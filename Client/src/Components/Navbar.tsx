@@ -65,7 +65,7 @@ const AppNavbar: React.FC = () => {
                     <Nav>
                         <NavDropdown title={
                             <>
-                                <img src={avatarUrl} height="30" alt="Profile" className="profile-image" /> <small>Unknown</small>
+                                <img src={avatarUrl} height="30" alt="Profile" className="profile-image" roundedCircle /> <small>Unknown</small>
                             </>
                         } id="profile-dropdown">
                             <NavDropdown.Item href="#">Profile</NavDropdown.Item>
