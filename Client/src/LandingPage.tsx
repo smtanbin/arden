@@ -1,16 +1,20 @@
 import { Container } from "react-bootstrap"
 import AppNavbar from "./Components/Navbar"
-import LoginPage from "./Pages/LoginPage"
+import { Outlet } from "react-router-dom";
 import Footer from "./Components/Footer"
-// import Dashboard from "./Pages/Dashboard/Dashboard"
-// import ProfilePage from "./Pages/ProfilePage"
 
-function App() {
+interface LandingPageProps {
+  children: React.ReactNode;
+}
+
+
+const LandingPage: React.FC<LandingPageProps> = () => {
   return (
     <main>
       <AppNavbar />
       <Container>
-        <LoginPage />
+        {/* <LoginPage /> */}
+        <Outlet />
         {/* <Dashboard /> */}
       </Container>
       <Footer />
@@ -18,4 +22,4 @@ function App() {
   )
 }
 
-export default App
+export default LandingPage

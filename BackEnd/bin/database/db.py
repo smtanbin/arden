@@ -11,8 +11,7 @@ Base = declarative_base()
 class User(Base):
     __tablename__ = 'users'
 
-    uuid = Column(String(32), primary_key=True, unique=True, nullable=False, default=lambda: 'AUID-USER-' +
-                  datetime.datetime.now().strftime('%Y%m-%d%H-%M%S') + '-' + str(uuid.uuid4())[-4:].zfill(4))
+    uuid = Column(String(32), primary_key=True, unique=True, nullable=False, default=lambda: 'AUID-USER-' + datetime.datetime.now().strftime('%Y%m-%d%H-%M%S') + '-' + str(uuid.uuid4())[-4:].zfill(4))
     email = Column(String(50), unique=True, nullable=False)
     firstName = Column(String(255))
     lastName = Column(String(255))
@@ -20,8 +19,7 @@ class User(Base):
     contact = Column(String(20), nullable=False)
     password_hash = Column(String(128), nullable=False)
     lock = Column(Boolean, nullable=False, default=True)
-    timestamp = Column(DateTime, nullable=False,
-                       default=datetime.datetime.now())
+    timestamp = Column(DateTime, nullable=False,default=datetime.datetime.now())
     update_at = Column(DateTime, nullable=True)
     permissions = Column(JSON)
 
@@ -29,11 +27,24 @@ class User(Base):
     audits = relationship('Audit', back_populates='user')
 
 
+class Timeline(Base):
+    __tablename__ = 'timeline'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    event = Column(String(255))
+    timestamp = Column(DateTime, nullable=False, default=datetime.datetime.now())
+
+    # Foreign key relationship to the User table
+    user_email = Column(String(50), ForeignKey('users.email'))
+
+    # Use lowercase 'user' for the relationship
+    user = relationship('User', back_populates='timeline')
+
+
 class Audit(Base):
     __tablename__ = 'audit'
 
-    uuid = Column(String(32), primary_key=True, unique=True, nullable=False, default=lambda: 'AUID-AUDIT-' +
-                  datetime.datetime.now().strftime('%Y%m-%d%H-%M%S') + '-' + str(uuid.uuid4())[-4:].zfill(4))
+    uuid = Column(String(32), primary_key=True, unique=True, nullable=False, default=lambda: 'AUID-AUDIT-' + datetime.datetime.now().strftime('%Y%m-%d%H-%M%S') + '-' + str(uuid.uuid4())[-4:].zfill(4))
     # Use the email column for the relationship
     user_email = Column(String(50), ForeignKey('users.email'))
     action = Column(String(255))

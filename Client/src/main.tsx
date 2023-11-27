@@ -1,9 +1,9 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import ReactDOM from 'react-dom/client'
 import { ThemeProvider } from "react-bootstrap";
-import "bootstrap/dist/css/bootstrap.min.css"; // Import Bootstrap CSS
-import App from "./App";
-
+import { BrowserRouter as Router } from 'react-router-dom';
+import "bootstrap/dist/css/bootstrap.min.css";
+import RootRouter from "./router/RootRouter";
 
 const theme = {
   colors: {
@@ -11,12 +11,17 @@ const theme = {
   },
 };
 
-ReactDOM.render(
-  <React.StrictMode>
-    <ThemeProvider theme={theme}>
+const el = document.getElementById('root')
+if (el === null) throw new Error('Root container missing in index.html')
 
-      <App />
-    </ThemeProvider>
-  </React.StrictMode>,
-  document.getElementById('root')
+const root = ReactDOM.createRoot(el)
+
+root.render(
+  <React.StrictMode>
+    <Router>
+      <ThemeProvider theme={theme}>
+        <RootRouter />
+      </ThemeProvider>
+    </Router>
+  </React.StrictMode>
 );
