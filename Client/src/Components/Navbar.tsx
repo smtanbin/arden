@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios, { AxiosResponse } from 'axios';
+import { Link } from 'react-router-dom';
 import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
 import logo from '../assets/logo.svg';
 
@@ -17,15 +18,16 @@ const AppNavbar: React.FC = () => {
     return (
         <Navbar fixed="top" expand="lg" style={{ backgroundColor: '#EFFFE8' }}>
             <div className="container">
-                <Navbar.Brand href="/">
-                    <img
-                        src={logo}
-                        alt="Logo"
-                        height="30"
-                        className="d-inline-block align-top"
-                    />
-                </Navbar.Brand>
-
+                <Link to={`/`}>
+                    <Navbar.Brand>
+                        <img
+                            src={logo}
+                            alt="Logo"
+                            height="30"
+                            className="d-inline-block align-top"
+                        />
+                    </Navbar.Brand>
+                </Link>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
 
                 <Navbar.Collapse id="basic-navbar-nav">
@@ -65,13 +67,14 @@ const AppNavbar: React.FC = () => {
                     <Nav>
                         <NavDropdown title={
                             <>
-                                <img src={avatarUrl} height="30" alt="Profile" className="profile-image" roundedCircle /> <small>Unknown</small>
+                                <img src={avatarUrl} height="30" alt="Profile" className="profile-image" /> <small>Unknown</small>
                             </>
                         } id="profile-dropdown">
-                            <NavDropdown.Item href="#">Profile</NavDropdown.Item>
-                            <NavDropdown.Item href="#">Settings</NavDropdown.Item>
+                            <Link to={`/userprofile`}><NavDropdown.Item>Test Profile</NavDropdown.Item></Link>
+                            <NavDropdown.Item href="/userprofile">Profile</NavDropdown.Item>
+
                             <NavDropdown.Divider />
-                            <NavDropdown.Item href="#">Logout</NavDropdown.Item>
+                            <NavDropdown.Item >Logout</NavDropdown.Item>
                         </NavDropdown>
                     </Nav>
                 </Navbar.Collapse>

@@ -7,7 +7,7 @@ import ErrorPage from "../Pages/errorPage";
 
 const SecureRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { sessionID } = useAuth();
-    if (!sessionID) {
+    if (sessionID) {
         // if (sessionID !== null) {
 
         return <LandingPage>{children}</LandingPage>;
@@ -16,8 +16,6 @@ const SecureRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
         return <Navigate to="/login" replace />;
     }
-
-    // Always return a valid ReactElement, such as by wrapping in a fragment
     return <ErrorPage />;
 };
 
