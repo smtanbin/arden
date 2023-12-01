@@ -4,8 +4,12 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy import Boolean, Column, Integer, String, JSON, DateTime, create_engine, ForeignKey
+import toml
 
 Base = declarative_base()
+
+with open('config.toml', 'r') as file:
+    config = toml.load(file)
 
 
 class User(Base):
@@ -55,11 +59,18 @@ class Audit(Base):
     user = relationship('User', back_populates='audits')
 
 
-DATABASE_URL = 'mysql+pymysql://root:toor@127.0.0.1/arden'
 
-engine = create_engine(DATABASE_URL, echo=True)
+
 
 try:
+
+   
+    # DATABASE_URL = 'mysql+pymysql://root:toor@127.0.0.1/arden'
+    DATABASE_URL = f'''mysql+pymysql://{config["database"]["username"]}:{config["database"]["password"]}@{config["database"]["address"]}/{config["database"]["database"]}'''
+  
+    engine = create_engine(DATABASE_URL, echo=True)
+    print(engine)
+
     Base.metadata.create_all(engine)
 except SQLAlchemyError as e:
     print(f"Error creating database tables: {str(e)}")

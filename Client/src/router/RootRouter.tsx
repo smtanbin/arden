@@ -5,6 +5,9 @@ import ProfilePage from "../Pages/ProfilePage"
 import LoginPage from "../Pages/LoginPage"
 import Dashboard from "../Pages/Dashboard/Dashboard"
 import ErrorPage from "../Pages/errorPage"
+import Activation from "../Pages/Activation/Activation"
+
+
 
 
 const RootRouter = () => {
@@ -13,6 +16,7 @@ const RootRouter = () => {
             <Route path="/" element={<SecureRoute children={undefined} />}>
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/userprofile" element={<ProfilePage />} />
+                <Route path="/cardActivation" element={<Activation />} />
             </Route>
             <Route path="/loading" element={<LoadingPage />} />
             <Route path="/login" element={<LoginPage />} />

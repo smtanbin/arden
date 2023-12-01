@@ -43,7 +43,8 @@ const AppNavbar: React.FC = () => {
                             <NavDropdown.Divider />
                             <NavDropdown.Item href="#">Card Status</NavDropdown.Item>
                             <NavDropdown.Item href="#">Reissue Card</NavDropdown.Item>
-                            <NavDropdown.Item href="#">Activision</NavDropdown.Item>
+                            <NavDropdown.Item><Link to={`/cardActivation`}>Card Activision</Link></NavDropdown.Item>
+
                             <NavDropdown.Item href="#">Disable Card</NavDropdown.Item>
                         </NavDropdown>
                         <NavDropdown title="Dispute" id="basic-nav-dropdown">
@@ -71,6 +72,7 @@ const AppNavbar: React.FC = () => {
                             </>
                         } id="profile-dropdown">
                             <Link to={`/userprofile`}><NavDropdown.Item>Test Profile</NavDropdown.Item></Link>
+
                             <NavDropdown.Item href="/userprofile">Profile</NavDropdown.Item>
 
                             <NavDropdown.Divider />

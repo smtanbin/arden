@@ -7,7 +7,7 @@ import ErrorPage from "../Pages/errorPage";
 
 const SecureRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { sessionID } = useAuth();
-    if (sessionID) {
+    if (!sessionID) {
         // if (sessionID !== null) {
 
         return <LandingPage>{children}</LandingPage>;

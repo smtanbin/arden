@@ -1,4 +1,3 @@
-import React from 'react';
 import { Col, Container } from 'react-bootstrap';
 import ATM from './ATM';
 import CardProduction from './CardProduction';
