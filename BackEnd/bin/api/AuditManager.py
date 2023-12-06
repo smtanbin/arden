@@ -1,7 +1,8 @@
 # AuditManager.py
 
 from sqlalchemy.exc import SQLAlchemyError
-from bin.database.db import Audit
+
+from bin.database.model import Audit
 
 
 class AuditManager:

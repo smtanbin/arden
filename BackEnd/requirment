@@ -2,3 +2,4 @@ toml
 flask
 sqlalchemy
 pymysql
+pyodbc
