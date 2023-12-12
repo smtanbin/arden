@@ -1,18 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import axios, { AxiosResponse } from 'axios';
 import { Link } from 'react-router-dom';
 import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
 import logo from '../assets/logo.svg';
 
 const AppNavbar: React.FC = () => {
-    const [avatarUrl, setAvatarUrl] = useState('');
 
-    useEffect(() => {
-        // Fetch a random avatar from DiceBear Avatars API
-        axios.get('https://avatars.dicebear.com/api/avataaars/example.svg?options[mood][]=happy').then((response: AxiosResponse) => {
-            setAvatarUrl(response.config?.url ?? ''); // Using nullish coalescing operator
-        });
-    }, []);
+
+
 
 
     return (
@@ -48,8 +41,10 @@ const AppNavbar: React.FC = () => {
                             <NavDropdown.Item href="#">Disable Card</NavDropdown.Item>
                         </NavDropdown>
                         <NavDropdown title="Dispute" id="basic-nav-dropdown">
-                            <NavDropdown.Item href="#">Profile</NavDropdown.Item>
-                            <NavDropdown.Item href="#">Settings</NavDropdown.Item>
+                            <NavDropdown.Item><Link to={`/dispute`}>Dispute list</Link></NavDropdown.Item>
+                            <NavDropdown.Item href="/dispute">Dispute list</NavDropdown.Item>
+                            <NavDropdown.Item><Link to={`/add_dispute`}>Add Dispute</Link></NavDropdown.Item>
+
                             <NavDropdown.Divider />
                             <NavDropdown.Item href="#">Logout</NavDropdown.Item>
                         </NavDropdown>
@@ -68,7 +63,7 @@ const AppNavbar: React.FC = () => {
                     <Nav>
                         <NavDropdown title={
                             <>
-                                <img src={avatarUrl} height="30" alt="Profile" className="profile-image" /> <small>Unknown</small>
+                                {/* <img src={} height="30" alt="Profile" className="profile-image" /> <small>Unknown</small> */}
                             </>
                         } id="profile-dropdown">
                             <Link to={`/userprofile`}><NavDropdown.Item>Test Profile</NavDropdown.Item></Link>

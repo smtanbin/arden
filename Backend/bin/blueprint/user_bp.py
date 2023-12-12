@@ -1,6 +1,6 @@
 # user_bp.py
 
-from bin.database.db import create_session
+from bin.database.db import database
 from bin.database.model import Userinfo
 from bin.api.PasswordManager import PasswordManager
 from bin.api.AuditManager import AuditManager
@@ -10,13 +10,13 @@ from flask import Blueprint, request, jsonify
 from sqlalchemy.exc import IntegrityError
 
 user_bp = Blueprint('user', __name__)
-
+session_maker = database()
+session = session_maker()
 
 @user_bp.route('/add', methods=['POST'])
 def add_user():
-    global session
+
     try:
-        session = create_session()
         data = request.get_json()
 
         if all(data.get(field) for field in ['firstName', 'lastName', 'email', 'contact', 'permissions']):
@@ -63,7 +63,7 @@ def verify_user():
         if not username or not password:
             return jsonify({'message': 'Invalid request. Please provide both username and password.'}), 400
 
-        session = create_session()
+
         user = session.query(Userinfo).filter_by(email=username).first()
         session.close()
 
@@ -83,7 +83,7 @@ def verify_user():
 
 @user_bp.route('/change_password', methods=['POST'])
 def change_password():
-    Session = create_session()
+    Session = database()
     data = request.get_json()
     username = data['username']
     old_password = data['old_password']
@@ -112,7 +112,7 @@ def change_password():
 
 @user_bp.route('/lock', methods=['POST'])
 def lock_user():
-    Session = create_session()
+    Session = database()
     data = request.get_json()
     username = data['name']
 

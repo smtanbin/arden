@@ -1,6 +1,6 @@
 import datetime
 import uuid
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, LargeBinary, JSON
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, LargeBinary, JSON, Date, inspect
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
@@ -74,8 +74,53 @@ class AuthorizedSilpData(Base):
     contact = Column(String(17))
     status = Column(String(2))
     makerUser = Column(String(50))  # Foreign key
-    authorizedUser = Column(String(50))  # Foreign key
+    authorizedUser = Column(String(50), ForeignKey('userinfo.uuid'))  # Add a foreign key
+
     timestamp = Column(DateTime, nullable=False, default=datetime.datetime.now())
 
     # Relationship
     user = relationship('Userinfo', back_populates='authorized_silp_data')
+
+
+class Dispute(Base):
+    __tablename__ = 'dispute'
+
+    uuid = Column(String(32), primary_key=True, unique=True, nullable=False,
+                  default=lambda: 'DP' + datetime.datetime.now().strftime('%Y%m-%d%H-%M%S') + '-' + str(
+                      uuid.uuid4())[-4:].zfill(4))
+    pan = Column(String(17))
+    acno = Column(String(17))
+    title = Column(String(24))
+    timestamp = Column(DateTime, nullable=False, default=datetime.datetime.now())
+    acquirer = Column(String(24))
+    org_branch_code = Column(String(5), nullable=False)
+    org_id = Column(String(24), nullable=False)
+    txn_date = Column(Date, nullable=False)
+    terminal_id = Column(String(32))
+    merchant_name = Column(String(32))
+    merchant_location = Column(String(32))
+    tr_amt = Column(String(100), nullable=False)
+    dispute_amt = Column(String(100))
+    refund_amt = Column(String(100))
+    massage = Column(String(300))
+    channel = Column(String(8), nullable=False)
+    complain_date = Column(Date)
+    doc_no = Column(String(64))
+    stan = Column(String(64))
+    attachment = Column(LargeBinary, nullable=True)
+    maker_user = Column(String(50), nullable=False)
+    open_date = Column(DateTime)
+    resolved = Column(Boolean)
+    bb_dispute_id = Column(String(64))
+    submitted = Column(Boolean)
+    approved = Column(Boolean)
+    approvedDate = Column(DateTime)
+    remark = Column(String(300))
+    authorizedUser = Column(String(50))
+
+    def serialize(self):
+        """
+        Serialize the object into a dictionary.
+        """
+        return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
+

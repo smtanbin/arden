@@ -1,7 +1,7 @@
 import { Col, Container } from 'react-bootstrap';
 import ATM from './ATM';
 import CardProduction from './CardProduction';
-import Dispute from './Dispute';
+
 
 
 
@@ -14,9 +14,7 @@ const Dashboard: React.FC = () => {
                     <ATM />
                     <CardProduction />
                 </Col>
-                <Col>
-                    <Dispute />
-                </Col>
+
             </Container>
         </section>
 

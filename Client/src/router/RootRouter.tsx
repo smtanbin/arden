@@ -6,6 +6,8 @@ import LoginPage from "../Pages/LoginPage"
 import Dashboard from "../Pages/Dashboard/Dashboard"
 import ErrorPage from "../Pages/errorPage"
 import Activation from "../Pages/Activation/Activation"
+import Dispute from "../Pages/Dispute/Dispute"
+
 
 
 
@@ -17,6 +19,7 @@ const RootRouter = () => {
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/userprofile" element={<ProfilePage />} />
                 <Route path="/cardActivation" element={<Activation />} />
+                <Route path="/dispute" element={<Dispute />} />
             </Route>
             <Route path="/loading" element={<LoadingPage />} />
             <Route path="/login" element={<LoginPage />} />
