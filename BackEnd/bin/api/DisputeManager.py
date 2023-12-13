@@ -2,7 +2,6 @@
 import base64
 
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.orm import Session
 from bin.database.model import Dispute  # Import the Dispute model
 
 

@@ -37,7 +37,7 @@ class LoginSession(Base):
     __tablename__ = 'login_session'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    token = Column(String(255))
+    token = Column(String(2048))
     timestamp = Column(DateTime, nullable=False, default=datetime.datetime.now())
     status = Column(Boolean, nullable=False, default=True)
     user_uuid = Column(String(32), ForeignKey('userinfo.uuid'))  # Foreign key

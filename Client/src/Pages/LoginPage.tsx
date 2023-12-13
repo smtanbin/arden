@@ -1,10 +1,16 @@
+// LoginPage.tsx
 import React, { useState } from 'react';
 import { Container, Row, Col, Form, Image } from 'react-bootstrap';
+import { useNavigate } from "react-router-dom";
+
 import CustomButton from '../Components/CustomButtons';
-import { ArrowLeft } from 'react-bootstrap-icons'; // Import Bootstrap Icons
+import { ArrowLeft } from 'react-bootstrap-icons';
 import styled from 'styled-components';
 import wallpaper from '../assets/login.svg'
 import logo from '../assets/arden_logo.svg'
+import { useAuth } from '../apps/useAuth';
+
+
 
 
 const LoginPageWrapper = styled.div`
@@ -44,9 +50,51 @@ const LoginPage: React.FC = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 
-    const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        // Handle login logic here
+
+
+    const auth = useAuth();
+    const navigate = useNavigate();
+
+    const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault()
+
+        const headers: Record<string, string> = {
+            "Content-Type": "application/json",
+        };
+
+        const data: { username: string; password: string } = {
+            username,
+            password,
+        };
+
+        try {
+            const response = await fetch("http://127.0.0.1:4000/api/v1/oauth/login", {
+                method: "POST",
+                headers,
+                body: JSON.stringify(data),
+            });
+
+            if (response.ok) {
+                const payload = await response.json();
+
+                if (payload.message != 'success') alert("Login failed")
+
+                const refreshToken = payload.token[1]
+                const token = payload.token[0]
+
+                auth.login({ username, token, refreshToken });
+                navigate("/", { replace: true });
+
+
+            } else {
+
+                console.error("Login failed:", response.status, response.statusText);
+
+            }
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+            console.error("Login failed:", error.message);
+        }
     };
 
 

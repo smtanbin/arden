@@ -13,9 +13,9 @@ user_bp = Blueprint('user', __name__)
 session_maker = database()
 session = session_maker()
 
+
 @user_bp.route('/add', methods=['POST'])
 def add_user():
-
     try:
         data = request.get_json()
 
@@ -26,7 +26,7 @@ def add_user():
                 firstName=data['firstName'],
                 lastName=data['lastName'],
                 status=True,
-                lock=True,
+                lock=False,
                 email=data['email'],
                 contact=data['contact'],
                 password_hash=PasswordManager.set_password(data['email'], password),
@@ -51,34 +51,6 @@ def add_user():
         return jsonify({'message': None, 'error': str(e)}), 500
     finally:
         session.close()
-
-
-@user_bp.route('/verify', methods=['POST'])
-def verify_user():
-    try:
-        data = request.get_json()
-        username = data.get('username')  # Use get() method to avoid KeyError
-        password = data.get('password')
-
-        if not username or not password:
-            return jsonify({'message': 'Invalid request. Please provide both username and password.'}), 400
-
-
-        user = session.query(Userinfo).filter_by(email=username).first()
-        session.close()
-
-        if user:
-            password_hash = user.password_hash
-            if PasswordManager.is_valid_password(username, password_hash, password):
-                return jsonify({'message': 'User verified successfully.'}), 200
-            else:
-                return jsonify({'message': 'Invalid password.'}), 401
-        else:
-            return jsonify({'message': 'User not found.'}), 404
-
-    except Exception as e:
-        session.close()
-        return jsonify({'error': str(e)}), 500
 
 
 @user_bp.route('/change_password', methods=['POST'])
@@ -118,20 +90,11 @@ def lock_user():
 
     user = Session.query(Userinfo).filter_by(email=username).first()
     if user:
-        user.lock = False
+        user.lock = True
         Session.commit()
         return jsonify({'message': 'User locked successfully.'})
     else:
         return jsonify({'message': 'User not found.'}), 404
-
-
-@user_bp.route('/about', methods=['GET'])
-def echo():
-    return jsonify({
-        "Modue": "User Management",
-        "Author": "Tanbin Hassan Bappi",
-        "License": "Mozilla Public Licence",
-    }), 200
 
 
 @user_bp.errorhandler(404)

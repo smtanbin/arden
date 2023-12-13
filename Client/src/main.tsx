@@ -4,6 +4,7 @@ import { ThemeProvider } from "react-bootstrap";
 import { BrowserRouter as Router } from 'react-router-dom';
 import "bootstrap/dist/css/bootstrap.min.css";
 import RootRouter from "./router/RootRouter";
+import { AuthProvider } from "./Context/AuthProvider";
 
 const theme = {
   colors: {
@@ -19,9 +20,11 @@ const root = ReactDOM.createRoot(el)
 root.render(
   <React.StrictMode>
     <Router>
-      <ThemeProvider theme={theme}>
-        <RootRouter />
-      </ThemeProvider>
+      <AuthProvider>
+        <ThemeProvider theme={theme}>
+          <RootRouter />
+        </ThemeProvider>
+      </AuthProvider>
     </Router>
   </React.StrictMode>
 );

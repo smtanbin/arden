@@ -1,27 +1,8 @@
-import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../Context/AuthProvider";
+import React from "react";
+
 
 const LoadingPage: React.FC = () => {
-    const navigate = useNavigate();
-    const { sessionID } = useAuth()
 
-    useEffect(() => {
-
-        if (sessionID !== undefined || null) {
-            const timeout = setTimeout(() => {
-                console.log("Navigate to home");
-                navigate("/");
-            }, 500);
-            return () => clearTimeout(timeout);
-        } else {
-            const timeout = setTimeout(() => {
-                console.log("Navigate to home");
-                navigate("/login")
-            }, 500);
-            return () => clearTimeout(timeout);
-        }
-    }, []);
 
     return (
         <div className="card" aria-hidden="true">
