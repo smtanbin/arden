@@ -3,8 +3,16 @@ import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 
 interface AuthContextValue {
-    token: { token: string | null; refreshToken: string | null } | null;
-    login: (data: { token: string; refreshToken: string; username: string }) => void;
+    token: {
+        token: string | null;
+        refreshToken: string | null;
+        username: string | null;
+    } | null;
+    login: (data: {
+        token: string;
+        refreshToken: string;
+        username: string;
+    }) => void;
     logout: () => void;
     username: string | null;
 }
@@ -38,12 +46,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         navigate("/");
     }, [navigate]);
 
-
     const logout = useCallback(() => {
         navigate("/", { replace: true });
         setTokenData(null);
         Cookies.remove("authToken"); // Remove the token cookie
-        Cookies.remove("username"); // Remove the username cookie
     }, [navigate]);
 
     useEffect(() => {
@@ -62,4 +68,3 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
-

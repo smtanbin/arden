@@ -2,7 +2,11 @@ import { useContext } from "react"
 import { AuthContext } from "../Context/AuthProvider"
 
 interface AuthContextValue {
-  token: { token: string | null; refreshToken: string | null } | null
+  token: {
+    token: string | null
+    refreshToken: string | null
+    username: string | null
+  } | null
   login: (data: {
     token: string
     refreshToken: string

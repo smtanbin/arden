@@ -1,15 +1,34 @@
 import { Link } from 'react-router-dom';
 import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
 import logo from '../assets/logo.svg';
+import { useAuth } from '../apps/useAuth';
+
+import { useState } from 'react';
+import LogoutModal from '../Pages/LogoutModal';
 
 const AppNavbar: React.FC = () => {
+
+    const { token } = useAuth();
+    const username: string = token?.username || 'guest';
+
+    const [logoutModalVisible, setLogoutModalVisible] = useState(false);
+
+    const showLogoutModal = () => {
+        setLogoutModalVisible(true);
+    };
+
+    const hideLogoutModal = () => {
+        setLogoutModalVisible(false);
+    };
+
+
 
 
 
 
 
     return (
-        <Navbar fixed="top" expand="lg" style={{ backgroundColor: '#EFFFE8' }}>
+        <><Navbar fixed="top" expand="lg" style={{ backgroundColor: '#EFFFE8' }}>
             <div className="container">
                 <Link to={`/`}>
                     <Navbar.Brand>
@@ -17,8 +36,7 @@ const AppNavbar: React.FC = () => {
                             src={logo}
                             alt="Logo"
                             height="30"
-                            className="d-inline-block align-top"
-                        />
+                            className="d-inline-block align-top" />
                     </Navbar.Brand>
                 </Link>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -41,9 +59,10 @@ const AppNavbar: React.FC = () => {
                             <NavDropdown.Item href="#">Disable Card</NavDropdown.Item>
                         </NavDropdown>
                         <NavDropdown title="Dispute" id="basic-nav-dropdown">
-                            <NavDropdown.Item><Link to={`/dispute`}>Dispute list</Link></NavDropdown.Item>
-                            <NavDropdown.Item href="/dispute">Dispute list</NavDropdown.Item>
-                            <NavDropdown.Item><Link to={`/add_dispute`}>Add Dispute</Link></NavDropdown.Item>
+
+                            <NavDropdown.Item href="/dispute">Add Dispute</NavDropdown.Item>
+                            <NavDropdown.Item href="/">Dispute list</NavDropdown.Item>
+
 
                             <NavDropdown.Divider />
                             <NavDropdown.Item href="#">Logout</NavDropdown.Item>
@@ -62,21 +81,26 @@ const AppNavbar: React.FC = () => {
 
                     <Nav>
                         <NavDropdown title={
-                            <>
-                                {/* <img src={} height="30" alt="Profile" className="profile-image" /> <small>Unknown</small> */}
-                            </>
-                        } id="profile-dropdown">
-                            <Link to={`/userprofile`}><NavDropdown.Item>Test Profile</NavDropdown.Item></Link>
+                            <span>{username.slice(0, 1).toUpperCase()
+                            }
+                            </span>} id="profile-dropdown">
 
                             <NavDropdown.Item href="/userprofile">Profile</NavDropdown.Item>
 
                             <NavDropdown.Divider />
-                            <NavDropdown.Item >Logout</NavDropdown.Item>
+                            <NavDropdown.Item onClick={showLogoutModal}>Logout</NavDropdown.Item>
                         </NavDropdown>
                     </Nav>
                 </Navbar.Collapse>
             </div>
-        </Navbar>
+        </Navbar><LogoutModal
+                visible={logoutModalVisible}
+                onConfirm={() => {
+                    // Add any additional logic you need on confirmation
+                    hideLogoutModal();
+                }}
+                onCancel={hideLogoutModal} /></>
+
     );
 };
 

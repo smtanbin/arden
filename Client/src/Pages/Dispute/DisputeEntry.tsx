@@ -1,6 +1,7 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { Col, Container, Form, Row, Button } from 'react-bootstrap';
 import axios from 'axios';
+import { useAuth } from '../../apps/useAuth';
 
 type FormData = {
     pan: string;
@@ -14,9 +15,15 @@ type FormData = {
     tr_amt: string;
     channel: string;
     attachment: string | null;
+    maker_user: string | null;
 };
 
-const Dispute: React.FC<{ userprofile?: string }> = ({ userprofile = 'tanbin' }) => {
+const DisputeEntry: React.FC<{ userprofile?: string }> = () => {
+
+    const { token } = useAuth();
+    const userprofile: string = token?.username || 'guest';
+
+
     const [formData, setFormData] = useState<FormData>({
         pan: '',
         acno: '',
@@ -29,7 +36,10 @@ const Dispute: React.FC<{ userprofile?: string }> = ({ userprofile = 'tanbin' })
         tr_amt: '',
         channel: '',
         attachment: null,
+        maker_user: userprofile
     });
+
+
 
     const [customerName, setCustomerName] = useState<string>("")
 
@@ -224,4 +234,4 @@ const Dispute: React.FC<{ userprofile?: string }> = ({ userprofile = 'tanbin' })
     );
 };
 
-export default Dispute;
+export default DisputeEntry;

@@ -8,12 +8,9 @@ import { useAuth } from "../apps/useAuth";
 
 const SecureRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { token } = useAuth();
-    console.log(token)
-    if (token) {
-        // if (sessionID !== null) {
 
+    if (token) {
         return <LandingPage>{children}</LandingPage>;
-        // }
     } else {
 
         return <Navigate to="/login" replace />;
