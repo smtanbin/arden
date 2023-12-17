@@ -49,6 +49,7 @@ const LoginPage: React.FC = () => {
     const [otpScreen, setOtpScreen] = useState(false);
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [error, setError] = useState<string | undefined>(undefined);
 
 
 
@@ -68,7 +69,7 @@ const LoginPage: React.FC = () => {
         };
 
         try {
-            const response = await fetch("http://127.0.0.1:4000/api/v1/oauth/login", {
+            const response = await fetch("http://10.140.6.65:4000/api/v1/oauth/login", {
                 method: "POST",
                 headers,
                 body: JSON.stringify(data),
@@ -87,7 +88,7 @@ const LoginPage: React.FC = () => {
 
 
             } else {
-
+                setError(response.statusText)
                 console.error("Login failed:", response.status, response.statusText);
 
             }
@@ -197,6 +198,12 @@ const LoginPage: React.FC = () => {
                                 />
                             </Col>
                         </Row>
+                        {error ? <><br /><Row>
+                            <div className="rounded p-1 bg-warning p-2 text-dark bg-opacity-50 text-center">
+                                {error.toString()}
+                            </div>
+                        </Row></> : <></>}
+                        <br />
                         <Row className="mb-3">
                             <Col>
                                 <CustomButton variant="primary" color={undefined} text="Login" type={"submit"} />
@@ -206,6 +213,7 @@ const LoginPage: React.FC = () => {
                                 <CustomButton onClick={handleForgotPassword} variant="outline" color={undefined} text="Forgot Password?" type={"submit"} />
                             </Col>
                         </Row>
+
                     </LoginForm>
                 )}
             </LoginContainer>

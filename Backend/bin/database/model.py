@@ -1,5 +1,6 @@
 import datetime
 import uuid
+
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, LargeBinary, JSON, Date, inspect
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
@@ -82,6 +83,35 @@ class AuthorizedSilpData(Base):
     user = relationship('Userinfo', back_populates='authorized_silp_data')
 
 
+class Branchs(Base):
+    __tablename__ = 'branchs'
+
+    branch_name = Column(String(32))
+    branch_code = Column(String(4), primary_key=True, unique=True, nullable=False, )
+    location = Column(String(100))
+    contact = Column(String(5), unique=True)
+    tl_atm = Column(Integer)
+    tl_pos = Column(Integer)
+    status = Column(Boolean)
+    timestamp = Column(DateTime, nullable=False, default=datetime.datetime.now())
+
+
+class LinkService(Base):
+    __tablename__ = 'link_service'
+
+    uuid = Column(String(32), primary_key=True, unique=True, nullable=False,
+                  default=lambda: 'AUID-LS-' + datetime.datetime.now().strftime('%Y%m-%d%H-%M%S') + '-' + str(
+                      uuid.uuid4())[-4:].zfill(4))
+    service_url = Column(String(128))
+    auth_user = Column(String(32))
+    auth_passwd = Column(String(100))
+    port = Column(String(5))
+    service_param = Column(String(64))
+    status = Column(Boolean)
+    service_name = Column(String(32))
+    timestamp = Column(DateTime, nullable=False, default=datetime.datetime.now())
+
+
 class Dispute(Base):
     __tablename__ = 'dispute'
 
@@ -123,4 +153,3 @@ class Dispute(Base):
         Serialize the object into a dictionary.
         """
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
-

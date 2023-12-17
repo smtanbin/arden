@@ -28,7 +28,8 @@ def check_user():
         if user:
             password_hash = user.password_hash
             if PasswordManager.is_valid_password(username, password_hash, password):
-                token = [create_access_token(identity=username, expires_delta=timedelta(minutes=7)), create_access_token(identity=user.uuid)]
+                token = [create_access_token(identity=username, expires_delta=timedelta(minutes=7)),
+                         create_access_token(identity=user.uuid)]
                 login_session = LoginSession(token=token[1], user_uuid=user.uuid)
                 session.add(login_session)
                 session.commit()
@@ -59,7 +60,9 @@ def verify_user():
         session.close()
 
         if user & token == refresh_token:
-            return jsonify({'success': True, 'token': create_access_token(identity=username, expires_delta=timedelta(minutes=7)), 'error': None}), 200
+            return jsonify(
+                {'success': True, 'token': create_access_token(identity=username, expires_delta=timedelta(minutes=7)),
+                 'error': None}), 200
         else:
             return jsonify({'success': False, 'token': None, 'error': 'token or user not match'}), 401
     except Exception as e:
@@ -73,15 +76,21 @@ def logout():
     refresh_token = data.get('refreshToken')
 
     user = session.query(Userinfo).filter_by(email=username, status=True).first()
-    token = session.query(LoginSession).filter_by(user_uuid=user.uuid, status=True).first()
+    if user is None:
+        return jsonify({'success': False, 'error': 'user not found'}), 401
 
-    if token == refresh_token:
-        token.status = False
-        session.close()
-        return jsonify({'success': True, 'error': None}), 200
+    token = session.query(LoginSession).filter_by(user_uuid=user.uuid, token=refresh_token, status=True).first()
+    if token is None:
+        return jsonify({'success': False, 'error': 'token not found'}), 401
     else:
-        session.close()
-        return jsonify({'success': False, 'error': 'token or user not match'}), 401
+        if token.token == refresh_token:
+            token.status = False
+            session.commit()
+            session.close()
+            return jsonify({'success': True, 'error': None}), 200
+        else:
+            session.close()
+            return jsonify({'success': False, 'error': 'token or user not match'}), 401
 
 
 @auth_bp.errorhandler(404)

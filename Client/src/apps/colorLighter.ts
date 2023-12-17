@@ -5,8 +5,7 @@ const lightenHexColor = (hexColor: string, percentage: number = 50): string => {
   // Parse the hex string to an integer
   const colorValue = parseInt(hex, 16)
   // Calculate the new color value by adding the difference between the original value and 0xFFFFFF (white) multiplied by the percentage
-  const newColorValue =
-    colorValue + (0xffffff - colorValue) * (percentage / 100)
+  const newColorValue = colorValue + (0xffffff - colorValue) * (percentage / 25)
 
   // Ensure the new color value is within the valid range [0, 0xFFFFFF]
   const finalColorValue = Math.min(newColorValue, 0xffffff)
@@ -26,4 +25,4 @@ const getContrastColor = (hexColor: string): string => {
   return brightness > 128 ? "#000" : "#fff"
 }
 
-export { lightenHexColor,  getContrastColor }
+export { lightenHexColor, getContrastColor }

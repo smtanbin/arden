@@ -3,11 +3,11 @@ port = 4000
 host = '0.0.0.0'  # To allow all IP access, use '0.0.0.0'; default is '127.0.0.1'
 
 [database]
-username = "root"
-password = "toor"
-address = "127.0.0.1"  # Enclose the IP address in double quotes
-port = 3306
-database = "arden"  # Enclose the database name in double quotes
+username = "arden_dev"
+password = "arden_dev"
+address = "10.140.6.7"  # Enclose the IP address in double quotes
+port = 5432
+database = "arden_dev"  # Enclose the database name in double quotes
 
 [access]
 username = "tanbin"
