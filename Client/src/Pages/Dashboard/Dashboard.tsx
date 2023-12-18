@@ -1,4 +1,4 @@
-import { Col, Container } from 'react-bootstrap';
+import { Col, Container } from 'rsuite';
 import ATM from './ATM';
 import CardProduction from './CardProduction';
 

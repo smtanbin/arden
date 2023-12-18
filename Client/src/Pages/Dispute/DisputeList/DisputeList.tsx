@@ -1,4 +1,4 @@
-import { Button, Container, Form, Row, Col } from 'react-bootstrap';
+import { Button, Container, Row, Col, DateRangePicker } from 'rsuite'
 
 import { useState, useEffect } from 'react';
 
@@ -47,9 +47,8 @@ interface DisputeData {
 
 const DisputeList = () => {
     const [data, setData] = useState<DisputeData[] | undefined>(undefined);
+    const [dateRange, setDateRange] = useState<[Date, Date] | []>([]);
     const [loading, setLoading] = useState<boolean>(true);
-    const [fromDate, setFromDate] = useState<string>('');
-    const [toDate, setToDate] = useState<string>('');
     const [defaultRefrash, setDefaultRefrash] = useState<boolean>(true);
 
     const auth = useAuth();
@@ -58,7 +57,6 @@ const DisputeList = () => {
     const fetchDefaultData = async () => {
         try {
             const res: Payload = await api.useApi('GET', '/v1/dispute/dispute_list');
-            console.log(res)
             if (res && !res.error) {
                 setData(res.payload || []);
             } else {
@@ -71,13 +69,12 @@ const DisputeList = () => {
         setLoading(false);
     };
 
-
     const fetchDataByDate = async () => {
         setDefaultRefrash(false);
         try {
             const payload: Payload = await api.useApi('POST', '/v1/dispute/list_by_date', {
-                from_date: fromDate,
-                to_date: toDate,
+                from_date: dateRange[0]?.toISOString().split('T')[0] || '',
+                to_date: dateRange[1]?.toISOString().split('T')[0] || '',
             });
             if (payload && !payload.error) {
                 setData(payload.payload || []);
@@ -91,12 +88,8 @@ const DisputeList = () => {
         setLoading(false);
     };
 
-    const handleFromDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setFromDate(event.target.value);
-    };
-
-    const handleToDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setToDate(event.target.value);
+    const handleDateRangeChange = (value: [Date, Date] | []) => {
+        setDateRange(value);
     };
 
     const handleRefresh = () => {
@@ -110,8 +103,7 @@ const DisputeList = () => {
 
     const handleReset = () => {
         fetchDefaultData();
-        setFromDate('');
-        setToDate('');
+        setDateRange([]);
     };
 
     useEffect(() => {
@@ -124,30 +116,21 @@ const DisputeList = () => {
                 <h1 className='p-5'>Dispute List</h1>
                 <Row className="mb-3">
                     <Col md={4}>
-                        <Form.Label>From Date:</Form.Label>
-                        <Form.Control
-                            type="date"
-                            value={fromDate}
-                            onChange={handleFromDateChange}
-                        />
-                    </Col>
-                    <Col md={4}>
-                        <Form.Label>To Date:</Form.Label>
-                        <Form.Control
-                            type="date"
-                            value={toDate}
-                            onChange={handleToDateChange}
+
+                        <DateRangePicker
+                            value={dateRange.length === 0 ? null : dateRange}
+                            onChange={handleDateRangeChange}
                         />
                     </Col>
                 </Row>
                 <div className="d-flex">
-                    <Button variant="primary" className=" btn-outline" onClick={handleGenerate}>
+                    <Button color="blue" appearance="primary" onClick={handleGenerate}>
                         Generate
                     </Button>
-                    <Button variant="outline" className="mx-2 btn-outline-primary" onClick={handleRefresh}>
+                    <Button color="blue" appearance="ghost" className="mx-2" onClick={handleRefresh}>
                         Refresh
                     </Button>
-                    <Button variant="outline" className="mx-2  btn-outline-secondary" onClick={handleReset}>
+                    <Button color="blue" appearance="ghost" className="mx-2" onClick={handleReset}>
                         Reset
                     </Button>
                 </div>

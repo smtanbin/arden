@@ -1,102 +1,60 @@
+// import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
-import logo from '../assets/logo.svg';
-import { useAuth } from '../apps/useAuth';
-import background from '../assets/login/light.svg'
+import { Navbar, Nav } from 'rsuite';
+import HomeIcon from '@rsuite/icons/legacy/Home';
+import CogIcon from '@rsuite/icons/legacy/Cog';
+// import logo from '../assets/logo.svg';
+// import { useAuth } from '../apps/useAuth';
 
-import { useState } from 'react';
-import LogoutModal from '../Pages/LogoutModal';
+
+
+
 
 
 const AppNavbar: React.FC = () => {
 
-    const { token } = useAuth();
-    const username: string = token?.username || 'guest';
+    // const { token } = useAuth();
+    // const username: string = token?.username || 'guest';
 
-    const [logoutModalVisible, setLogoutModalVisible] = useState(false);
+    // const [logoutModalVisible, setLogoutModalVisible] = useState(false);
 
-    const showLogoutModal = () => {
-        setLogoutModalVisible(true);
-    };
+    // const showLogoutModal = () => {
+    //     setLogoutModalVisible(true);
+    // };
 
-    const hideLogoutModal = () => {
-        setLogoutModalVisible(false);
-    };
+    // const hideLogoutModal = () => {
+    //     setLogoutModalVisible(false);
+    // };
 
 
     return (
-        <header><Navbar fixed="top" expand="lg" style={{ background: `url(${background}) left/cover`, backgroundColor: '#EFFFE8' }}>
-
-            <div className="container">
-                <Link to={`/`}>
-                    <Navbar.Brand>
-                        <img
-                            src={logo}
-                            alt="Logo"
-                            height="30"
-                            className="d-inline-block align-top" />
-                    </Navbar.Brand>
-                </Link>
-                <Navbar.Toggle aria-controls="basic-navbar-nav" />
-
-                <Navbar.Collapse id="basic-navbar-nav">
-                    <Nav className="me-auto">
-                        <NavDropdown title="ATM" id="basic-nav-dropdown">
-                            <NavDropdown.Item href="#">ATM Monitor</NavDropdown.Item>
-                            <NavDropdown.Item href="#">Downtime</NavDropdown.Item>
-                        </NavDropdown>
-                        <NavDropdown title="Cards" id="basic-nav-dropdown">
-                            <NavDropdown.Item href="#">Production List</NavDropdown.Item>
-                            <NavDropdown.Item href="#">Card Mailer List</NavDropdown.Item>
-                            <NavDropdown.Item href="#">PIN Mailer List</NavDropdown.Item>
-                            <NavDropdown.Divider />
-                            <NavDropdown.Item href="#">Card Status</NavDropdown.Item>
-                            <NavDropdown.Item href="#">Reissue Card</NavDropdown.Item>
-                            <NavDropdown.Item><Link to={`/cardActivation`}>Card Activision</Link></NavDropdown.Item>
-
-                            <NavDropdown.Item href="#">Disable Card</NavDropdown.Item>
-                        </NavDropdown>
-                        <NavDropdown title="Dispute" id="basic-nav-dropdown">
-
-                            <NavDropdown.Item href="/addDispute">Add Dispute</NavDropdown.Item>
-                            <NavDropdown.Item href="/disputeList">Dispute list</NavDropdown.Item>
+        <Navbar>
+            <Nav>
+                <Navbar.Brand href="#">RSUITE</Navbar.Brand>
+                <Nav>
+                    <Nav.Item icon={<HomeIcon />}>Home</Nav.Item>
 
 
-                            <NavDropdown.Divider />
-                            <NavDropdown.Item href="#">Logout</NavDropdown.Item>
-                        </NavDropdown>
-                        <NavDropdown title="Report" id="basic-nav-dropdown">
-                            <NavDropdown.Item href="#">MIS</NavDropdown.Item>
-                        </NavDropdown>
-                        <NavDropdown title="Call Center" id="basic-nav-dropdown">
-                            <NavDropdown.Item href="#">Search</NavDropdown.Item>
-                            <NavDropdown.Item href="#">Customer List</NavDropdown.Item>
-                            <NavDropdown.Item href="#">Account List</NavDropdown.Item>
-                            <NavDropdown.Item href="#">Branch Address</NavDropdown.Item>
-                            <NavDropdown.Item href="#">Branch SIP</NavDropdown.Item>
-                        </NavDropdown>
-                    </Nav>
+                    <Nav.Menu title="ATM">
+                        <Nav.Item>ATM Monitor</Nav.Item>
+                        <Nav.Item>Downtime</Nav.Item>
+                        <Nav.Item>Extra Cash</Nav.Item>
+                    </Nav.Menu>
+                    <Nav.Menu title="Cards">
+                        <Nav.Item>Production List</Nav.Item>
 
-                    <Nav>
-                        <NavDropdown title={
-                            <span>{username.slice(0, 1).toUpperCase()
-                            }
-                            </span>} id="profile-dropdown">
+                    </Nav.Menu>
+                    <Nav.Menu title="Dispute">
+                        <Link to={"/addDispute"}><Nav.Item>Add Dispute</Nav.Item></Link>
+                        <Link to={"/disputeList"}><Nav.Item>Dispute list</Nav.Item></Link>
 
-                            <NavDropdown.Item href="/userprofile">Profile</NavDropdown.Item>
-
-                            <NavDropdown.Divider />
-                            <NavDropdown.Item onClick={showLogoutModal}>Logout</NavDropdown.Item>
-                        </NavDropdown>
-                    </Nav>
-                </Navbar.Collapse>
-            </div>
-        </Navbar >
-            <LogoutModal
-                visible={logoutModalVisible}
-                onConfirm={() => hideLogoutModal()}
-                onCancel={hideLogoutModal} />
-        </header>
+                    </Nav.Menu>
+                </Nav>
+                <Nav pullRight>
+                    <Nav.Item icon={<CogIcon />}>Settings</Nav.Item>
+                </Nav>
+            </Nav>
+        </Navbar>
 
     );
 };

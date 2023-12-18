@@ -1,15 +1,14 @@
+
+
 import { useState, useEffect } from 'react';
 import Hero from '../Components/Hero';
-
-import { OverlayTrigger, Popover, Container, Row, Col, Image, Form, Button, Table } from 'react-bootstrap';
+import { Container, Row, Col, Form, Button } from 'rsuite';
 import axios, { AxiosResponse } from 'axios';
 
-
-
-
+import { OverlayTrigger, Popover, Image } from 'react-bootstrap'
 
 const ProfilePage = () => {
-    const [avatarUrl, setAvatarUrl] = useState('');
+    const [avatarUrl, setAvatarUrl] = useState<string>('');
 
     useEffect(() => {
         // Fetch a random avatar from DiceBear Avatars API
@@ -18,21 +17,15 @@ const ProfilePage = () => {
         });
     }, []);
 
-
-
     return (
         <Container className="mt-4">
-
             <Row className="justify-content-center">
                 <Hero title="Profile Information" subtitle={undefined} />
             </Row>
 
-
             <Row>
                 <Col md={6} className="mb-4">
-
                     <OverlayTrigger
-
                         trigger="hover"
                         placement="bottom"
                         overlay={
@@ -53,23 +46,21 @@ const ProfilePage = () => {
                     </OverlayTrigger>
 
                     <Form className="mt-3">
-                        <Form.Group className="mb-3" controlId="formName">
+                        {/* <Form.Group className="mb-3" controlId="formName">
                             <Form.Label>Name</Form.Label>
                             <Form.Control type="text" placeholder="Your Name" />
-                        </Form.Group>
+                        </Form.Group> */}
 
                         <h5>Last Login</h5>
 
-                        <Table responsive>
-                            {/* ... (your table code) */}
-                        </Table>
+
                     </Form>
                 </Col>
 
                 <Col md={6} className="mb-4">
                     <h2>Change Password</h2>
                     <Form>
-                        <Form.Group className="mb-3" controlId="formCurrentPassword">
+                        {/* <Form.Group className="mb-3" controlId="formCurrentPassword">
                             <Form.Label>Current Password</Form.Label>
                             <Form.Control type="password" placeholder="Current Password" />
                         </Form.Group>
@@ -77,14 +68,14 @@ const ProfilePage = () => {
                         <Form.Group className="mb-3" controlId="formNewPassword">
                             <Form.Label>New Password</Form.Label>
                             <Form.Control type="password" placeholder="New Password" />
-                        </Form.Group>
+                        </Form.Group> */}
 
-                        <Form.Group className="mb-3" controlId="formConfirmPassword">
+                        {/* <Form.Group className="mb-3" controlId="formConfirmPassword">
                             <Form.Label>Confirm Password</Form.Label>
                             <Form.Control type="password" placeholder="Confirm Password" />
-                        </Form.Group>
+                        </Form.Group> */}
 
-                        <Button variant="primary" type="submit">
+                        <Button appearance="primary" type="submit">
                             Change Password
                         </Button>
                     </Form>

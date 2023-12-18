@@ -1,11 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { Table, Pagination, ProgressBar } from "react-bootstrap";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheck, faClock } from '@fortawesome/free-solid-svg-icons'
+import { Table, Pagination } from 'rsuite';
+const { Column, HeaderCell, Cell } = Table;
 import { useState } from "react";
-import moment from "moment";
-import background from '../../../assets/login/light.svg'
-
 
 interface DisputeData {
     acno: string;
@@ -40,22 +35,21 @@ interface DisputeData {
     uuid: string;
 }
 
-type DisputeListTable = {
-    data: DisputeData[] | undefined;
-    loading: boolean
-}
+type DisputeListTableProps = {
+    payload: DisputeData[] | undefined;
+    loading: boolean;
+};
 
-
-
-const DisputeListTable: React.FC<DisputeListTable> = ({ data, loading }) => {
-
-    const [currentPage, setCurrentPage] = useState<number>(1);
-    const [itemsPerPage] = useState<number>(10); // Adjust the number of items per page
+const DisputeListTable: React.FC<DisputeListTableProps> = ({ payload, loading }) => {
+    const [limit] = useState(10);
+    const [currentPage, setCurrentPage] = useState(1);
 
     // Pagination logic
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = data ? data.slice(indexOfFirstItem, indexOfLastItem) : [];
+    const indexOfLastItem = currentPage * limit;
+    const indexOfFirstItem = indexOfLastItem - limit;
+    const currentItems = payload ? payload.slice(indexOfFirstItem, indexOfLastItem) : [];
+
+    const totalPages = payload ? Math.ceil(payload.length / limit) : 1;
 
     const paginate = (pageNumber: number) => {
         setCurrentPage(pageNumber);
@@ -63,56 +57,36 @@ const DisputeListTable: React.FC<DisputeListTable> = ({ data, loading }) => {
 
     return (
         <div>
-            {loading ?
-                <ProgressBar animated now={100} />
-                :
-                data && data.length != 0 ?
-                    <><Table hover size="sm">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>UUID</th>
-                                <th>Branch Code</th>
-                                <th>Acquirer</th>
-                                <th>Account No</th>
-                                <th>Clame Amount</th>
-                                <th>Raise Date</th>
-                                <th>Branch Code</th>
-                                <th>BB Dispute ID</th>
-                                <th>Status</th>
+            <Table
+                height={420}
+                data={currentItems}
+                loading={loading}
+                autoHeight
+                affixHeader
+                affixHorizontalScrollbar
+            >
+                <Column width={50} align="center" fixed>
+                    <HeaderCell>Id</HeaderCell>
+                    <Cell dataKey="id" />
+                </Column>
 
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {currentItems.map(({ acquirer, uuid, org_branch_code, dispute_amt, acno, timestamp, channel, resolved, bb_dispute_id }: any, index: number) => (
-                                <tr key={index}>
-                                    <td>{index + 1} </td>
-                                    <td>{uuid}</td>
-                                    <td>{org_branch_code}</td>
-                                    <td>{acquirer}</td>
-                                    <td>{acno}</td>
-                                    <td>{dispute_amt}</td>
-                                    <td>{moment(timestamp).format('MMMM Do YYYY, h:mm:ss a')}</td>
-                                    <td>{channel}</td>
-                                    <td>{bb_dispute_id}</td>
-                                    <td>{resolved ? <FontAwesomeIcon icon={faCheck} /> : <FontAwesomeIcon icon={faClock} />}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </Table><Pagination>
-                            {[...Array(Math.ceil(data?.length / itemsPerPage) || 1)].map((_, index) => (
-                                <Pagination.Item
-                                    key={index + 1}
-                                    active={index + 1 === currentPage}
-                                    onClick={() => paginate(index + 1)}
-                                >
-                                    {index + 1}
-                                </Pagination.Item>
-                            ))}
-                        </Pagination></>
-                    : <div className="text-center p-4" style={{ background: `url(${background}) center/cover` }}>
-                        <h3>No data found</h3>
-                    </div>}
+                <Column width={100} fixed>
+                    <HeaderCell>First Name</HeaderCell>
+                    <Cell dataKey="firstName" />
+                </Column>
+            </Table>
+
+            <Pagination
+                prev
+                last
+                next
+                first
+                size="md"
+                pages={totalPages}
+                activePage={currentPage}
+                onSelect={(pageNumber: number) => paginate(pageNumber)}
+            />
+
         </div>
     );
 };

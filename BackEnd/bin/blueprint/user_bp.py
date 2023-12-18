@@ -1,7 +1,7 @@
 # user_bp.py
 
 from bin.database.db import database
-from bin.database.model import Userinfo
+from BackEnd.bin.database.model import Userinfo
 from bin.api.PasswordManager import PasswordManager
 from bin.api.AuditManager import AuditManager
 
@@ -29,7 +29,8 @@ def add_user():
                 lock=False,
                 email=data['email'],
                 contact=data['contact'],
-                password_hash=PasswordManager.set_password(data['email'], password),
+                password_hash=PasswordManager.set_password(
+                    data['email'], password),
                 permissions=data['permissions']
             )
             session.add(new_user)
