@@ -26,6 +26,7 @@ class Userinfo(Base):
     timestamp = Column(DateTime, nullable=False, default=datetime.datetime.now())
     update_at = Column(DateTime, nullable=True)
     permissions = Column(JSON)
+    branch = Column(String(20))
     jwt_token = Column(String(255))  # Add a column for JWT token
 
     # Relationships
@@ -147,6 +148,26 @@ class Dispute(Base):
     approvedDate = Column(DateTime)
     remark = Column(String(300))
     authorizedUser = Column(String(50))
+
+
+
+    def data_between_date(self, limit, from_date=None, to_date=None):
+        query = Dispute.query
+
+        if from_date and to_date:
+            from_timestamp = datetime.strptime(from_date, '%Y-%m-%d').timestamp()
+            to_timestamp = datetime.strptime(to_date, '%Y-%m-%d').timestamp()
+
+            query = query.filter(and_(Dispute.timestamp >= from_timestamp, Dispute.timestamp <= to_timestamp))
+        elif from_date:
+            from_timestamp = datetime.strptime(from_date, '%Y-%m-%d').timestamp()
+            query = query.filter(Dispute.timestamp >= from_timestamp)
+        elif to_date:
+            to_timestamp = datetime.strptime(to_date, '%Y-%m-%d').timestamp()
+            query = query.filter(Dispute.timestamp <= to_timestamp)
+
+        disputes = query.limit(limit).all()
+        return disputes
 
     def serialize(self):
         """

@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from 'react-dom/client'
 import { ThemeProvider } from "react-bootstrap";
 import { BrowserRouter as Router } from 'react-router-dom';
+
 import "bootstrap/dist/css/bootstrap.min.css";
 import RootRouter from "./router/RootRouter";
 import { AuthProvider } from "./Context/AuthProvider";
@@ -21,9 +22,11 @@ root.render(
   <React.StrictMode>
     <Router>
       <AuthProvider>
+
         <ThemeProvider theme={theme}>
           <RootRouter />
         </ThemeProvider>
+
       </AuthProvider>
     </Router>
   </React.StrictMode>

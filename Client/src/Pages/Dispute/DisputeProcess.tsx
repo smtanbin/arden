@@ -155,19 +155,16 @@ const DisputeEntry: React.FC<{ userprofile?: string }> = () => {
     return (
         <Container>
             {success ?
-                <><div className='mt-4 p-5 p-center' style={{ color: '#053223' }}>
-                    <h1 className='p-5'>Add Dispute</h1>
-                </div>
-                    <div className="px-4 py-4  text-center">
-                        <img src={Success} height="300px" alt="" />
-                        <h1 className="display-5 fw-bold">Success</h1>
-                        <div className="col-lg-6 mx-auto">
-                            <p className="lead mb-4">{uuid}</p>
-                            <div className="d-grid gap-2 d-sm-flex justify-content-sm-center">
-                                <CustomButton loading={false} variant={'outline'} icon={<img src={BackIcon} height="20px" />} text="Go Back" onClick={handleBack} />
-                            </div>
+                <div className="px-4 py-5 my-5 text-center">
+                    <img src={Success} height="300px" alt="" />
+                    <h1 className="display-5 fw-bold">Success</h1>
+                    <div className="col-lg-6 mx-auto">
+                        <p className="lead mb-4">{uuid}</p>
+                        <div className="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                            <CustomButton loading={false} variant={'outline'} icon={<img src={BackIcon} height="20px" />} text="Go Back" onClick={handleBack} />
                         </div>
-                    </div></>
+                    </div>
+                </div>
                 :
                 <><div className='mt-4 p-5 p-center' style={{ color: '#053223' }}>
 

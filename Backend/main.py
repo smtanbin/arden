@@ -45,16 +45,19 @@ app.register_blueprint(auth_bp, url_prefix='/api/v1/oauth')
 app.register_blueprint(user_bp, url_prefix='/api/v1/users')
 app.register_blueprint(mis_report_bp, url_prefix='/api/v1/report/mis')
 app.register_blueprint(dispute_report_bp, url_prefix='/api/v1/dispute')
+
 # Only apply middleware to the following blueprints
 app = jwt_middleware(app, blueprints=[mis_report_bp, dispute_report_bp])
+
 
 @app.errorhandler(404)
 def page_not_found():
     print("test")
     return jsonify({"error": "Page not found"}), 404
 
+
 if __name__ == '__main__':
-    setup()
-    database()  # Create tables and commit changes
+    # setup()
+    database()
     app.run(debug=True, host=config["server"]["host"], port=int(config["server"]["port"]))
     print("To run console type python3 console.py")

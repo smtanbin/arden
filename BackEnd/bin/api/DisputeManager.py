@@ -1,7 +1,9 @@
 # DisputeManager.py
 import base64
+from datetime import datetime
 
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy import desc, func
 from bin.database.model import Dispute  # Import the Dispute model
 
 
@@ -9,7 +11,8 @@ class DisputeManager:
     def __init__(self, session):
         self.session = session
 
-    def add(self, pan, acno,channel, txn_date, org_id, org_branch_code, acquirer, maker_user, merchant_name, merchant_location,
+    def add(self, pan, acno, channel, txn_date, org_id, org_branch_code, acquirer, maker_user, merchant_name,
+            merchant_location,
             tr_amt, attachment):
         try:
 
@@ -18,7 +21,6 @@ class DisputeManager:
                 encoded_attachment = base64.b64encode(attachment)
             else:
                 encoded_attachment = None  # Set to None if attachment
-
 
             new_dispute = Dispute(
                 pan=pan,
@@ -62,11 +64,26 @@ class DisputeManager:
 
     def get_all(self, limit=200):
         try:
-            disputes = self.session.query(Dispute).limit(limit).all()
+            disputes = self.session.query(Dispute).order_by(desc(Dispute.timestamp)).limit(limit).all()
             return disputes
 
         except SQLAlchemyError as e:
             print(f"Error retrieving dispute entries: {str(e)}")
+            raise
+        except Exception as ex:
+            print(f"An unexpected error occurred: {str(ex)}")
+            raise
+
+    def data_between_date(self, from_date_str=None, to_date_str=None):
+        from_date = datetime.strptime(from_date_str, '%Y-%m-%d') if from_date_str else None
+        to_date = datetime.strptime(to_date_str, '%Y-%m-%d') if to_date_str else None
+
+        try:
+            dispute = self.session.query(Dispute).filter(func.date(Dispute.timestamp).between(from_date, to_date))
+            return dispute
+
+        except SQLAlchemyError as e:
+            print(f"Error retrieving dispute entries between dates: {str(e)}")
             raise
         except Exception as ex:
             print(f"An unexpected error occurred: {str(ex)}")

@@ -2,9 +2,11 @@ import { Link } from 'react-router-dom';
 import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
 import logo from '../assets/logo.svg';
 import { useAuth } from '../apps/useAuth';
+import background from '../assets/login/light.svg'
 
 import { useState } from 'react';
 import LogoutModal from '../Pages/LogoutModal';
+
 
 const AppNavbar: React.FC = () => {
 
@@ -22,13 +24,9 @@ const AppNavbar: React.FC = () => {
     };
 
 
-
-
-
-
-
     return (
-        <><Navbar fixed="top" expand="lg" style={{ backgroundColor: '#EFFFE8' }}>
+        <header><Navbar fixed="top" expand="lg" style={{ background: `url(${background}) left/cover`, backgroundColor: '#EFFFE8' }}>
+
             <div className="container">
                 <Link to={`/`}>
                     <Navbar.Brand>
@@ -60,8 +58,8 @@ const AppNavbar: React.FC = () => {
                         </NavDropdown>
                         <NavDropdown title="Dispute" id="basic-nav-dropdown">
 
-                            <NavDropdown.Item href="/dispute">Add Dispute</NavDropdown.Item>
-                            <NavDropdown.Item href="/">Dispute list</NavDropdown.Item>
+                            <NavDropdown.Item href="/addDispute">Add Dispute</NavDropdown.Item>
+                            <NavDropdown.Item href="/disputeList">Dispute list</NavDropdown.Item>
 
 
                             <NavDropdown.Divider />
@@ -93,13 +91,12 @@ const AppNavbar: React.FC = () => {
                     </Nav>
                 </Navbar.Collapse>
             </div>
-        </Navbar><LogoutModal
+        </Navbar >
+            <LogoutModal
                 visible={logoutModalVisible}
-                onConfirm={() => {
-                    // Add any additional logic you need on confirmation
-                    hideLogoutModal();
-                }}
-                onCancel={hideLogoutModal} /></>
+                onConfirm={() => hideLogoutModal()}
+                onCancel={hideLogoutModal} />
+        </header>
 
     );
 };
