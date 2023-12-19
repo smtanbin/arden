@@ -8,6 +8,8 @@ import ErrorPage from "../Pages/errorPage"
 import Activation from "../Pages/Activation/Activation"
 import DisputeEntry from "../Pages/Dispute/DisputeEntry"
 import DisputeList from "../Pages/Dispute/DisputeList/DisputeList"
+import PasswordReset from "../Pages/LoginPage/PasswordReset"
+import SignUp from "../Pages/LoginPage/SignUpPage"
 
 
 
@@ -25,6 +27,8 @@ const RootRouter = () => {
             </Route>
             <Route path="/loading" element={<LoadingPage />} />
             <Route path="/login" element={<SignInPage />} />
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/PasswordReset" element={<PasswordReset />} />
             <Route path="*" element={<ErrorPage />} />
         </Routes>
     )

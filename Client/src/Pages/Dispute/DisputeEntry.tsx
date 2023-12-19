@@ -1,20 +1,28 @@
 
 
 import React, { useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import moment from 'moment';
 import {
+    Grid,
     Container,
     Row,
     Col,
     Form,
     SelectPicker,
     Input,
+    FlexboxGrid,
+    Divider,
+    Button,
     DatePicker,
+    Stack,
+    IconButton,
 } from 'rsuite';
 
 import { useAuth } from '../../apps/useAuth';
 import useApi from '../../apps/useApi';
-import CustomButton from '../../Components/CustomButtons';
-import BackIcon from '../../assets/icons/back.svg';
+
+import { faArrowCircleLeft } from '@fortawesome/free-solid-svg-icons';
 import Success from '../../assets/success.gif';
 
 type Payload = {
@@ -37,12 +45,15 @@ type FormData = {
     maker_user: string | null;
 };
 
+
 const DisputeEntry: React.FC<{ userprofile?: string }> = () => {
     const auth = useAuth();
     const api = new useApi(auth);
     const userprofile: string = auth.token?.username || 'guest';
 
+
     const [uuid, setUuid] = useState<string>('');
+
     const [success, setSuccess] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [formData, setFormData] = useState<FormData>({
@@ -59,8 +70,8 @@ const DisputeEntry: React.FC<{ userprofile?: string }> = () => {
         attachment: null,
         maker_user: userprofile,
     });
-
     const [customerName, setCustomerName] = useState<string>('');
+
 
     const handleBack = () => {
         setUuid('');
@@ -81,45 +92,19 @@ const DisputeEntry: React.FC<{ userprofile?: string }> = () => {
         });
     };
 
-    const handleChange = (name: string, value: string) => {
-        setCustomerName(value);
-        setFormData({
-            ...formData,
+    const handleChange = (name: string, value: string | null) => {
+        setCustomerName(value ? value : "");
+
+        setFormData((prevData) => ({
+            ...prevData,
             [name]: value || '',
-            pan: name === 'pan' ? value || '' : formData.pan,
-            acno: name === 'acno' ? value || '' : formData.acno,
-        });
+            pan: name === 'pan' ? value || '' : prevData.pan,
+            acno: name === 'acno' ? value || '' : prevData.acno,
+
+        }));
+
     };
 
-    // const handleImageChange = (file: File) => {
-    //     if (file) {
-    //         const reader = new FileReader();
-
-    //         reader.onloadend = () => {
-    //             const img = new Image();
-    //             img.src = reader.result as string;
-
-    //             img.onload = () => {
-    //                 const canvas = document.createElement('canvas');
-    //                 const ctx = canvas.getContext('2d')!;
-
-    //                 canvas.width = 1200;
-    //                 canvas.height = 800;
-
-    //                 ctx.drawImage(img, 0, 0, 1200, 800);
-
-    //                 const resizedImage = canvas.toDataURL('image/jpeg');
-
-    //                 setFormData({
-    //                     ...formData,
-    //                     attachment: resizedImage,
-    //                 });
-    //             };
-    //         };
-
-    //         reader.readAsDataURL(file);
-    //     }
-    // };
 
     const handleSubmit = async () => {
         try {
@@ -140,153 +125,256 @@ const DisputeEntry: React.FC<{ userprofile?: string }> = () => {
         }
     };
 
+
+    const handelDate = (value: Date | null) => {
+        console.log(value)
+        if (value) {
+            handleChange('txn_date', moment(value).format("YYYY-MM-DD"));
+        }
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const handleImageChange = (event: any) => {
+
+
+        const file = event.target.files[0]
+
+        if (file) {
+            const reader = new FileReader();
+
+            reader.onloadend = () => {
+                const img = new Image();
+                img.src = reader.result as string;
+
+                img.onload = () => {
+                    const canvas = document.createElement("canvas");
+                    const ctx = canvas.getContext("2d")!;
+
+                    // Set the canvas size to the desired dimensions
+
+                    canvas.width = 1200;
+                    canvas.height = 800;
+
+                    // Draw the image onto the canvas with the desired dimensions
+                    ctx.drawImage(img, 0, 0, 1200, 800);
+
+                    // Convert the canvas content to a data URL
+                    const resizedImage = canvas.toDataURL("image/jpeg");
+
+                    // Update the form data with the resized image
+                    setFormData({
+                        ...formData,
+                        attachment: resizedImage,
+                    });
+                };
+            };
+
+            reader.readAsDataURL(file);
+        }
+    };
+
+
+
+
+
+
+
     return (
         <Container>
             {success ? (
-                <>
-                    <div className="mt-4 p-5 p-center" style={{ color: '#053223' }}>
-                        <h1 className="p-5">Add Dispute</h1>
-                    </div>
-                    <div className="px-4 py-4  text-center">
+                <Grid fluid>
+                    <Stack direction="column" alignItems="center" spacing={6}>
                         <img src={Success} height="300px" alt="" />
-                        <h1 className="display-5 fw-bold">Success</h1>
-                        <div className="col-lg-6 mx-auto">
-                            <p className="lead mb-4">{uuid}</p>
-                            <div className="d-grid gap-2 d-sm-flex justify-content-sm-center">
-                                <CustomButton loading={false} variant={'outline'} icon={<img src={BackIcon} height="20px" />} text="Go Back" onClick={handleBack} />
-                            </div>
-                        </div>
-                    </div>
-                </>
+                        <h4 className="display-5 fw-bold">Success {uuid}</h4>
+                        <br />
+                        <IconButton size="lg" circle
+                            onClick={handleBack}
+                            color="green"
+                            icon={<FontAwesomeIcon icon={faArrowCircleLeft} />}
+                        />
+
+
+                    </Stack>
+                </Grid>
             ) : (
-                <>
-                    <div className="mt-4 p-5 p-center" style={{ color: '#053223' }}>
-                        <h1 className="p-5">Add Dispute</h1>
-                    </div>
-                    <p>Login as {userprofile}</p>
-                    <Form onSubmit={handleSubmit}>
-                        <Row>
-                            <Col lg={6} md={12}>
-                                <Form.Group controlId="pan">
-                                    <Form.Control
-                                        type="text"
-                                        name="pan"
-                                        value={formData.pan}
-                                        onChange={(value) => handleChange('pan', value)}
-                                        placeholder="PAN"
-                                    />
-                                </Form.Group>
-                                <Form.Group controlId="acno">
-                                    <Form.Control
-                                        type="text"
-                                        name="acno"
-                                        value={formData.acno}
-                                        onChange={(value) => handleChange('acno', value)}
-                                        placeholder="ACNO"
-                                    />
-                                    <p>
-                                        <strong>Titel:</strong> {customerName}
-                                    </p>
-                                </Form.Group>
-                                <Row>
-                                    <Col>
+                <Form onSubmit={handleSubmit} style={{ padding: '3%' }}>
+                    <Grid fluid >
+                        <Row className="p-5">
+                            <FlexboxGrid>
+                                <FlexboxGrid.Item as={Col} colspan={24} md={21}>
+                                    <h3 className="p-5">Dispute Maker</h3>
+                                </FlexboxGrid.Item>
+                                <FlexboxGrid.Item as={Col} colspan={24} md={3}>
+                                    <br />
+                                    <Button style={{ width: '100%' }} size="lg" type="submit" color="green" loading={loading} appearance="primary">Save</Button>
+                                </FlexboxGrid.Item>
+                            </FlexboxGrid>
+                        </Row>
+
+                        <Divider />
+
+
+                    </Grid>
+                    <Grid fluid>
+                        <Row className="show-grid">
+                            <Col sm={24} md={8} style={{ margin: "15px 0" }}>
+                                <Stack direction="column" alignItems="flex-start" spacing={6}>
+                                    <Form.Group controlId="pan">
+                                        <Form.ControlLabel>Card Number</Form.ControlLabel>
+                                        <Form.Control
+                                            type="text"
+                                            name="pan"
+                                            value={formData.pan}
+                                            onChange={(value) => handleChange('pan', value)}
+                                            placeholder="PAN"
+                                        />
+                                    </Form.Group>
+                                    <Form.Group controlId="acno">
+                                        <Form.ControlLabel>Account Number</Form.ControlLabel>
+                                        <Form.Control
+                                            type="text"
+                                            name="acno"
+                                            value={formData.acno}
+                                            onChange={(value) => handleChange('acno', value)}
+                                            placeholder="ACNO"
+                                        />
+                                    </Form.Group>
+                                    <Form.Group controlId="titel">
+                                        <Form.ControlLabel>Account Titel</Form.ControlLabel>
+                                        <Form.Control
+                                            type="text"
+                                            name="titel"
+                                            value={customerName}
+                                            disabled={true}
+                                            placeholder="Titel"
+                                        />
+                                    </Form.Group>
+
+                                    <Stack direction="row" alignItems="flex-start" spacing={6}>
                                         <Form.Group controlId="org_branch_code">
+                                            <Form.ControlLabel>Branch</Form.ControlLabel>
                                             <SelectPicker
-                                                data={[{ value: '001', label: 'Default' }]}
+                                                data={[{ value: '001', label: 'Head Office' }]}
                                                 placeholder="Select Branch"
                                                 name="org_branch_code"
-                                                value={formData.org_branch_code}
+                                                value={formData.org_branch_code || '001'}
                                                 onChange={(value) => handleChange('org_branch_code', value || '')}
                                             />
                                         </Form.Group>
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    <Form.Group controlId="channel">
-                                        <SelectPicker
-                                            data={[
-                                                { value: 'Online', label: 'Online' },
-                                                { value: 'In-Store', label: 'In-Store' },
-                                            ]}
-                                            placeholder="Select Channel"
-                                            name="channel"
-                                            value={formData.channel}
-                                            onChange={(value) => handleChange('channel', value)}
+
+                                        <Form.Group controlId="channel">
+                                            <Form.ControlLabel>Channel</Form.ControlLabel>
+                                            <SelectPicker
+                                                data={[
+                                                    { value: 'ATM', label: 'ATM' },
+                                                    { value: 'Online', label: 'Online' },
+                                                    { value: 'NPSB', label: 'NPSB' },
+                                                    { value: 'bkash', label: 'bKash' },
+                                                ]}
+                                                placeholder="Select Channel"
+                                                name="channel"
+                                                value={formData.channel || 'Online'}
+                                                onChange={(value) => handleChange('channel', value || '')}
+                                            />
+                                        </Form.Group>
+                                    </Stack>
+                                </Stack>
+                            </Col>
+
+                            <Col sm={24} md={8} style={{ margin: "15px 0" }}>
+                                <Stack direction="column" alignItems="flex-start" spacing={6}>
+
+
+                                    <Form.ControlLabel>Transaction Date</Form.ControlLabel>
+                                    <Form.Group controlId="txn_date">
+                                        <DatePicker block format="MM/dd/yyyy" ranges={[]} onChange={handelDate} />
+                                        {/* <Input
+                                                type="text"
+                                                name="org_id"
+                                                value={formData.org_id}
+                                                onChange={(value) => handleChange('org_id', value)}
+                                                placeholder="Transaction ID"
+                                            /> */}
+                                    </Form.Group>
+                                    <Form.ControlLabel>Transaction ID</Form.ControlLabel>
+                                    <Form.Group controlId="org_id">
+                                        <Input
+                                            type="text"
+                                            name="org_id"
+                                            value={formData.org_id}
+                                            onChange={(value) => handleChange('org_id', value)}
+                                            placeholder="Transaction ID"
                                         />
                                     </Form.Group>
-                                </Row>
+                                    <Form.ControlLabel>Merchant Name</Form.ControlLabel>
+                                    <Form.Group controlId="merchant_name">
+                                        <Input
+                                            type="text"
+                                            name="merchant_name"
+                                            value={formData.merchant_name}
+                                            onChange={(value) => handleChange('merchant_name', value)}
+                                            placeholder="Merchant Name"
+                                        />
+                                    </Form.Group>
+                                    <Form.ControlLabel>Merchant Location</Form.ControlLabel>
+                                    <Form.Group controlId="merchant_location">
+                                        <Input
+                                            type="text"
+                                            name="merchant_location"
+                                            value={formData.merchant_location}
+                                            onChange={(value) => handleChange('merchant_location', value)}
+                                            placeholder="Merchant Location"
+                                        />
+                                    </Form.Group>
+                                    <Form.Group>
+                                        <Form.ControlLabel>Uploader:</Form.ControlLabel>
+                                        <input
+                                            style={{
+                                                width: '100%',
+                                                borderRadius: 4,
+                                                border: '1px solid #d9d9d9',
+                                                padding: '10px',
+                                            }}
+                                            type="file"
+                                            name="attachment"
+                                            accept=".jpg, .jpeg"
+                                            onChange={handleImageChange}
+                                        />
+                                    </Form.Group>
+
+
+                                </Stack>
                             </Col>
 
-
-
-                            <Col lg={6} md={12}>
-                                {/* <Form.Group controlId="imageAttachment">
-                                    <Uploader
-                                        fileList={[]}
-                                        autoUpload={false}
-                                        onChange={(file) => handleImageChange(file[0].blobFile)} action={''}                                    >
-                                        <button type="button" className="rs-uploader-trigger-btn">
-                                            Upload Image
-                                        </button>
-                                    </Uploader>
-                                    {formData.attachment && (
-                                        <div className="p-3">
-                                            <img
-                                                src={formData.attachment}
-                                                alt="Image Preview"
-                                                style={{ maxWidth: '100%', maxHeight: '200px' }}
-                                            />
-                                        </div>
-                                    )}
-                                </Form.Group> */}
-                                <Form.Group controlId="txn_date">
-                                    <DatePicker
-                                        format="YYYY-MM-DD"
-                                        name="txn_date"
-                                        value={formData.txn_date}
-                                        onChange={(value) => handleChange('txn_date', value)}
-                                        placeholder="Date of Transaction"
-                                    />
-                                </Form.Group>
-                                <Form.Group controlId="org_id">
-                                    <Input
-                                        type="text"
-                                        name="org_id"
-                                        value={formData.org_id}
-                                        onChange={(value) => handleChange('org_id', value)}
-                                        placeholder="Transaction ID"
-                                    />
-                                </Form.Group>
-                                <Form.Group controlId="merchant_name">
-                                    <Input
-                                        type="text"
-                                        name="merchant_name"
-                                        value={formData.merchant_name}
-                                        onChange={(value) => handleChange('merchant_name', value)}
-                                        placeholder="Merchant Name"
-                                    />
-                                </Form.Group>
-                                <Form.Group controlId="merchant_location">
-                                    <Input
-                                        type="text"
-                                        name="merchant_location"
-                                        value={formData.merchant_location}
-                                        onChange={(value) => handleChange('merchant_location', value)}
-                                        placeholder="Merchant Location"
-                                    />
-                                </Form.Group>
+                            <Col sm={24} md={8} style={{ margin: "15px 0" }}>
+                                {formData.attachment && (
+                                    <div className='p-3'>
+                                        <img
+                                            src={formData.attachment}
+                                            alt="Image Preview"
+                                            style={{ maxWidth: '100%', maxHeight: '200px' }}
+                                        />
+                                    </div>
+                                )}
                             </Col>
                         </Row>
-                        <Row className="p-5">
-                            <Col className="d-grid gap-2 d-md-flex justify-content-md-end">
-                                <CustomButton variant={'primary'} className="mx-2" loading={loading} color={undefined} type="submit" text="Submit" />
-                            </Col>
-                        </Row>
-                    </Form>
-                </>
-            )}
-        </Container>
+                    </Grid>
+                </Form>
+
+
+
+
+
+            )
+            }
+        </Container >
     );
 };
 
+
+
+
+
 export default DisputeEntry;
+
+

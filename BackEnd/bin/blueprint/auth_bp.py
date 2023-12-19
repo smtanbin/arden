@@ -1,16 +1,68 @@
 # auth_bp.py
 from datetime import timedelta
+import random
 
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import create_access_token
 
+from bin.api.AuditManager import AuditManager
 from bin.api.PasswordManager import PasswordManager
 from bin.database.db import database
 from bin.database.model import Userinfo, LoginSession
+from bin.mail.smtp import smtp_server
+from sqlalchemy.exc import IntegrityError
 
 auth_bp = Blueprint('auth_bp', __name__)
 session_maker = database()
 session = session_maker()
+
+
+@auth_bp.route('/signup', methods=['POST'])
+def signup():
+    try:
+        data = request.get_json()
+
+        if all(data.get(field) for field in ['firstName', 'lastName', 'email', 'contact', 'permissions']):
+            password = str(random.randint(100000, 999999))
+
+            new_user = Userinfo(
+                firstName=data['firstName'],
+                lastName=data['lastName'],
+                status=True,
+                lock=False,
+                email=data['email'],
+                contact=data['contact'],
+                password_hash=PasswordManager.set_password(data['email'], password),
+                permissions=data['permissions']
+            )
+            session.add(new_user)
+            session.commit()
+
+            subject = f"Account Confirmation for {data['email']}"
+            body = f"Your password is: {password}. This OTP is valid for a short period of time."
+            smtpreplay = smtp_server(data['email'], subject, body)
+
+            print(smtpreplay)
+
+            # audit_manager = AuditManager(session)
+            # audit_manager.log(str(data['email']), "User added successfully")
+
+            print(password)
+
+            return jsonify({'message': 'User added successfully.', "otp": password})
+        else:
+            return jsonify({'error': 'mandatory parameter not found', 'message': None}), 400
+
+    except IntegrityError as e:
+        # Handle duplicate email entry error
+        session.rollback()
+        return jsonify({'error': 'Duplicate username. User with this email already exists.'}), 400
+    except Exception as e:
+        print(e)
+        session.rollback()
+        return jsonify({'message': None, 'error': str(e)}), 500
+    finally:
+        session.close()
 
 
 @auth_bp.route('/login', methods=['POST'])
@@ -38,10 +90,10 @@ def check_user():
                 return jsonify({'message': 'success', 'token': token}), 200
             else:
                 session.close()
-                return jsonify({'message': 'Invalid password.'}), 401
+                return jsonify({'message': 'Invalid password.'}), 200
         else:
             session.close()
-            return jsonify({'message': 'User not found.'}), 404
+            return jsonify({'message': 'User not found.'}), 200
 
     except Exception as e:
         session.close()
@@ -67,6 +119,51 @@ def verify_user():
             return jsonify({'success': False, 'token': None, 'error': 'token or user not match'}), 401
     except Exception as e:
         return jsonify({'success': False, 'token': None, 'error': str(e)}), 401
+
+
+@auth_bp.route('/forget_password', methods=['POST'])
+def forget_password():
+    data = request.get_json()
+    username = data['username']
+    otp = data['otp']
+    new_password = data['new_password']
+
+    user = session.query(Userinfo).filter_by(email=username).first()
+
+    if user:
+        if otp == user.otp:
+            user.password_hash = PasswordManager.set_password(
+                username, new_password)
+            user.otp = None  # Clear OTP after successful password reset
+            session.commit()
+
+            return jsonify({'message': 'Password update successfully successfully.'}), 200
+        else:
+            return jsonify({'message': 'Invalid password.'}), 401
+    else:
+        return jsonify({'message': 'User not found.'}), 404
+
+
+@auth_bp.route('/reset_otp/<username>', methods=['GET'])
+def send_otp(username):
+    try:
+        user = session.query(Userinfo).filter_by(email=username).first()
+
+        if user:
+            otp = str(random.randint(100000, 999999))
+            subject = "Your OTP for Verification"
+            body = f"Your OTP is: {otp}. This OTP is valid for a short period of time."
+            smtp_server(username, subject, body)
+            user.otp = otp
+            session.commit()
+            return jsonify({'success': True, 'message': 'OTP sent successfully.'}), 200
+        else:
+            print(f"Error: user not found")
+            return jsonify(
+                {'success': False, 'message': 'User not found.'}), 404  # Updated status code to 404 for "Not Found"
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        return jsonify({'success': False, 'message': 'Internal Server Error'}), 500
 
 
 @auth_bp.route('/logout', methods=['POST'])
@@ -95,4 +192,4 @@ def logout():
 
 @auth_bp.errorhandler(404)
 def admin_page_not_found():
-    return jsonify({"error": "Admin Page not found"}), 404
+    return jsonify({"error": "Page not found"}), 404

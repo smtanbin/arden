@@ -1,21 +1,21 @@
 from datetime import timedelta
+
 import toml
 from flask import Flask, jsonify
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 
 from bin.blueprint.auth_bp import auth_bp
-from bin.blueprint.reports.mis_report_bp import mis_report_bp
 from bin.blueprint.dispute_report_bp import dispute_report_bp
+from bin.blueprint.reports.mis_report_bp import mis_report_bp
 from bin.blueprint.user_bp import user_bp
 from bin.database.db import database
 from bin.middleware.jwt_middleware import jwt_middleware
 from bin.sys.key_storage import retrieve_jwt_hash
-from bin.sys.setup import setup
 
 app = Flask(__name__)
 
-CORS(app)
+CORS(app, resources={r"*": {"origins": "*"}})
 app.config['JWT_SECRET_KEY'] = retrieve_jwt_hash()[0]
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(minutes=30)
 jwt = JWTManager(app)

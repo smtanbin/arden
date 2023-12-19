@@ -1,23 +1,34 @@
 
 
-import React, { useState } from 'react'; // Import useState hook
-import { Form, Button, Panel, Stack, Divider } from 'rsuite';
+import { useState } from 'react';
+import { Form, Button, Panel, Stack, Message } from 'rsuite';
 import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate hook
 import { useAuth } from '../../apps/useAuth';
 
 import wallpaper from '../../assets/login/light.svg';
+import logo from '../../assets/arden_logo.svg';
 
 const SignInPage = () => {
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [errorState, setErrorState] = useState<string | undefined>(undefined);
 
 
     const auth = useAuth();
     const navigate = useNavigate();
 
-    const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
+
+    const handelForgetPassword = () => {
+        navigate('/PasswordReset');
+    }
+
+    const handelSignup = () => {
+        navigate('/signup');
+    }
+
+
+    const handleLogin = async () => {
 
         const headers: Record<string, string> = {
             'Content-Type': 'application/json',
@@ -39,18 +50,24 @@ const SignInPage = () => {
                 const payload = await response.json();
 
                 if (payload.message !== 'success') {
-                    alert('Login failed');
+
+                    setErrorState(payload.message)
+
                 } else {
                     const refreshToken = payload.token[1];
                     const token = payload.token[0];
 
                     auth.login({ username, token, refreshToken });
                     navigate('/', { replace: true });
+
                 }
             } else {
-                console.error('Login failed:', response.status, response.statusText);
+                setErrorState(JSON.stringify(response.statusText))
+                console.error('Login failed:', response.status, '<->', response);
             }
-        } catch (error: Error) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+            setErrorState(error)
             console.error('Login failed:', error.message);
         }
     };
@@ -68,28 +85,36 @@ const SignInPage = () => {
         >
 
 
-            <Panel bordered style={{ background: '#fff', width: 400 }} header={<h3>Sign In</h3>}>
+            <Panel bordered style={{ background: '#ffffff', width: 400 }} header={
+                <img height={'100px'} src={logo} />
+            }>
                 <p style={{ marginBottom: 10 }}>
                     <span className="text-muted">New Here? </span>{' '}
                     <Link to="/sign-up"> Create an Account</Link>
                 </p>
 
                 <Form fluid onSubmit={handleLogin}>
+
+
                     <Form.Group>
-                        <Form.ControlLabel>Username or email address</Form.ControlLabel>
+                        <Form.ControlLabel>Email address</Form.ControlLabel>
                         <Form.Control name="username" value={username} onChange={value => setUsername(value)} /> {/* Update name and add value and onChange props */}
                     </Form.Group>
                     <Form.Group>
                         <Form.ControlLabel>
                             <span>Password</span>
-                            <a style={{ float: 'right' }}>Forgot password?</a>
+
                         </Form.ControlLabel>
-                        <Form.Control name="password" type="password" value={password} onChange={value => setPassword(value)} /> {/* Update name and add value and onChange props */}
+                        <Form.Control name="password" type="password" value={password} onChange={value => setPassword(value)} />
                     </Form.Group>
+
+                    {errorState ? <Message showIcon type="error">{errorState}</Message> : <></>}
+                    <br />
                     <Form.Group>
-                        <Stack spacing={6} divider={<Divider vertical />}>
-                            <Button appearance="primary" type="submit">Sign in</Button> {/* Add type="submit" prop */}
-                        </Stack>
+                        <Button appearance="primary" type="submit" block>Sign in</Button>
+                        <Button appearance="link" onClick={handelForgetPassword} block>Forgot password?</Button>
+                        <br />
+                        <Button appearance="ghost" onClick={handelSignup} block>Signup</Button>
                     </Form.Group>
                 </Form>
             </Panel>
@@ -97,4 +122,4 @@ const SignInPage = () => {
     );
 };
 
-export default SignInPage; // Rename component to SignInPage
+export default SignInPage; 

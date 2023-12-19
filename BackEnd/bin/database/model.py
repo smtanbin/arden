@@ -23,11 +23,14 @@ class Userinfo(Base):
     contact = Column(String(20), nullable=False)
     password_hash = Column(String(128), nullable=False)
     lock = Column(Boolean, nullable=False, default=True)
+    lock_timestamp = Column(DateTime, nullable=False, default=datetime.datetime.now())
     timestamp = Column(DateTime, nullable=False, default=datetime.datetime.now())
     update_at = Column(DateTime, nullable=True)
     permissions = Column(JSON)
     branch = Column(String(20))
-    jwt_token = Column(String(255))  # Add a column for JWT token
+    otp = Column(String(20))
+    passwordTry = Column(String(1))
+    lastLogin = Column(DateTime, nullable=True)
 
     # Relationships
     audits = relationship('Audit', back_populates='user')
@@ -46,6 +49,20 @@ class LoginSession(Base):
 
     # Relationship
     user = relationship('Userinfo', back_populates='login_session')
+
+
+class Outbox(Base):
+    __tablename__ = 'outbox'
+
+    uuid = Column(String(32), primary_key=True, unique=True, nullable=False,
+                  default=lambda: 'AUID-SMTP-' + datetime.datetime.now().strftime('%Y%m-%d%H-%M%S') + '-' + str(
+                      uuid.uuid4())[-4:].zfill(4))
+    to = Column(String(32), nullable=False)
+    subject = Column(String(64), nullable=False)
+    payload = Column(String(2048), nullable=False)
+    response = Column(String(255), nullable=False)
+    timestamp = Column(DateTime, nullable=False,
+                       default=datetime.datetime.now())
 
 
 class Audit(Base):
@@ -148,8 +165,6 @@ class Dispute(Base):
     approvedDate = Column(DateTime)
     remark = Column(String(300))
     authorizedUser = Column(String(50))
-
-
 
     def data_between_date(self, limit, from_date=None, to_date=None):
         query = Dispute.query
