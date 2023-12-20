@@ -62,6 +62,18 @@ class DisputeManager:
             print(f"An unexpected error occurred: {str(ex)}")
             raise
 
+    def get_image(self, dispute_id):
+        try:
+            dispute = self.session.query(Dispute).filter_by(uuid=dispute_id).first()
+            return dispute.attachment
+
+        except SQLAlchemyError as e:
+            print(f"Error retrieving dispute entry: {str(e)}")
+            raise
+        except Exception as ex:
+            print(f"An unexpected error occurred: {str(ex)}")
+            raise
+
     def get_all(self, limit=200):
         try:
             disputes = self.session.query(Dispute).order_by(desc(Dispute.timestamp)).limit(limit).all()

@@ -9,7 +9,7 @@ from bin.api.AuditManager import AuditManager
 from bin.api.PasswordManager import PasswordManager
 from bin.database.db import database
 from bin.database.model import Userinfo, LoginSession
-from bin.mail.smtp import smtp_server
+from bin.mail.smtp import Sent_email
 from sqlalchemy.exc import IntegrityError
 
 auth_bp = Blueprint('auth_bp', __name__)
@@ -40,9 +40,9 @@ def signup():
 
             subject = f"Account Confirmation for {data['email']}"
             body = f"Your password is: {password}. This OTP is valid for a short period of time."
-            smtpreplay = smtp_server(data['email'], subject, body)
+            smtpreplay = Sent_email(data['email'], subject, body)
 
-            print(smtpreplay)
+            print("___mail___", smtpreplay)
 
             # audit_manager = AuditManager(session)
             # audit_manager.log(str(data['email']), "User added successfully")
@@ -153,7 +153,7 @@ def send_otp(username):
             otp = str(random.randint(100000, 999999))
             subject = "Your OTP for Verification"
             body = f"Your OTP is: {otp}. This OTP is valid for a short period of time."
-            smtp_server(username, subject, body)
+            Sent_email(username, subject, body)
             user.otp = otp
             session.commit()
             return jsonify({'success': True, 'message': 'OTP sent successfully.'}), 200

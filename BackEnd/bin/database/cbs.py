@@ -27,9 +27,11 @@ def cbs_query(query, bind_vars=None):
                 for i, value in enumerate(row):
                     json_row[column_names[i]] = value
                 json_results.append(json_row)
+                print(json_results)
             return json_results
         else:
             return None
 
     except cx_Oracle.Error as e:
+        print(f"Oracle Error: {e}")
         raise ValueError(f"Oracle Error: {e}")

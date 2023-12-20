@@ -37,6 +37,7 @@ type FormData = {
     org_id: string;
     org_branch_code: string;
     acquirer: string;
+    merchant_bank: string;
     merchant_name: string;
     merchant_location: string;
     tr_amt: string;
@@ -93,7 +94,12 @@ const DisputeEntry: React.FC<{ userprofile?: string }> = () => {
     };
 
     const handleChange = (name: string, value: string | null) => {
-        setCustomerName(value ? value : "");
+
+
+        if (name === 'acno' && value !== null && value.length >= 11) {
+            getAccountTitle(value);
+        }
+
 
         setFormData((prevData) => ({
             ...prevData,
@@ -105,6 +111,25 @@ const DisputeEntry: React.FC<{ userprofile?: string }> = () => {
 
     };
 
+
+    const getAccountTitle = async (value: string) => {
+        try {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const data: any = await api.useApi('GET', `/v1/cbs/account_info/${value}`);
+            if (!data.error) setCustomerName(data.payload[0].ACCOUNTTITLE)
+            if (data.error) alert(data.error)
+        } catch (error) {
+            console.error('Error submitting form:', error);
+        }
+    };
+
+
+    const handelDate = (value: Date | null) => {
+        console.log(value)
+        if (value) {
+            handleChange('txn_date', moment(value).format("YYYY-MM-DD"));
+        }
+    }
 
     const handleSubmit = async () => {
         try {
@@ -125,13 +150,6 @@ const DisputeEntry: React.FC<{ userprofile?: string }> = () => {
         }
     };
 
-
-    const handelDate = (value: Date | null) => {
-        console.log(value)
-        if (value) {
-            handleChange('txn_date', moment(value).format("YYYY-MM-DD"));
-        }
-    }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleImageChange = (event: any) => {
@@ -220,7 +238,7 @@ const DisputeEntry: React.FC<{ userprofile?: string }> = () => {
                             <Col sm={24} md={8} style={{ margin: "15px 0" }}>
                                 <Stack direction="column" alignItems="flex-start" spacing={6}>
                                     <Form.Group controlId="pan">
-                                        <Form.ControlLabel>Card Number</Form.ControlLabel>
+                                        <Form.ControlLabel>Card Number <span style={{ color: 'purple' }}>*</span></Form.ControlLabel>
                                         <Form.Control
                                             type="text"
                                             name="pan"
@@ -230,7 +248,7 @@ const DisputeEntry: React.FC<{ userprofile?: string }> = () => {
                                         />
                                     </Form.Group>
                                     <Form.Group controlId="acno">
-                                        <Form.ControlLabel>Account Number</Form.ControlLabel>
+                                        <Form.ControlLabel>Account Number <span style={{ color: 'purple' }}>*</span></Form.ControlLabel>
                                         <Form.Control
                                             type="text"
                                             name="acno"
@@ -252,7 +270,7 @@ const DisputeEntry: React.FC<{ userprofile?: string }> = () => {
 
                                     <Stack direction="row" alignItems="flex-start" spacing={6}>
                                         <Form.Group controlId="org_branch_code">
-                                            <Form.ControlLabel>Branch</Form.ControlLabel>
+                                            <Form.ControlLabel>Branch <span style={{ color: 'red' }}>*</span></Form.ControlLabel>
                                             <SelectPicker
                                                 data={[{ value: '001', label: 'Head Office' }]}
                                                 placeholder="Select Branch"
@@ -263,17 +281,23 @@ const DisputeEntry: React.FC<{ userprofile?: string }> = () => {
                                         </Form.Group>
 
                                         <Form.Group controlId="channel">
-                                            <Form.ControlLabel>Channel</Form.ControlLabel>
+                                            <Form.ControlLabel>Channel <span style={{ color: 'red' }}>*</span></Form.ControlLabel>
                                             <SelectPicker
                                                 data={[
+                                                    { value: 'default', label: 'Default' },
                                                     { value: 'ATM', label: 'ATM' },
-                                                    { value: 'Online', label: 'Online' },
-                                                    { value: 'NPSB', label: 'NPSB' },
-                                                    { value: 'bkash', label: 'bKash' },
+                                                    { value: 'E-COMMERCE', label: 'E-commerce ' },
+                                                    { value: 'POS', label: 'POS' },
+                                                    { value: 'IBEFTN', label: 'IBEFTN' },
+                                                    { value: 'RTGS', label: 'RTGS' },
+                                                    { value: 'BFTEN', label: 'BFTEN' },
+                                                    { value: 'BFTEN', label: 'BFTEN' },
+                                                    { value: 'MFS', label: 'MFS' },
+                                                    { value: 'PSP', label: 'P2P' },
                                                 ]}
                                                 placeholder="Select Channel"
                                                 name="channel"
-                                                value={formData.channel || 'Online'}
+                                                value={formData.channel || 'default'}
                                                 onChange={(value) => handleChange('channel', value || '')}
                                             />
                                         </Form.Group>
@@ -283,20 +307,11 @@ const DisputeEntry: React.FC<{ userprofile?: string }> = () => {
 
                             <Col sm={24} md={8} style={{ margin: "15px 0" }}>
                                 <Stack direction="column" alignItems="flex-start" spacing={6}>
-
-
-                                    <Form.ControlLabel>Transaction Date</Form.ControlLabel>
+                                    <Form.ControlLabel>Transaction Date <span style={{ color: 'red' }}>*</span></Form.ControlLabel>
                                     <Form.Group controlId="txn_date">
                                         <DatePicker block format="MM/dd/yyyy" ranges={[]} onChange={handelDate} />
-                                        {/* <Input
-                                                type="text"
-                                                name="org_id"
-                                                value={formData.org_id}
-                                                onChange={(value) => handleChange('org_id', value)}
-                                                placeholder="Transaction ID"
-                                            /> */}
                                     </Form.Group>
-                                    <Form.ControlLabel>Transaction ID</Form.ControlLabel>
+                                    <Form.ControlLabel>Transaction ID <span style={{ color: 'red' }}>*</span><Form.HelpText tooltip>Any ID help idenfy the dispute.</Form.HelpText></Form.ControlLabel>
                                     <Form.Group controlId="org_id">
                                         <Input
                                             type="text"
@@ -304,6 +319,33 @@ const DisputeEntry: React.FC<{ userprofile?: string }> = () => {
                                             value={formData.org_id}
                                             onChange={(value) => handleChange('org_id', value)}
                                             placeholder="Transaction ID"
+                                        />
+                                    </Form.Group>
+                                    <Form.ControlLabel>Amount <span style={{ color: 'red' }}>*</span></Form.ControlLabel>
+                                    <Form.Group controlId="tr_amt">
+                                        <Input
+                                            type="text"
+                                            name="tr_amt"
+                                            value={formData.tr_amt}
+                                            onChange={(value) => handleChange('tr_amt', value)}
+                                            placeholder="Transaction Amount"
+                                        />
+                                    </Form.Group>
+
+
+                                </Stack>
+                            </Col>
+
+                            <Col sm={24} md={8} style={{ margin: "15px 0" }}>
+                                <Stack direction={"column"} alignItems="flex-start" spacing={2}>
+                                    <Form.ControlLabel>Merchant Bank</Form.ControlLabel>
+                                    <Form.Group controlId="merchant_bank">
+                                        <Input
+                                            type="text"
+                                            name="merchant_bank"
+                                            value={formData.merchant_bank}
+                                            onChange={(value) => handleChange('merchant_bank', value)}
+                                            placeholder="Merchant Name"
                                         />
                                     </Form.Group>
                                     <Form.ControlLabel>Merchant Name</Form.ControlLabel>
@@ -341,12 +383,7 @@ const DisputeEntry: React.FC<{ userprofile?: string }> = () => {
                                             onChange={handleImageChange}
                                         />
                                     </Form.Group>
-
-
                                 </Stack>
-                            </Col>
-
-                            <Col sm={24} md={8} style={{ margin: "15px 0" }}>
                                 {formData.attachment && (
                                     <div className='p-3'>
                                         <img

@@ -1,92 +1,109 @@
-import { Table, Pagination } from 'rsuite';
-const { Column, HeaderCell, Cell } = Table;
-import { useState } from "react";
+import { Stack, Table } from 'rsuite';
 
-interface DisputeData {
+import { useState, useEffect, ReactNode } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+type DisputeData = {
     acno: string;
-    acquirer: string | null;
-    approved: string | null;
-    approvedDate: string | null;
-    attachment: string | null;
-    authorizedUser: string | null;
-    bb_dispute_id: string | null;
     channel: string;
     complain_date: string | null;
     dispute_amt: string | null;
-    doc_no: string | null;
-    maker_user: string;
-    massage: string | null;
-    merchant_location: string | null;
-    merchant_name: string | null;
     open_date: string | null;
-    org_branch_code: string;
     org_id: string;
     pan: string | null;
-    refund_amt: string | null;
-    remark: string | null;
-    resolved: string | null;
-    stan: string | null;
-    submitted: string | null;
-    terminal_id: string | null;
     timestamp: string;
     title: string | null;
     tr_amt: string;
     txn_date: string;
     uuid: string;
-}
-
-type DisputeListTableProps = {
-    payload: DisputeData[] | undefined;
-    loading: boolean;
 };
 
-const DisputeListTable: React.FC<DisputeListTableProps> = ({ payload, loading }) => {
-    const [limit] = useState(10);
-    const [currentPage, setCurrentPage] = useState(1);
+type DisputeListTableProps = {
+    data: [DisputeData[] | null | undefined, boolean, boolean];
+};
 
-    // Pagination logic
-    const indexOfLastItem = currentPage * limit;
-    const indexOfFirstItem = indexOfLastItem - limit;
-    const currentItems = payload ? payload.slice(indexOfFirstItem, indexOfLastItem) : [];
+const keyOrder = [
+    'acno',
+    'channel',
+    'complain_date',
+    'dispute_amt',
+    'open_date',
+    'org_id',
+    'pan',
+    'timestamp',
+    'title',
+    'tr_amt',
+    'txn_date',
+    'uuid',
+];
+const appKeyOrder = [
+    'acno',
+    'approvedDate',
+    'bb_dispute_id',
+    'channel',
+    'complain_date',
+    'dispute_amt',
+    'open_date',
+    'org_id',
+    'pan',
+    'timestamp',
+    'title',
+    'tr_amt',
+    'txn_date',
+    'uuid',
+];
 
-    const totalPages = payload ? Math.ceil(payload.length / limit) : 1;
+const DisputeListTable: React.FC<DisputeListTableProps> = ({ data }) => {
+    const { Column, HeaderCell, Cell } = Table;
+    const [headerCells, setHeaderCells] = useState<ReactNode[]>([]);
+    const navigate = useNavigate();
 
-    const paginate = (pageNumber: number) => {
-        setCurrentPage(pageNumber);
+    useEffect(() => {
+        const newHeaderCells = data[2]
+            ? keyOrder.map((key) => (
+                <Column key={key} width={100} fixed>
+                    <HeaderCell style={{ fontSize: '11px' }}>{key}</HeaderCell>
+                    <Cell
+                        style={{ fontSize: '11px' }}
+                        dataKey={key as keyof DisputeData}
+
+                    />
+                </Column>
+            ))
+            : appKeyOrder.map((key) => (
+                <Column key={key} width={100} fixed>
+                    <HeaderCell style={{ fontSize: '11px' }}>{key}</HeaderCell>
+                    <Cell
+                        style={{ fontSize: '11px' }}
+                        dataKey={key as keyof DisputeData}
+
+                    />
+                </Column>
+            ));
+        setHeaderCells(newHeaderCells);
+    }, [data])
+
+    const handleRowClick = (rowData: DisputeData) => {
+
+        navigate(`/disputeChecker/${rowData.uuid}`);
     };
 
     return (
-        <div>
+        <div style={{ padding: '15px' }}>
+            <Stack direction='row' alignItems="flex-start">
+                {!data[2] ? <p>Approved List</p> : <p>Pending List</p>}
+            </Stack>
+            <hr />
             <Table
-                height={420}
-                data={currentItems}
-                loading={loading}
+                style={{ padding: '15px' }}
                 autoHeight
-                affixHeader
-                affixHorizontalScrollbar
+                data={data[0] || []} loading={data[1]}
+                onRowClick={rowData => {
+                    handleRowClick(rowData);
+                }}
             >
-                <Column width={50} align="center" fixed>
-                    <HeaderCell>Id</HeaderCell>
-                    <Cell dataKey="id" />
-                </Column>
-
-                <Column width={100} fixed>
-                    <HeaderCell>First Name</HeaderCell>
-                    <Cell dataKey="firstName" />
-                </Column>
+                {headerCells}
             </Table>
-
-            <Pagination
-                prev
-                last
-                next
-                first
-                size="md"
-                pages={totalPages}
-                activePage={currentPage}
-                onSelect={(pageNumber: number) => paginate(pageNumber)}
-            />
-
         </div>
     );
 };

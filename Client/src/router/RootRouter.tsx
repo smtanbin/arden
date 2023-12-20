@@ -10,6 +10,7 @@ import DisputeEntry from "../Pages/Dispute/DisputeEntry"
 import DisputeList from "../Pages/Dispute/DisputeList/DisputeList"
 import PasswordReset from "../Pages/LoginPage/PasswordReset"
 import SignUp from "../Pages/LoginPage/SignUpPage"
+import DisputeChecker from "../Pages/Dispute/DisputeList/DisputeChecker"
 
 
 
@@ -24,6 +25,7 @@ const RootRouter = () => {
                 <Route path="/cardActivation" element={<Activation />} />
                 <Route path="/addDispute" element={<DisputeEntry />} />
                 <Route path="/disputeList" element={<DisputeList />} />
+                <Route path="/disputeChecker/:param" element={<DisputeChecker />} />
             </Route>
             <Route path="/loading" element={<LoadingPage />} />
             <Route path="/login" element={<SignInPage />} />

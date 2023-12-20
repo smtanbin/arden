@@ -40,6 +40,7 @@ def add_dispute_route():
 
         dispute = dispute_manager.add(pan, acno, channel, txn_date, org_id, org_branch_code, acquirer, maker_user,
                                       merchant_name, merchant_location, tr_amt, attachment_bytes)
+        DisputeAttachment
 
         if dispute:
             return jsonify({"uuid": str(dispute), "error": None})
@@ -50,38 +51,75 @@ def add_dispute_route():
         return jsonify({"payload": None, "error": str(e)}), 500
 
 
-@dispute_report_bp.route('/get', methods=['POST'])
-def get_data_route():
+@dispute_report_bp.route('/get/<dispute_id>', methods=['GET'])
+def get_data_route(dispute_id):
     try:
-        req = request.get_json()
-        dispute_id = req.get("dispute_id")
-
         if not dispute_id:
             return jsonify({"payload": None, "error": "Missing dispute_id in the request"}), 400
 
         dispute = dispute_manager.get(dispute_id)
 
         if dispute:
-            # Assuming 'attachment' is a field in the dispute model containing base64-encoded image data
-            attachment_base64 = dispute.attachment
+            # Exclude the 'attachment' field from the serialized dispute
+            serialized_dispute = dispute.serialize()
+            if 'attachment' in serialized_dispute:
+                del serialized_dispute['attachment']
 
-            if attachment_base64:
-                # Convert base64-encoded image data to PIL Image
-                image_data = base64.b64decode(attachment_base64)
-                image = PILImage.open(BytesIO(image_data))
-
-                # Do something with the image if needed
-
-                return jsonify({"payload": {"dispute_data": dispute.serialize(),
-                                            "attachment": {"width": image.width, "height": image.height}}})
-            else:
-                return jsonify({"payload": {"dispute_data": dispute.serialize(), "attachment": None}})
+            return jsonify({"error": None, "payload": serialized_dispute})
 
         else:
             return jsonify({"payload": "Dispute not found", "error": None}), 404
 
     except Exception as e:
+        print(e)
         return jsonify({"payload": None, "error": str(e)}), 500
+
+
+@dispute_report_bp.route('/get_image/<dispute_id>', methods=['GET'])
+def get_image_data_route(dispute_id):
+    try:
+        if not dispute_id:
+            return jsonify({"payload": None, "error": "Missing dispute_id in the request"}), 400
+
+        dispute_attachment = dispute_manager.get_image(dispute_id)
+
+        if dispute_attachment:
+            # Convert bytes to base64-encoded string
+            attachment_base64 = base64.b64encode(dispute_attachment).decode('utf-8')
+            return jsonify({"error": None, "attachment": attachment_base64})
+        else:
+            return jsonify({"attachment": None, "error": None}), 200
+
+    except Exception as e:
+        print(e)
+        return jsonify({"payload": None, "error": str(e)}), 500
+
+
+# @dispute_report_bp.route('/get/<dispute_id>', methods=['GET'])
+# def get_data_route(dispute_id):
+#     try:
+#
+#         if not dispute_id:
+#             return jsonify({"payload": None, "error": "Missing dispute_id in the request"}), 400
+#
+#         dispute = dispute_manager.get(dispute_id)
+#
+#         if dispute:
+#             # Assuming 'attachment' is a field in the dispute model containing base64-encoded image data
+#             attachment_base64 = dispute.attachment
+#
+#             if attachment_base64:
+#                 return jsonify({"error": None, "payload": {"dispute_data": dispute.serialize(),
+#                                                            "attachment": attachment_base64.decode('utf-8')}})
+#             else:
+#                 return jsonify({"error": None, "payload": {"dispute_data": dispute.serialize(), "attachment": None}})
+#
+#         else:
+#             return jsonify({"payload": "Dispute not found", "error": None}), 404
+#
+#     except Exception as e:
+#         print(e)
+#         return jsonify({"payload": None, "error": str(e)}), 500
 
 
 @dispute_report_bp.route('/dispute_list', methods=['GET'])
@@ -136,7 +174,6 @@ def post_all_dispute_data():
     except Exception as e:
         logger.exception("An unexpected error occurred")
         return jsonify({"payload": None, "error": str(e)}), 500
-
 
 
 @dispute_report_bp.errorhandler(404)

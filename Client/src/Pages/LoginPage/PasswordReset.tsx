@@ -13,9 +13,13 @@ const PasswordReset = () => {
     const [otp, setOtp] = useState<string | undefined>(undefined);
     const [password, setPassword] = useState<string | undefined>(undefined); // Add password state
     const [errorState, setErrorState] = useState<string | undefined>(undefined);
+    const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(false);
 
     const handleSendOtp = async () => {
         try {
+            // Disable the button when sending OTP
+            setIsButtonDisabled(true);
+
             const response = await fetch(`http://10.140.6.65:4000/api/v1/oauth/reset_otp/${username}`, {
                 method: 'GET',
                 headers: {
@@ -27,16 +31,23 @@ const PasswordReset = () => {
                 console.log(response);
                 setErrorState(undefined);
                 setOtpStage(true);
+
+                // Enable the button after 30 seconds
+                setTimeout(() => {
+                    setIsButtonDisabled(false);
+                }, 30000);
             } else if (response.status === 404) {
-                setErrorState('User not found.'); // Handle the 404 error
+                setErrorState('User not found.');
             } else {
                 const data = await response.json();
                 setErrorState(data.message || 'Error sending OTP.');
+                setIsButtonDisabled(false); // Enable the button on error
             }
         } catch (error) {
             console.log(error);
             setErrorState('Internal Server Error');
             console.error('Error sending OTP:', error);
+            setIsButtonDisabled(false); // Enable the button on error
         }
     };
 
@@ -94,10 +105,12 @@ const PasswordReset = () => {
                 <Form fluid onSubmit={handleSendOtp}>
                     <Form.Group>
                         <Form.ControlLabel>Email address</Form.ControlLabel>
-                        <Form.Control name="username" value={username} onChange={value => setUsername(value)} />
+                        <Form.Control name="username" value={username} onChange={(value) => setUsername(value)} />
                     </Form.Group>
                     <Form.Group>
-                        <Button disabled={otpStage} appearance="primary" onClick={handleSendOtp} block>Send OTP</Button>
+                        <Button disabled={isButtonDisabled} appearance="primary" onClick={handleSendOtp} block>
+                            {isButtonDisabled ? `Retry in 30s` : 'Send OTP'}
+                        </Button>
                     </Form.Group>
                 </Form>
 

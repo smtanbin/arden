@@ -1,4 +1,4 @@
-import { Button, Container, Row, Col, DateRangePicker } from 'rsuite'
+import { Button, Container, DateRangePicker, Dropdown, Stack } from 'rsuite'
 
 import { useState, useEffect } from 'react';
 
@@ -12,7 +12,7 @@ interface Payload {
 }
 
 
-interface DisputeData {
+export interface DisputeData {
     acno: string;
     acquirer: string | null;
     approved: string | null;
@@ -28,6 +28,7 @@ interface DisputeData {
     massage: string | null;
     merchant_location: string | null;
     merchant_name: string | null;
+    merchant_bank: string | null;
     open_date: string | null;
     org_branch_code: string;
     org_id: string;
@@ -50,9 +51,16 @@ const DisputeList = () => {
     const [dateRange, setDateRange] = useState<[Date, Date] | []>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [defaultRefrash, setDefaultRefrash] = useState<boolean>(true);
+    const [approvedData, setApprovedData] = useState<boolean>(true);
 
     const auth = useAuth();
     const api = new useApi(auth);
+
+
+    const approvedDataOptions = [
+        { value: true, label: 'Approved' },
+        { value: false, label: 'Pending' },
+    ];
 
     const fetchDefaultData = async () => {
         try {
@@ -76,6 +84,7 @@ const DisputeList = () => {
                 from_date: dateRange[0]?.toISOString().split('T')[0] || '',
                 to_date: dateRange[1]?.toISOString().split('T')[0] || '',
             });
+
             if (payload && !payload.error) {
                 setData(payload.payload || []);
             } else {
@@ -87,6 +96,9 @@ const DisputeList = () => {
         }
         setLoading(false);
     };
+
+
+    // Handel Functions 
 
     const handleDateRangeChange = (value: [Date, Date] | []) => {
         setDateRange(value);
@@ -106,37 +118,60 @@ const DisputeList = () => {
         setDateRange([]);
     };
 
+
+    const handleApprovedDataChange = (value: boolean) => {
+        setApprovedData(value);
+    }
+
     useEffect(() => {
         fetchDefaultData();
     }, []);
 
     return (
         <Container>
-            <div className='mt-4 p-5 p-center' style={{ color: '#053223' }}>
-                <h1 className='p-5'>Dispute List</h1>
-                <Row className="mb-3">
-                    <Col md={4}>
 
-                        <DateRangePicker
-                            value={dateRange.length === 0 ? null : dateRange}
-                            onChange={handleDateRangeChange}
-                        />
-                    </Col>
-                </Row>
-                <div className="d-flex">
-                    <Button color="blue" appearance="primary" onClick={handleGenerate}>
+            <Stack style={{
+                width: "100%", padding: "3%"
+            }}
+                direction="column" alignItems="center" spacing={6}>
+                <h2 className='p-5'>Dispute List</h2>
+                <hr />
+                <Stack direction="row" alignItems="center" spacing={6}>
+                    <DateRangePicker disabled
+                        value={dateRange.length === 0 ? null : dateRange
+                        }
+                        onChange={handleDateRangeChange}
+                    />
+
+                    <Button color="blue" disabled appearance="primary" onClick={handleGenerate}>
                         Generate
                     </Button>
-                    <Button color="blue" appearance="ghost" className="mx-2" onClick={handleRefresh}>
-                        Refresh
-                    </Button>
-                    <Button color="blue" appearance="ghost" className="mx-2" onClick={handleReset}>
+                    <Button appearance="ghost" disabled onClick={handleReset}>
                         Reset
                     </Button>
-                </div>
+
+                    <Button color="blue" appearance="default" onClick={handleRefresh}>
+                        Refresh
+                    </Button>
+                    <Dropdown
+                        title={approvedData ? 'Approved' : 'Pending'}
+                        activeKey={approvedData}
+                        onSelect={handleApprovedDataChange}
+                    >
+                        {approvedDataOptions.map(option => (
+                            <Dropdown.Item key={option.value} eventKey={option.value}>
+                                {option.label}
+                            </Dropdown.Item>
+                        ))}
+                    </Dropdown>
+                </Stack>
+            </Stack>
+            <div style={{ padding: "1%" }}>
+
+                {data ? <DisputeListTable data={[data, loading, approvedData]} /> : <></>}
             </div>
-            <DisputeListTable data={data} loading={loading} />
-        </Container>
+
+        </Container >
     );
 };
 

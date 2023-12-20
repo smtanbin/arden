@@ -1,7 +1,7 @@
-import datetime
+from datetime import datetime
 import uuid
 
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, LargeBinary, JSON, Date, inspect
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, LargeBinary, JSON, Date, inspect, and_
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
@@ -13,7 +13,7 @@ class Userinfo(Base):
 
     # Primary key
     uuid = Column(String(32), primary_key=True, unique=True, nullable=False,
-                  default=lambda: 'AUID-USER-' + datetime.datetime.now().strftime('%Y%m-%d%H-%M%S') + '-' + str(
+                  default=lambda: 'AUID-USER-' + datetime.now().strftime('%Y%m-%d%H-%M%S') + '-' + str(
                       uuid.uuid4())[-4:].zfill(4))
 
     email = Column(String(50), unique=True, nullable=False)
@@ -23,8 +23,8 @@ class Userinfo(Base):
     contact = Column(String(20), nullable=False)
     password_hash = Column(String(128), nullable=False)
     lock = Column(Boolean, nullable=False, default=True)
-    lock_timestamp = Column(DateTime, nullable=False, default=datetime.datetime.now())
-    timestamp = Column(DateTime, nullable=False, default=datetime.datetime.now())
+    lock_timestamp = Column(DateTime, nullable=False, default=datetime.now())
+    timestamp = Column(DateTime, nullable=False, default=datetime.now())
     update_at = Column(DateTime, nullable=True)
     permissions = Column(JSON)
     branch = Column(String(20))
@@ -43,7 +43,7 @@ class LoginSession(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     token = Column(String(2048))
-    timestamp = Column(DateTime, nullable=False, default=datetime.datetime.now())
+    timestamp = Column(DateTime, nullable=False, default=datetime.now())
     status = Column(Boolean, nullable=False, default=True)
     user_uuid = Column(String(32), ForeignKey('userinfo.uuid'))  # Foreign key
 
@@ -55,27 +55,27 @@ class Outbox(Base):
     __tablename__ = 'outbox'
 
     uuid = Column(String(32), primary_key=True, unique=True, nullable=False,
-                  default=lambda: 'AUID-SMTP-' + datetime.datetime.now().strftime('%Y%m-%d%H-%M%S') + '-' + str(
+                  default=lambda: 'AUID-SMTP-' + datetime.now().strftime('%Y%m-%d%H-%M%S') + '-' + str(
                       uuid.uuid4())[-4:].zfill(4))
     to = Column(String(32), nullable=False)
     subject = Column(String(64), nullable=False)
     payload = Column(String(2048), nullable=False)
     response = Column(String(255), nullable=False)
     timestamp = Column(DateTime, nullable=False,
-                       default=datetime.datetime.now())
+                       default=datetime.now())
 
 
 class Audit(Base):
     __tablename__ = 'audit'
 
     uuid = Column(String(32), primary_key=True, unique=True, nullable=False,
-                  default=lambda: 'AUID-AUDIT-' + datetime.datetime.now().strftime('%Y%m-%d%H-%M%S') + '-' + str(
+                  default=lambda: 'AUID-AUDIT-' + datetime.now().strftime('%Y%m-%d%H-%M%S') + '-' + str(
                       uuid.uuid4())[-4:].zfill(4))
     # Use the email column for the relationship
     user_email = Column(String(50), ForeignKey('userinfo.uuid'))
     action = Column(String(255))
     timestamp = Column(DateTime, nullable=False,
-                       default=datetime.datetime.now())
+                       default=datetime.now())
 
     # Relationship
     user = relationship('Userinfo', back_populates='audits')
@@ -85,7 +85,7 @@ class AuthorizedSilpData(Base):
     __tablename__ = 'authorized_silp_data'
 
     uuid = Column(String(32), primary_key=True, unique=True, nullable=False,
-                  default=lambda: 'AUID-ASLIP-' + datetime.datetime.now().strftime('%Y%m-%d%H-%M%S') + '-' + str(
+                  default=lambda: 'AUID-ASLIP-' + datetime.now().strftime('%Y%m-%d%H-%M%S') + '-' + str(
                       uuid.uuid4())[-4:].zfill(4))
     pan = Column(String(17))
     acno = Column(String(17))
@@ -95,7 +95,7 @@ class AuthorizedSilpData(Base):
     makerUser = Column(String(50))  # Foreign key
     authorizedUser = Column(String(50), ForeignKey('userinfo.uuid'))  # Add a foreign key
 
-    timestamp = Column(DateTime, nullable=False, default=datetime.datetime.now())
+    timestamp = Column(DateTime, nullable=False, default=datetime.now())
 
     # Relationship
     user = relationship('Userinfo', back_populates='authorized_silp_data')
@@ -111,14 +111,14 @@ class Branchs(Base):
     tl_atm = Column(Integer)
     tl_pos = Column(Integer)
     status = Column(Boolean)
-    timestamp = Column(DateTime, nullable=False, default=datetime.datetime.now())
+    timestamp = Column(DateTime, nullable=False, default=datetime.now())
 
 
 class LinkService(Base):
     __tablename__ = 'link_service'
 
     uuid = Column(String(32), primary_key=True, unique=True, nullable=False,
-                  default=lambda: 'AUID-LS-' + datetime.datetime.now().strftime('%Y%m-%d%H-%M%S') + '-' + str(
+                  default=lambda: 'AUID-LS-' + datetime.now().strftime('%Y%m-%d%H-%M%S') + '-' + str(
                       uuid.uuid4())[-4:].zfill(4))
     service_url = Column(String(128))
     auth_user = Column(String(32))
@@ -127,24 +127,35 @@ class LinkService(Base):
     service_param = Column(String(64))
     status = Column(Boolean)
     service_name = Column(String(32))
-    timestamp = Column(DateTime, nullable=False, default=datetime.datetime.now())
+    timestamp = Column(DateTime, nullable=False, default=datetime.now())
 
+
+class DisputeAttachment(Base):
+    __tablename__ = 'dispute_attachment'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    attachment_data = Column(LargeBinary, nullable=True)
+    timestamp = Column(DateTime, nullable=False, default=datetime.now())
+
+    dispute_uuid = Column(String(32), ForeignKey('dispute.uuid'))
+    dispute = relationship('Dispute', back_populates='attachments')
 
 class Dispute(Base):
     __tablename__ = 'dispute'
 
     uuid = Column(String(32), primary_key=True, unique=True, nullable=False,
-                  default=lambda: 'DP' + datetime.datetime.now().strftime('%Y%m-%d%H-%M%S') + '-' + str(
+                  default=lambda: 'DP' + datetime.now().strftime('%Y%m-%d%H-%M%S') + '-' + str(
                       uuid.uuid4())[-4:].zfill(4))
     pan = Column(String(17))
     acno = Column(String(17))
     title = Column(String(24))
-    timestamp = Column(DateTime, nullable=False, default=datetime.datetime.now())
+    timestamp = Column(DateTime, nullable=False, default=datetime.now())
     acquirer = Column(String(24))
     org_branch_code = Column(String(5), nullable=False)
     org_id = Column(String(24), nullable=False)
     txn_date = Column(Date, nullable=False)
     terminal_id = Column(String(32))
+    merchant_bank = Column(String(32))
     merchant_name = Column(String(32))
     merchant_location = Column(String(32))
     tr_amt = Column(String(100), nullable=False)
@@ -155,7 +166,6 @@ class Dispute(Base):
     complain_date = Column(Date)
     doc_no = Column(String(64))
     stan = Column(String(64))
-    attachment = Column(LargeBinary, nullable=True)
     maker_user = Column(String(50), nullable=False)
     open_date = Column(DateTime)
     resolved = Column(Boolean)
@@ -164,7 +174,9 @@ class Dispute(Base):
     approved = Column(Boolean)
     approvedDate = Column(DateTime)
     remark = Column(String(300))
+    checkerUser = Column(String(50))
     authorizedUser = Column(String(50))
+    attachments = relationship('DisputeAttachment', back_populates='dispute')
 
     def data_between_date(self, limit, from_date=None, to_date=None):
         query = Dispute.query
