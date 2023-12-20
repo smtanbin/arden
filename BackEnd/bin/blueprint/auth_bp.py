@@ -5,10 +5,12 @@ import random
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import create_access_token
 
-from bin.api.AuditManager import AuditManager
+
 from bin.api.PasswordManager import PasswordManager
 from bin.database.db import database
-from bin.database.model import Userinfo, LoginSession
+from bin.database.models.LoginSessionModel import LoginSessionModel
+from bin.database.models.Users.UserInfoModel import UserInfoModel
+
 from bin.mail.smtp import Sent_email
 from sqlalchemy.exc import IntegrityError
 
@@ -25,14 +27,15 @@ def signup():
         if all(data.get(field) for field in ['firstName', 'lastName', 'email', 'contact', 'permissions']):
             password = str(random.randint(100000, 999999))
 
-            new_user = Userinfo(
+            new_user = UserInfoModel(
                 firstName=data['firstName'],
                 lastName=data['lastName'],
                 status=True,
                 lock=False,
                 email=data['email'],
                 contact=data['contact'],
-                password_hash=PasswordManager.set_password(data['email'], password),
+                password_hash=PasswordManager.set_password(
+                    data['email'], password),
                 permissions=data['permissions']
             )
             session.add(new_user)
@@ -44,7 +47,7 @@ def signup():
 
             print("___mail___", smtpreplay)
 
-            # audit_manager = AuditManager(session)
+            # audit_manager = AuditModelManager(session)
             # audit_manager.log(str(data['email']), "User added successfully")
 
             print(password)
@@ -75,14 +78,16 @@ def check_user():
         if not username or not password:
             return jsonify({'message': 'Invalid request. Please provide both username and password.'}), 400
 
-        user = session.query(Userinfo).filter_by(email=username, status=True).first()
+        user = session.query(UserInfoModel).filter_by(
+            email=username, status=True).first()
 
         if user:
             password_hash = user.password_hash
             if PasswordManager.is_valid_password(username, password_hash, password):
                 token = [create_access_token(identity=username, expires_delta=timedelta(minutes=7)),
                          create_access_token(identity=user.uuid)]
-                login_session = LoginSession(token=token[1], user_uuid=user.uuid)
+                login_session = LoginSessionModel(
+                    token=token[1], user_uuid=user.uuid)
                 session.add(login_session)
                 session.commit()
                 session.close()
@@ -107,8 +112,10 @@ def verify_user():
         username = data.get('username')
         refresh_token = data.get('refreshToken')
 
-        user = session.query(Userinfo).filter_by(email=username, status=True).first()
-        token = session.query(LoginSession).filter_by(user_uuid=user.uuid, status=True).first()
+        user = session.query(UserInfoModel).filter_by(
+            email=username, status=True).first()
+        token = session.query(LoginSessionModel).filter_by(
+            user_uuid=user.uuid, status=True).first()
         session.close()
 
         if user & token == refresh_token:
@@ -128,7 +135,7 @@ def forget_password():
     otp = data['otp']
     new_password = data['new_password']
 
-    user = session.query(Userinfo).filter_by(email=username).first()
+    user = session.query(UserInfoModel).filter_by(email=username).first()
 
     if user:
         if otp == user.otp:
@@ -147,7 +154,7 @@ def forget_password():
 @auth_bp.route('/reset_otp/<username>', methods=['GET'])
 def send_otp(username):
     try:
-        user = session.query(Userinfo).filter_by(email=username).first()
+        user = session.query(UserInfoModel).filter_by(email=username).first()
 
         if user:
             otp = str(random.randint(100000, 999999))
@@ -172,11 +179,13 @@ def logout():
     username = data.get('username')
     refresh_token = data.get('refreshToken')
 
-    user = session.query(Userinfo).filter_by(email=username, status=True).first()
+    user = session.query(UserInfoModel).filter_by(
+        email=username, status=True).first()
     if user is None:
         return jsonify({'success': False, 'error': 'user not found'}), 401
 
-    token = session.query(LoginSession).filter_by(user_uuid=user.uuid, token=refresh_token, status=True).first()
+    token = session.query(LoginSessionModel).filter_by(
+        user_uuid=user.uuid, token=refresh_token, status=True).first()
     if token is None:
         return jsonify({'success': False, 'error': 'token not found'}), 401
     else:

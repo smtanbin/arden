@@ -2,7 +2,6 @@ import base64
 import logging
 from io import BytesIO
 
-from PIL import Image as PILImage
 from flask import Blueprint, request, jsonify
 
 from bin.api.DisputeManager import DisputeManager

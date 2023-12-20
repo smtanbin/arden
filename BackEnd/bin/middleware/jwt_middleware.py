@@ -2,7 +2,8 @@ from flask import jsonify, request
 from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity
 
 from bin.database.db import database
-from bin.database.model import Userinfo
+from bin.database.models.Users.UserInfoModel import UserInfoModel
+
 
 def jwt_middleware(app, blueprints=None):
     session_maker = database()
@@ -22,7 +23,8 @@ def jwt_middleware(app, blueprints=None):
                 username = get_jwt_identity()
 
                 # Query the database for the user with the specified username and status=True
-                user = session.query(Userinfo).filter_by(email=username, status=True, lock=False).first()
+                user = session.query(UserInfoModel).filter_by(
+                    email=username, status=True, lock=False).first()
 
                 if not user:
                     # User not found or status is false

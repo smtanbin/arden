@@ -4,7 +4,8 @@ from datetime import datetime
 
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import desc, func
-from bin.database.model import Dispute  # Import the Dispute model
+
+from bin.database.models.DisputeModels.DisputeModel import Dispute
 
 
 class DisputeManager:
@@ -52,7 +53,8 @@ class DisputeManager:
 
     def get(self, dispute_id):
         try:
-            dispute = self.session.query(Dispute).filter_by(uuid=dispute_id).first()
+            dispute = self.session.query(
+                Dispute).filter_by(uuid=dispute_id).first()
             return dispute
 
         except SQLAlchemyError as e:
@@ -64,7 +66,8 @@ class DisputeManager:
 
     def get_image(self, dispute_id):
         try:
-            dispute = self.session.query(Dispute).filter_by(uuid=dispute_id).first()
+            dispute = self.session.query(
+                Dispute).filter_by(uuid=dispute_id).first()
             return dispute.attachment
 
         except SQLAlchemyError as e:
@@ -76,7 +79,8 @@ class DisputeManager:
 
     def get_all(self, limit=200):
         try:
-            disputes = self.session.query(Dispute).order_by(desc(Dispute.timestamp)).limit(limit).all()
+            disputes = self.session.query(Dispute).order_by(
+                desc(Dispute.timestamp)).limit(limit).all()
             return disputes
 
         except SQLAlchemyError as e:
@@ -87,11 +91,14 @@ class DisputeManager:
             raise
 
     def data_between_date(self, from_date_str=None, to_date_str=None):
-        from_date = datetime.strptime(from_date_str, '%Y-%m-%d') if from_date_str else None
-        to_date = datetime.strptime(to_date_str, '%Y-%m-%d') if to_date_str else None
+        from_date = datetime.strptime(
+            from_date_str, '%Y-%m-%d') if from_date_str else None
+        to_date = datetime.strptime(
+            to_date_str, '%Y-%m-%d') if to_date_str else None
 
         try:
-            dispute = self.session.query(Dispute).filter(func.date(Dispute.timestamp).between(from_date, to_date))
+            dispute = self.session.query(Dispute).filter(
+                func.date(Dispute.timestamp).between(from_date, to_date))
             return dispute
 
         except SQLAlchemyError as e:

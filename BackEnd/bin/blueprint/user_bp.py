@@ -1,13 +1,15 @@
 # user_bp.py
 
+from bin.api.AuditManager import AuditModelManager
 from bin.database.db import database
-from bin.database.model import Userinfo
 from bin.api.PasswordManager import PasswordManager
-from bin.api.AuditManager import AuditManager
+
 
 import random
 from flask import Blueprint, request, jsonify
 from sqlalchemy.exc import IntegrityError
+
+from bin.database.models.Users.UserInfoModel import UserInfoModel
 
 user_bp = Blueprint('user', __name__)
 session_maker = database()
@@ -22,20 +24,21 @@ def add_user():
         if all(data.get(field) for field in ['firstName', 'lastName', 'email', 'contact', 'permissions']):
             password = str(random.randint(1111, 9999))
 
-            new_user = Userinfo(
+            new_user = UserInfoModel(
                 firstName=data['firstName'],
                 lastName=data['lastName'],
                 status=True,
                 lock=False,
                 email=data['email'],
                 contact=data['contact'],
-                password_hash=PasswordManager.set_password(data['email'], password),
+                password_hash=PasswordManager.set_password(
+                    data['email'], password),
                 permissions=data['permissions']
             )
             session.add(new_user)
             session.commit()
 
-            audit_manager = AuditManager(session)
+            audit_manager = AuditModelManager(session)
             audit_manager.log(str(data['email']), "User added successfully")
 
             return jsonify({'message': 'User added successfully.', "otp": password})
@@ -64,7 +67,7 @@ def change_password():
     if not username or not old_password or not new_password:
         return jsonify({'message': 'Invalid request. Please provide both username and password.'}), 400
 
-    user = Session.query(Userinfo).filter_by(email=username).first()
+    user = Session.query(UserInfoModel).filter_by(email=username).first()
 
     if user:
         # Assuming 'password_hash' is the attribute in your User model
@@ -88,7 +91,7 @@ def lock_user():
     data = request.get_json()
     username = data['name']
 
-    user = Session.query(Userinfo).filter_by(email=username).first()
+    user = Session.query(UserInfoModel).filter_by(email=username).first()
     if user:
         user.lock = True
         Session.commit()

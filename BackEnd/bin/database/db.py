@@ -2,7 +2,8 @@ import toml
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
-from bin.database.model import Base
+
+from bin.database.base import Base
 
 with open('config.toml', 'r') as file:
     config = toml.load(file)

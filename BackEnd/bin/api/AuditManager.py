@@ -1,17 +1,17 @@
-# AuditManager.py
+# AuditModelManager.py
 
 from sqlalchemy.exc import SQLAlchemyError
 
-from bin.database.model import Audit
+from bin.database.models.AuditModel import AuditModel
 
 
-class AuditManager:
+class AuditModelManager:
     def __init__(self, session):
         self.session = session
 
     def log(self, user_email, action):
         try:
-            audit_entry = Audit(user_email=user_email, action=action)
+            audit_entry = AuditModel(user_email=user_email, action=action)
             self.session.add(audit_entry)
             self.session.commit()
             return audit_entry
