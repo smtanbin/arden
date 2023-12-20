@@ -4,7 +4,8 @@ from sqlalchemy.orm import relationship
 
 from bin.database.base import Base
 
-class DisputeAttachment(Base):
+
+class DisputeAttachmentModel(Base):
     __tablename__ = 'dispute_attachment'
 
     id = Column(Integer, primary_key=True, autoincrement=True)

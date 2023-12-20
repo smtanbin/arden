@@ -15,6 +15,7 @@ class UserInfoModel(Base):
                   default=lambda: 'AUID-USER-' + datetime.datetime.now().strftime('%Y%m-%d%H-%M%S') + '-' + str(
                       uuid.uuid4())[-4:].zfill(4))
 
+    userid = Column(String(8), unique=True, nullable=False)
     email = Column(String(50), unique=True, nullable=False)
     firstName = Column(String(255))
     lastName = Column(String(255))

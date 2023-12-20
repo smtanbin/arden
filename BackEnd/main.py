@@ -8,7 +8,7 @@ from flask_jwt_extended import JWTManager
 from bin.blueprint.auth_bp import auth_bp
 from bin.blueprint.cbs_bp import cbs_bp
 from bin.blueprint.dispute_bp import dispute_report_bp
-from bin.blueprint.reports.mis_report_bp import mis_report_bp
+
 from bin.blueprint.user_bp import user_bp
 from bin.database.db import database
 from bin.middleware.jwt_middleware import jwt_middleware
@@ -44,12 +44,11 @@ def echo():
 # Apply middleware to specific blueprints
 app.register_blueprint(auth_bp, url_prefix='/api/v1/oauth')
 app.register_blueprint(user_bp, url_prefix='/api/v1/users')
-app.register_blueprint(mis_report_bp, url_prefix='/api/v1/report/mis')
 app.register_blueprint(cbs_bp, url_prefix='/api/v1/cbs')
 app.register_blueprint(dispute_report_bp, url_prefix='/api/v1/dispute')
 
 # Only apply middleware to the following blueprints
-app = jwt_middleware(app, blueprints=[mis_report_bp, cbs_bp, user_bp, dispute_report_bp])
+app = jwt_middleware(app, blueprints=[cbs_bp, user_bp, dispute_report_bp])
 
 
 @app.errorhandler(404)

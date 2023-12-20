@@ -6,6 +6,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import desc, func
 
 from bin.database.models.DisputeModels.DisputeModel import Dispute
+from bin.database.models.DisputeModels.DisputeAttachmentModel import DisputeAttachmentModel
 
 
 class DisputeManager:
@@ -16,13 +17,6 @@ class DisputeManager:
             merchant_location,
             tr_amt, attachment):
         try:
-
-            if attachment is not None:
-                # Encode binary data using base64 encoding
-                encoded_attachment = base64.b64encode(attachment)
-            else:
-                encoded_attachment = None  # Set to None if attachment
-
             new_dispute = Dispute(
                 pan=pan,
                 acno=acno,
@@ -35,75 +29,85 @@ class DisputeManager:
                 merchant_location=merchant_location,
                 tr_amt=tr_amt,
                 channel=channel,
-                attachment=encoded_attachment
             )
 
             self.session.add(new_dispute)
             self.session.commit()
+
+            if attachment is not None:
+                # Encode binary data using base64 encoding
+                encoded_attachment = base64.b64encode(attachment)
+                attachment = DisputeAttachmentModel(
+                    attachment_data=encoded_attachment,
+                    dispute_uuid=new_dispute.uuid
+                )
+            self.session.add(attachment)
+            self.session.commit()
+
             return new_dispute.uuid  # Return the newly added dispute object
 
         except SQLAlchemyError as e:
             self.session.rollback()
             print(f"Error adding dispute entry: {str(e)}")
             raise
-        except Exception as ex:
-            self.session.rollback()
-            print(f"An unexpected error occurred: {str(ex)}")
-            raise
 
-    def get(self, dispute_id):
-        try:
-            dispute = self.session.query(
-                Dispute).filter_by(uuid=dispute_id).first()
-            return dispute
 
-        except SQLAlchemyError as e:
-            print(f"Error retrieving dispute entry: {str(e)}")
-            raise
-        except Exception as ex:
-            print(f"An unexpected error occurred: {str(ex)}")
-            raise
+def get(self, dispute_id):
+    try:
+        dispute = self.session.query(
+            Dispute).filter_by(uuid=dispute_id).first()
+        return dispute
 
-    def get_image(self, dispute_id):
-        try:
-            dispute = self.session.query(
-                Dispute).filter_by(uuid=dispute_id).first()
-            return dispute.attachment
+    except SQLAlchemyError as e:
+        print(f"Error retrieving dispute entry: {str(e)}")
+        raise
+    except Exception as ex:
+        print(f"An unexpected error occurred: {str(ex)}")
+        raise
 
-        except SQLAlchemyError as e:
-            print(f"Error retrieving dispute entry: {str(e)}")
-            raise
-        except Exception as ex:
-            print(f"An unexpected error occurred: {str(ex)}")
-            raise
 
-    def get_all(self, limit=200):
-        try:
-            disputes = self.session.query(Dispute).order_by(
-                desc(Dispute.timestamp)).limit(limit).all()
-            return disputes
+def get_image(self, dispute_id):
+    try:
+        dispute = self.session.query(
+            DisputeAttachmentModel).filter_by(uuid=dispute_id).first()
+        return dispute.attachment
 
-        except SQLAlchemyError as e:
-            print(f"Error retrieving dispute entries: {str(e)}")
-            raise
-        except Exception as ex:
-            print(f"An unexpected error occurred: {str(ex)}")
-            raise
+    except SQLAlchemyError as e:
+        print(f"Error retrieving dispute entry: {str(e)}")
+        raise
+    except Exception as ex:
+        print(f"An unexpected error occurred: {str(ex)}")
+        raise
 
-    def data_between_date(self, from_date_str=None, to_date_str=None):
-        from_date = datetime.strptime(
-            from_date_str, '%Y-%m-%d') if from_date_str else None
-        to_date = datetime.strptime(
-            to_date_str, '%Y-%m-%d') if to_date_str else None
 
-        try:
-            dispute = self.session.query(Dispute).filter(
-                func.date(Dispute.timestamp).between(from_date, to_date))
-            return dispute
+def get_all(self, limit=200):
+    try:
+        disputes = self.session.query(Dispute).order_by(
+            desc(Dispute.timestamp)).limit(limit).all()
+        return disputes
 
-        except SQLAlchemyError as e:
-            print(f"Error retrieving dispute entries between dates: {str(e)}")
-            raise
-        except Exception as ex:
-            print(f"An unexpected error occurred: {str(ex)}")
-            raise
+    except SQLAlchemyError as e:
+        print(f"Error retrieving dispute entries: {str(e)}")
+        raise
+    except Exception as ex:
+        print(f"An unexpected error occurred: {str(ex)}")
+        raise
+
+
+def data_between_date(self, from_date_str=None, to_date_str=None):
+    from_date = datetime.strptime(
+        from_date_str, '%Y-%m-%d') if from_date_str else None
+    to_date = datetime.strptime(
+        to_date_str, '%Y-%m-%d') if to_date_str else None
+
+    try:
+        dispute = self.session.query(Dispute).filter(
+            func.date(Dispute.timestamp).between(from_date, to_date))
+        return dispute
+
+    except SQLAlchemyError as e:
+        print(f"Error retrieving dispute entries between dates: {str(e)}")
+        raise
+    except Exception as ex:
+        print(f"An unexpected error occurred: {str(ex)}")
+        raise

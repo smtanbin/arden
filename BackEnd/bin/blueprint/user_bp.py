@@ -22,17 +22,17 @@ def add_user():
         data = request.get_json()
 
         if all(data.get(field) for field in ['firstName', 'lastName', 'email', 'contact', 'permissions']):
-            password = str(random.randint(1111, 9999))
+            otp = str(random.randint(1111, 9999))
 
             new_user = UserInfoModel(
+                userid=data['userid'],
                 firstName=data['firstName'],
                 lastName=data['lastName'],
                 status=True,
                 lock=False,
                 email=data['email'],
                 contact=data['contact'],
-                password_hash=PasswordManager.set_password(
-                    data['email'], password),
+                otp=otp,
                 permissions=data['permissions']
             )
             session.add(new_user)
@@ -58,7 +58,7 @@ def add_user():
 
 @user_bp.route('/change_password', methods=['POST'])
 def change_password():
-    Session = database()
+
     data = request.get_json()
     username = data['username']
     old_password = data['old_password']
@@ -67,7 +67,7 @@ def change_password():
     if not username or not old_password or not new_password:
         return jsonify({'message': 'Invalid request. Please provide both username and password.'}), 400
 
-    user = Session.query(UserInfoModel).filter_by(email=username).first()
+    user = session.query(UserInfoModel).filter_by(email=username).first()
 
     if user:
         # Assuming 'password_hash' is the attribute in your User model
@@ -76,7 +76,7 @@ def change_password():
 
             user.password_hash = PasswordManager.set_password(
                 username, new_password)
-            Session.commit()
+            session.commit()
 
             return jsonify({'message': 'Password update successfully successfully.'}), 200
         else:
@@ -87,14 +87,14 @@ def change_password():
 
 @user_bp.route('/lock', methods=['POST'])
 def lock_user():
-    Session = database()
+
     data = request.get_json()
     username = data['name']
 
-    user = Session.query(UserInfoModel).filter_by(email=username).first()
+    user = session.query(UserInfoModel).filter_by(email=username).first()
     if user:
         user.lock = True
-        Session.commit()
+        session.commit()
         return jsonify({'message': 'User locked successfully.'})
     else:
         return jsonify({'message': 'User not found.'}), 404

@@ -39,7 +39,7 @@ def add_dispute_route():
 
         dispute = dispute_manager.add(pan, acno, channel, txn_date, org_id, org_branch_code, acquirer, maker_user,
                                       merchant_name, merchant_location, tr_amt, attachment_bytes)
-        DisputeAttachment
+
 
         if dispute:
             return jsonify({"uuid": str(dispute), "error": None})

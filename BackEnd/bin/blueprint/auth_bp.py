@@ -25,18 +25,18 @@ def signup():
         data = request.get_json()
 
         if all(data.get(field) for field in ['firstName', 'lastName', 'email', 'contact', 'permissions']):
-            password = str(random.randint(100000, 999999))
+            otp = str(random.randint(100000, 999999))
 
             new_user = UserInfoModel(
+                userid=data['userid'],
                 firstName=data['firstName'],
                 lastName=data['lastName'],
-                status=True,
+                status=False,
                 lock=False,
                 email=data['email'],
                 contact=data['contact'],
-                password_hash=PasswordManager.set_password(
-                    data['email'], password),
-                permissions=data['permissions']
+                otp=otp
+
             )
             session.add(new_user)
             session.commit()

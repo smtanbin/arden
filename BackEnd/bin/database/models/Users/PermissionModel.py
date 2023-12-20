@@ -15,4 +15,4 @@ class PermissionModel(Base):
                        default=datetime.datetime.now())
     name = Column(String(50), unique=True, nullable=False)
     description = Column(String(100), nullable=False)
-    permissionlist = Column(JSON, nullable=True)
+    permission = Column(JSON, nullable=True)
