@@ -5,9 +5,10 @@ import random
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import create_access_token
 
-
 from bin.api.PasswordManager import PasswordManager
+
 from bin.database.db import database
+from bin.database.models.BranchModel import BranchsModel
 from bin.database.models.LoginSessionModel import LoginSessionModel
 from bin.database.models.Users.UserInfoModel import UserInfoModel
 
@@ -17,6 +18,7 @@ from sqlalchemy.exc import IntegrityError
 auth_bp = Blueprint('auth_bp', __name__)
 session_maker = database()
 session = session_maker()
+pm = PasswordManager()
 
 
 @auth_bp.route('/signup', methods=['POST'])
@@ -24,16 +26,20 @@ def signup():
     try:
         data = request.get_json()
 
-        if all(data.get(field) for field in ['firstName', 'lastName', 'email', 'contact', 'permissions']):
+        if all(data.get(field) for field in ['employeeid', 'firstName', 'lastName', 'email', 'contact', 'branch']):
             otp = str(random.randint(100000, 999999))
 
+            username = str(data['email']).lower()
+
             new_user = UserInfoModel(
-                userid=data['userid'],
+                userid=data['employeeid'],
                 firstName=data['firstName'],
                 lastName=data['lastName'],
-                status=False,
+                branch=data['branch'],
+                status=True,
                 lock=False,
-                email=data['email'],
+                email=username,
+                password_hash=pm.set_password(data['email'], otp),
                 contact=data['contact'],
                 otp=otp
 
@@ -41,25 +47,14 @@ def signup():
             session.add(new_user)
             session.commit()
 
-            subject = f"Account Confirmation for {data['email']}"
-            body = f"Your password is: {password}. This OTP is valid for a short period of time."
-            smtpreplay = Sent_email(data['email'], subject, body)
-
-            print("___mail___", smtpreplay)
-
-            # audit_manager = AuditModelManager(session)
-            # audit_manager.log(str(data['email']), "User added successfully")
-
-            print(password)
-
-            return jsonify({'message': 'User added successfully.', "otp": password})
+            return jsonify({'message': 'User added successfully.', 'error': None}), 200
         else:
-            return jsonify({'error': 'mandatory parameter not found', 'message': None}), 400
+            return jsonify({'error': 'mandatory parameter not found', 'message': None}), 200
 
     except IntegrityError as e:
-        # Handle duplicate email entry error
+        print(e)
         session.rollback()
-        return jsonify({'error': 'Duplicate username. User with this email already exists.'}), 400
+        return jsonify({'error': 'Duplicate username. User with this email already exists.'}), 200
     except Exception as e:
         print(e)
         session.rollback()
@@ -68,12 +63,26 @@ def signup():
         session.close()
 
 
+@auth_bp.route('/branchs', methods=['GET'])
+def branch_list():
+    try:
+        # Fetch only the required columns
+        branchs = session.query(BranchsModel.branch_code.label('CODE'), BranchsModel.branch_name.label('NAME')).all()
+
+        # Convert the query result to a list of dictionaries
+        branchs_data = [{"CODE": branch.CODE, "NAME": branch.NAME} for branch in branchs]
+
+        return jsonify({"payload": branchs_data, "error": None})
+    except Exception as e:
+        return jsonify({"payload": None, "error": str(e)}), 200
+
+
 @auth_bp.route('/login', methods=['POST'])
 def check_user():
     try:
         data = request.get_json()
-        username = data.get('username')  # Use get() method to avoid KeyError
         password = data.get('password')
+        username = str(data.get('username')).lower()
 
         if not username or not password:
             return jsonify({'message': 'Invalid request. Please provide both username and password.'}), 400
@@ -109,7 +118,7 @@ def check_user():
 def verify_user():
     try:
         data = request.get_json()
-        username = data.get('username')
+        username = str(data.get('username')).lower()
         refresh_token = data.get('refreshToken')
 
         user = session.query(UserInfoModel).filter_by(

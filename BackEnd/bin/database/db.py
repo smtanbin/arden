@@ -1,9 +1,10 @@
 import toml
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, declarative_base
 from sqlalchemy import create_engine
 
-from bin.database.base import Base
+
+Base = declarative_base()
 
 with open('config.toml', 'r') as file:
     config = toml.load(file)
@@ -20,5 +21,6 @@ def database():
         engine.dispose()  # Commit and close the engine
     except SQLAlchemyError as e:
         print(f"Error creating database tables: {str(e)}")
+
 
     return sessionmaker(bind=engine)

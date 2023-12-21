@@ -2,7 +2,7 @@ from datetime import datetime
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, LargeBinary, String
 from sqlalchemy.orm import relationship
 
-from bin.database.base import Base
+from bin.database.db import Base
 
 
 class DisputeAttachmentModel(Base):

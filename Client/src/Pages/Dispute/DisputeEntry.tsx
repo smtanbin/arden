@@ -1,8 +1,10 @@
 
 
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import moment from 'moment';
+import isAfter from 'date-fns/isAfter';
+
 import {
     Grid,
     Container,
@@ -17,6 +19,8 @@ import {
     DatePicker,
     Stack,
     IconButton,
+    Message,
+
 } from 'rsuite';
 
 import { useAuth } from '../../apps/useAuth';
@@ -30,6 +34,13 @@ type Payload = {
     uuid: string | null;
 };
 
+
+interface BranchItem {
+    label: string;
+    value: string;
+}
+
+
 type FormData = {
     pan: string;
     acno: string;
@@ -37,7 +48,6 @@ type FormData = {
     org_id: string;
     org_branch_code: string;
     acquirer: string;
-    merchant_bank: string;
     merchant_name: string;
     merchant_location: string;
     tr_amt: string;
@@ -54,8 +64,10 @@ const DisputeEntry: React.FC<{ userprofile?: string }> = () => {
 
 
     const [uuid, setUuid] = useState<string>('');
-
+    const [branch, setBranch] = useState<BranchItem[]>([{ label: 'Select Branch', value: '' }]);
+    const [acquirers, setAcquirers] = useState<BranchItem[]>([{ label: 'Select Acquirer', value: '' }]);
     const [success, setSuccess] = useState<boolean>(false);
+    const [error, setError] = useState<string | undefined>(undefined);
     const [loading, setLoading] = useState<boolean>(false);
     const [formData, setFormData] = useState<FormData>({
         pan: '',
@@ -93,13 +105,92 @@ const DisputeEntry: React.FC<{ userprofile?: string }> = () => {
         });
     };
 
-    const handleChange = (name: string, value: string | null) => {
 
+    const fatchBranch = useCallback(async () => {
+        try {
+            const response = await fetch('http://10.140.6.65:4000/api/v1/oauth/branchs', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
 
-        if (name === 'acno' && value !== null && value.length >= 11) {
-            getAccountTitle(value);
+            const data = await response.json();
+
+            if (!data.error) {
+                const selectData = data.payload.map(({ CODE, NAME }: { CODE: string; NAME: string }) => ({
+                    label: NAME,
+                    value: CODE,
+                }));
+                setBranch(selectData);
+            } else {
+                setBranch([{ label: 'Select Branch', value: '' }]);
+            }
+        } catch (error) {
+            console.log(error);
+            setBranch([{ label: 'Select Branch', value: '' }]);
         }
+    }, []);
 
+    const fatchAcquirers = useCallback(async () => {
+        try {
+            setLoading(true);
+            const response = await fetch('http://10.140.6.65:4000/api/v1/dispute/acquirers', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            const data = await response.json();
+
+            if (!data.error) {
+                const selectData = data.payload.map((acquirer: string, index: number) => ({
+                    label: acquirer,
+                    value: `${acquirer}-${index}`,
+                }));
+                setAcquirers(selectData);
+            } else {
+                setAcquirers([{ label: 'Select Acquirer', value: '' }]);
+            }
+            setLoading(false);
+        } catch (error) {
+            setLoading(false);
+            console.log(error);
+            setAcquirers([{ label: 'Select Acquirer', value: '' }]);
+        }
+    }, []);
+
+    const fetchAccountTitle = useCallback(async (value) => {
+        setLoading(true);
+        try {
+
+            const data = await api.useApi('GET', `/v1/cbs/account_info/${value}`);
+
+            if (!data.error && data.payload && data.payload.length != 0) {
+                setCustomerName(data.payload[0].ACCOUNTTITLE);
+                handleChange('org_branch_code', data.payload[0].BRANCHCODE);
+            } else if (!data.error && data.payload && data.payload.length === 0) {
+                setCustomerName("Account not found");
+            } else if (data.error) {
+                setError(data.error);
+            } else {
+                setError("Unknown Error");
+            }
+            setLoading(false);
+        } catch (error) {
+            setLoading(false);
+            setError(error.message)
+            console.log('Error fetching account title:', error.message);
+        }
+    }, [])
+
+
+    const handleChange = (name: string, value: string | null) => {
+        setError(undefined)
+        if (name === 'acno' && value !== null && value.length >= 11) {
+            fetchAccountTitle(value);
+        }
 
         setFormData((prevData) => ({
             ...prevData,
@@ -108,24 +199,11 @@ const DisputeEntry: React.FC<{ userprofile?: string }> = () => {
             acno: name === 'acno' ? value || '' : prevData.acno,
 
         }));
-
-    };
-
-
-    const getAccountTitle = async (value: string) => {
-        try {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const data: any = await api.useApi('GET', `/v1/cbs/account_info/${value}`);
-            if (!data.error) setCustomerName(data.payload[0].ACCOUNTTITLE)
-            if (data.error) alert(data.error)
-        } catch (error) {
-            console.error('Error submitting form:', error);
-        }
     };
 
 
     const handelDate = (value: Date | null) => {
-        console.log(value)
+
         if (value) {
             handleChange('txn_date', moment(value).format("YYYY-MM-DD"));
         }
@@ -153,10 +231,7 @@ const DisputeEntry: React.FC<{ userprofile?: string }> = () => {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleImageChange = (event: any) => {
-
-
         const file = event.target.files[0]
-
         if (file) {
             const reader = new FileReader();
 
@@ -192,13 +267,17 @@ const DisputeEntry: React.FC<{ userprofile?: string }> = () => {
     };
 
 
+    useEffect(() => {
+        fatchBranch()
+        fatchAcquirers()
+    }, [])
 
 
-
-
-
+    const memoizedAcquirers = useMemo(() => acquirers, [acquirers]);
+    const memoizedBranches = useMemo(() => branch, [branch]);
     return (
         <Container>
+
             {success ? (
                 <Grid fluid>
                     <Stack direction="column" alignItems="center" spacing={6}>
@@ -215,7 +294,8 @@ const DisputeEntry: React.FC<{ userprofile?: string }> = () => {
                     </Stack>
                 </Grid>
             ) : (
-                <Form onSubmit={handleSubmit} style={{ padding: '3%' }}>
+                <Form onSubmit={handleSubmit} style={{ padding: '3%' }} fluid>
+
                     <Grid fluid >
                         <Row className="p-5">
                             <FlexboxGrid>
@@ -230,6 +310,9 @@ const DisputeEntry: React.FC<{ userprofile?: string }> = () => {
                         </Row>
 
                         <Divider />
+                        {error ? <Message showIcon type="error" header="Error">
+                            {error}
+                        </Message> : <></>}
 
 
                     </Grid>
@@ -256,6 +339,8 @@ const DisputeEntry: React.FC<{ userprofile?: string }> = () => {
                                             onChange={(value) => handleChange('acno', value)}
                                             placeholder="ACNO"
                                         />
+                                        <Form.ErrorMessage show={customerName === "Account Not found" ? true : false
+                                        }>{customerName}</Form.ErrorMessage>
                                     </Form.Group>
                                     <Form.Group controlId="titel">
                                         <Form.ControlLabel>Account Titel</Form.ControlLabel>
@@ -266,18 +351,21 @@ const DisputeEntry: React.FC<{ userprofile?: string }> = () => {
                                             disabled={true}
                                             placeholder="Titel"
                                         />
-                                    </Form.Group>
 
+                                    </Form.Group>
+                                    {/* Account not found */}
                                     <Stack direction="row" alignItems="flex-start" spacing={6}>
-                                        <Form.Group controlId="org_branch_code">
+                                        <Form.Group controlId="org_branch_code" >
                                             <Form.ControlLabel>Branch <span style={{ color: 'red' }}>*</span></Form.ControlLabel>
                                             <SelectPicker
-                                                data={[{ value: '001', label: 'Head Office' }]}
+                                                data={memoizedBranches}
                                                 placeholder="Select Branch"
                                                 name="org_branch_code"
-                                                value={formData.org_branch_code || '001'}
+                                                value={formData.org_branch_code || '100'}
                                                 onChange={(value) => handleChange('org_branch_code', value || '')}
                                             />
+
+
                                         </Form.Group>
 
                                         <Form.Group controlId="channel">
@@ -309,7 +397,7 @@ const DisputeEntry: React.FC<{ userprofile?: string }> = () => {
                                 <Stack direction="column" alignItems="flex-start" spacing={6}>
                                     <Form.ControlLabel>Transaction Date <span style={{ color: 'red' }}>*</span></Form.ControlLabel>
                                     <Form.Group controlId="txn_date">
-                                        <DatePicker block format="MM/dd/yyyy" ranges={[]} onChange={handelDate} />
+                                        <DatePicker shouldDisableDate={date => isAfter(date, new Date())} format="MM/dd/yyyy" ranges={[]} onChange={handelDate} block />
                                     </Form.Group>
                                     <Form.ControlLabel>Transaction ID <span style={{ color: 'red' }}>*</span><Form.HelpText tooltip>Any ID help idenfy the dispute.</Form.HelpText></Form.ControlLabel>
                                     <Form.Group controlId="org_id">
@@ -338,16 +426,19 @@ const DisputeEntry: React.FC<{ userprofile?: string }> = () => {
 
                             <Col sm={24} md={8} style={{ margin: "15px 0" }}>
                                 <Stack direction={"column"} alignItems="flex-start" spacing={2}>
-                                    <Form.ControlLabel>Merchant Bank</Form.ControlLabel>
-                                    <Form.Group controlId="merchant_bank">
-                                        <Input
-                                            type="text"
-                                            name="merchant_bank"
-                                            value={formData.merchant_bank}
-                                            onChange={(value) => handleChange('merchant_bank', value)}
-                                            placeholder="Merchant Name"
+
+                                    <Form.ControlLabel>Acquirer</Form.ControlLabel>
+                                    <Form.Group controlId="acquirer">
+
+                                        <SelectPicker
+                                            data={memoizedAcquirers}
+                                            placeholder="Acquirer"
+                                            name="acquirer"
+                                            value={formData.acquirer || '100'}
+                                            onChange={(value) => handleChange('acquirer', value || '')}
                                         />
                                     </Form.Group>
+
                                     <Form.ControlLabel>Merchant Name</Form.ControlLabel>
                                     <Form.Group controlId="merchant_name">
                                         <Input

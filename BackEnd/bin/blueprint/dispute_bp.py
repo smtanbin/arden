@@ -6,6 +6,7 @@ from flask import Blueprint, request, jsonify
 
 from bin.api.DisputeManager import DisputeManager
 from bin.database.db import database
+from bin.database.models.RawData.AcquirerModel import AcquirerModel
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +20,6 @@ dispute_manager = DisputeManager(session)
 def add_dispute_route():
     try:
         req = request.get_json()
-        print("______req data____", req)
         pan = req.get("pan")
         acno = req.get("acno")
         txn_date = req.get("txn_date")
@@ -39,7 +39,6 @@ def add_dispute_route():
 
         dispute = dispute_manager.add(pan, acno, channel, txn_date, org_id, org_branch_code, acquirer, maker_user,
                                       merchant_name, merchant_location, tr_amt, attachment_bytes)
-
 
         if dispute:
             return jsonify({"uuid": str(dispute), "error": None})
@@ -94,31 +93,15 @@ def get_image_data_route(dispute_id):
         return jsonify({"payload": None, "error": str(e)}), 500
 
 
-# @dispute_report_bp.route('/get/<dispute_id>', methods=['GET'])
-# def get_data_route(dispute_id):
-#     try:
-#
-#         if not dispute_id:
-#             return jsonify({"payload": None, "error": "Missing dispute_id in the request"}), 400
-#
-#         dispute = dispute_manager.get(dispute_id)
-#
-#         if dispute:
-#             # Assuming 'attachment' is a field in the dispute model containing base64-encoded image data
-#             attachment_base64 = dispute.attachment
-#
-#             if attachment_base64:
-#                 return jsonify({"error": None, "payload": {"dispute_data": dispute.serialize(),
-#                                                            "attachment": attachment_base64.decode('utf-8')}})
-#             else:
-#                 return jsonify({"error": None, "payload": {"dispute_data": dispute.serialize(), "attachment": None}})
-#
-#         else:
-#             return jsonify({"payload": "Dispute not found", "error": None}), 404
-#
-#     except Exception as e:
-#         print(e)
-#         return jsonify({"payload": None, "error": str(e)}), 500
+@dispute_report_bp.route('/acquirers', methods=['GET'])
+def Acquirers():
+    try:
+        acquirer_names = session.query(AcquirerModel.acquirer_name).all()
+        acquirer_names_list = [name[0] for name in acquirer_names] if acquirer_names else []
+
+        return jsonify({"payload": acquirer_names_list, "error": None}), 200
+    except Exception as e:
+        return jsonify({"payload": None, "error": str(e)}), 500
 
 
 @dispute_report_bp.route('/dispute_list', methods=['GET'])

@@ -5,16 +5,36 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="638a31d0-24d5-4172-aa0a-d10fd3c332c5" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/bin/data/acquirer_list.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bin/database/models/RawData/AcquirerModel.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/activate" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/bin/api/DisputeManager.py" beforeDir="false" afterPath="$PROJECT_DIR$/bin/api/DisputeManager.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/api/PasswordManager.py" beforeDir="false" afterPath="$PROJECT_DIR$/bin/api/PasswordManager.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bin/blueprint/auth_bp.py" beforeDir="false" afterPath="$PROJECT_DIR$/bin/blueprint/auth_bp.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/blueprint/cbs_bp.py" beforeDir="false" afterPath="$PROJECT_DIR$/bin/blueprint/cbs_bp.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bin/blueprint/dispute_bp.py" beforeDir="false" afterPath="$PROJECT_DIR$/bin/blueprint/dispute_bp.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/blueprint/reports/mis_report_bp.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/bin/blueprint/user_bp.py" beforeDir="false" afterPath="$PROJECT_DIR$/bin/blueprint/user_bp.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/database/base.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/database/cbs.py" beforeDir="false" afterPath="$PROJECT_DIR$/bin/database/cbs.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/database/db.py" beforeDir="false" afterPath="$PROJECT_DIR$/bin/database/db.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/database/models/AuditModel.py" beforeDir="false" afterPath="$PROJECT_DIR$/bin/database/models/AuditModel.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/database/models/AuthorizedSilpDataModel.py" beforeDir="false" afterPath="$PROJECT_DIR$/bin/database/models/AuthorizedSilpDataModel.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/database/models/BranchModel.py" beforeDir="false" afterPath="$PROJECT_DIR$/bin/database/models/BranchModel.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bin/database/models/DisputeModels/DisputeAttachmentModel.py" beforeDir="false" afterPath="$PROJECT_DIR$/bin/database/models/DisputeModels/DisputeAttachmentModel.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/database/models/Users/PermissionModel.py" beforeDir="false" afterPath="$PROJECT_DIR$/bin/database/models/Users/PermissionModel.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/database/models/DisputeModels/DisputeModel.py" beforeDir="false" afterPath="$PROJECT_DIR$/bin/database/models/DisputeModels/DisputeModel.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/database/models/LoginSessionModel.py" beforeDir="false" afterPath="$PROJECT_DIR$/bin/database/models/LoginSessionModel.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bin/database/models/Users/UserInfoModel.py" beforeDir="false" afterPath="$PROJECT_DIR$/bin/database/models/Users/UserInfoModel.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/sys/setup.py" beforeDir="false" afterPath="$PROJECT_DIR$/bin/sys/setup.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config.toml" beforeDir="false" afterPath="$PROJECT_DIR$/config.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dev.session.sql" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/api/mis/mis.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/api/mis/mis_qurry.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Client/src/Pages/Dispute/DisputeEntry.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Client/src/Pages/Dispute/DisputeEntry.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Client/src/Pages/LoginPage/SignInPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Client/src/Pages/LoginPage/SignInPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Client/src/Pages/LoginPage/SignUpPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Client/src/Pages/LoginPage/SignUpPage.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,6 +52,7 @@
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
+    <option name="showMembers" value="true" />
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
@@ -46,14 +67,12 @@
   <component name="RunManager">
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="project_arden" />
-      <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="SDK_NAME" value="arden" />
       <option name="WORKING_DIRECTORY" value="" />
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />

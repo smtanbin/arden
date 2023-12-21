@@ -2,11 +2,11 @@
 import base64
 from datetime import datetime
 
-from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import desc, func
+from sqlalchemy.exc import SQLAlchemyError
 
-from bin.database.models.DisputeModels.DisputeModel import Dispute
 from bin.database.models.DisputeModels.DisputeAttachmentModel import DisputeAttachmentModel
+from bin.database.models.DisputeModels.DisputeModel import Dispute
 
 
 class DisputeManager:
@@ -51,63 +51,61 @@ class DisputeManager:
             print(f"Error adding dispute entry: {str(e)}")
             raise
 
+    def get(self, dispute_id):
 
-def get(self, dispute_id):
-    try:
-        dispute = self.session.query(
-            Dispute).filter_by(uuid=dispute_id).first()
-        return dispute
+        try:
+            dispute = self.session.query(
+                Dispute).filter_by(uuid=dispute_id).first()
+            return dispute
 
-    except SQLAlchemyError as e:
-        print(f"Error retrieving dispute entry: {str(e)}")
-        raise
-    except Exception as ex:
-        print(f"An unexpected error occurred: {str(ex)}")
-        raise
+        except SQLAlchemyError as e:
+            print(f"Error retrieving dispute entry: {str(e)}")
+            raise
+        except Exception as ex:
+            print(f"An unexpected error occurred: {str(ex)}")
+            raise
 
+    def get_image(self, dispute_id):
 
-def get_image(self, dispute_id):
-    try:
-        dispute = self.session.query(
-            DisputeAttachmentModel).filter_by(uuid=dispute_id).first()
-        return dispute.attachment
+        try:
+            dispute = self.session.query(
+                DisputeAttachmentModel).filter_by(uuid=dispute_id).first()
+            return dispute.attachment
 
-    except SQLAlchemyError as e:
-        print(f"Error retrieving dispute entry: {str(e)}")
-        raise
-    except Exception as ex:
-        print(f"An unexpected error occurred: {str(ex)}")
-        raise
+        except SQLAlchemyError as e:
+            print(f"Error retrieving dispute entry: {str(e)}")
+            raise
+        except Exception as ex:
+            print(f"An unexpected error occurred: {str(ex)}")
+            raise
 
+    def get_all(self, limit=200):
 
-def get_all(self, limit=200):
-    try:
-        disputes = self.session.query(Dispute).order_by(
-            desc(Dispute.timestamp)).limit(limit).all()
-        return disputes
+        try:
+            disputes = self.session.query(Dispute).order_by(
+                desc(Dispute.timestamp)).limit(limit).all()
+            return disputes
 
-    except SQLAlchemyError as e:
-        print(f"Error retrieving dispute entries: {str(e)}")
-        raise
-    except Exception as ex:
-        print(f"An unexpected error occurred: {str(ex)}")
-        raise
+        except SQLAlchemyError as e:
+            print(f"Error retrieving dispute entries: {str(e)}")
+            raise
+        except Exception as ex:
+            print(f"An unexpected error occurred: {str(ex)}")
+            raise
 
+    def data_between_date(self, from_date_str=None, to_date_str=None):
 
-def data_between_date(self, from_date_str=None, to_date_str=None):
-    from_date = datetime.strptime(
-        from_date_str, '%Y-%m-%d') if from_date_str else None
-    to_date = datetime.strptime(
-        to_date_str, '%Y-%m-%d') if to_date_str else None
+        from_date = datetime.strptime(from_date_str, '%Y-%m-%d') if from_date_str else None
+        to_date = datetime.strptime(to_date_str, '%Y-%m-%d') if to_date_str else None
 
-    try:
-        dispute = self.session.query(Dispute).filter(
-            func.date(Dispute.timestamp).between(from_date, to_date))
-        return dispute
+        try:
+            dispute = self.session.query(Dispute).filter(
+                func.date(Dispute.timestamp).between(from_date, to_date))
+            return dispute
 
-    except SQLAlchemyError as e:
-        print(f"Error retrieving dispute entries between dates: {str(e)}")
-        raise
-    except Exception as ex:
-        print(f"An unexpected error occurred: {str(ex)}")
-        raise
+        except SQLAlchemyError as e:
+            print(f"Error retrieving dispute entries between dates: {str(e)}")
+            raise
+        except Exception as ex:
+            print(f"An unexpected error occurred: {str(ex)}")
+            raise

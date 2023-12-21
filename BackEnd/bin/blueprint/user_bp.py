@@ -14,6 +14,7 @@ from bin.database.models.Users.UserInfoModel import UserInfoModel
 user_bp = Blueprint('user', __name__)
 session_maker = database()
 session = session_maker()
+pm = PasswordManager()
 
 
 @user_bp.route('/add', methods=['POST'])
@@ -32,6 +33,7 @@ def add_user():
                 lock=False,
                 email=data['email'],
                 contact=data['contact'],
+                password_hash=pm.set_password(data['email'], otp),
                 otp=otp,
                 permissions=data['permissions']
             )
@@ -41,7 +43,7 @@ def add_user():
             audit_manager = AuditModelManager(session)
             audit_manager.log(str(data['email']), "User added successfully")
 
-            return jsonify({'message': 'User added successfully.', "otp": password})
+            return jsonify({'message': 'User added successfully.'})
         else:
             return jsonify({'error': 'mandatory parameter not found', 'message': None}), 400
 

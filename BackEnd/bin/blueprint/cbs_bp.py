@@ -21,8 +21,22 @@ def add_dispute_route(account_no):
                  f"b.OPRINS NOT IN ('AN2','AN3','JNT') and b.OPRINS is not null")
 
         payload = cbs_query(query)
-        return jsonify({"payload": payload, "error": None})
+        if payload and payload[0]:
+            return jsonify({"payload": payload, "error": None}), 200
+        else:
+            return jsonify({"payload": [], "error": None}), 200
 
+
+
+    except Exception as e:
+        return jsonify({"payload": None, "error": str(e)}), 500
+
+
+@cbs_bp.route('/branchs', methods=['GET'])
+def branch_list():
+    try:
+        payload = cbs_query("SELECT CACMPCDE AS CODE,CACMPNAM AS NAME  FROM ISLBAS.SYPARMAS")
+        return jsonify({"payload": payload, "error": None})
     except Exception as e:
         return jsonify({"payload": None, "error": str(e)}), 500
 

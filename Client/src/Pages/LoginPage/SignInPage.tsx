@@ -2,11 +2,11 @@
 
 import { useState } from 'react';
 import { Form, Button, Panel, Stack, Message } from 'rsuite';
-import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate hook
+import { useNavigate } from 'react-router-dom'; // Import useNavigate hook
 import { useAuth } from '../../apps/useAuth';
 
 import wallpaper from '../../assets/login/light.svg';
-import logo from '../../assets/arden_logo.svg';
+import logo from '../../assets/logo.svg';
 
 const SignInPage = () => {
 
@@ -85,38 +85,51 @@ const SignInPage = () => {
         >
 
 
-            <Panel bordered style={{ background: '#ffffff', width: 400 }} header={
-                <img height={'100px'} src={logo} />
-            }>
-                <p style={{ marginBottom: 10 }}>
-                    <span className="text-muted">New Here? </span>{' '}
-                    <Link to="/sign-up"> Create an Account</Link>
-                </p>
+            <Panel bordered shaded style={{ background: 'rgba(255, 255, 255, 0.9)', width: 400 }}
 
-                <Form fluid onSubmit={handleLogin}>
+            >
+
+                <Stack
+                    alignItems="center"
+                    direction="column"
+                    style={{
+                        padding: 15
+                    }}
+                >
+                    <img height={'50px'} src={logo} />
+                </Stack>
+                <Panel header={<h3>Login</h3>}>
 
 
-                    <Form.Group>
-                        <Form.ControlLabel>Email address</Form.ControlLabel>
-                        <Form.Control name="username" value={username} onChange={value => setUsername(value)} /> {/* Update name and add value and onChange props */}
-                    </Form.Group>
-                    <Form.Group>
-                        <Form.ControlLabel>
-                            <span>Password</span>
 
-                        </Form.ControlLabel>
-                        <Form.Control name="password" type="password" value={password} onChange={value => setPassword(value)} />
-                    </Form.Group>
 
-                    {errorState ? <Message showIcon type="error">{errorState}</Message> : <></>}
-                    <br />
-                    <Form.Group>
-                        <Button appearance="primary" type="submit" block>Sign in</Button>
-                        <Button appearance="link" onClick={handelForgetPassword} block>Forgot password?</Button>
+                    <Form fluid onSubmit={handleLogin}>
+                        <Form.Group>
+                            <Form.ControlLabel>Email address</Form.ControlLabel>
+                            <Form.Control name="username" value={username} onChange={value => setUsername(value)} /> {/* Update name and add value and onChange props */}
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.ControlLabel>
+                                <span>Password</span>
+
+                            </Form.ControlLabel>
+                            <Form.Control name="password" type="password" value={password} onChange={value => setPassword(value)} />
+                            <Button appearance="link" onClick={handelForgetPassword} block>Forgot password?</Button>
+                        </Form.Group>
+
+
+                        {errorState ? <Message showIcon type="error">{errorState}</Message> : <></>}
                         <br />
-                        <Button appearance="ghost" onClick={handelSignup} block>Signup</Button>
-                    </Form.Group>
-                </Form>
+                        <Form.Group>
+                            <Button appearance="primary" type="submit" block>Sign in</Button>
+
+                            <br />
+                            <span className="text-muted">New Here? </span>
+                            <br />
+                            <Button appearance="ghost" onClick={handelSignup} block>Signup</Button>
+                        </Form.Group>
+                    </Form>
+                </Panel>
             </Panel>
         </Stack >
     );

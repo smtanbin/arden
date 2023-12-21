@@ -6,7 +6,7 @@ class PasswordManager:
     def __init__(self):
         pass
 
-    def set_password(username, password):
+    def set_password(self, username, password):
         salt = secrets.token_hex(8)
         key = hashlib.sha512(username.encode()).hexdigest()
         hashed_password = hashlib.pbkdf2_hmac(

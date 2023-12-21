@@ -4,13 +4,13 @@ import uuid
 from sqlalchemy import Boolean, Column, DateTime, and_, String, inspect, Date
 from sqlalchemy.orm import relationship
 
-from bin.database.base import Base
+from bin.database.db import Base
 
 
 class Dispute(Base):
     __tablename__ = 'dispute'
 
-    uuid = Column(String(32), primary_key=True, unique=True, nullable=False,
+    uuid = Column(String(64), primary_key=True, unique=True, nullable=False,
                   default=lambda: 'DP' + datetime.now().strftime('%Y%m-%d%H-%M%S') + '-' + str(
                       uuid.uuid4())[-4:].zfill(4))
     pan = Column(String(17))
@@ -22,7 +22,6 @@ class Dispute(Base):
     org_id = Column(String(24), nullable=False)
     txn_date = Column(Date, nullable=False)
     terminal_id = Column(String(32))
-    merchant_bank = Column(String(32))
     merchant_name = Column(String(32))
     merchant_location = Column(String(32))
     tr_amt = Column(String(100), nullable=False)
@@ -43,7 +42,7 @@ class Dispute(Base):
     remark = Column(String(300))
     checkerUser = Column(String(50))
     authorizedUser = Column(String(50))
-    attachments = relationship('DisputeAttachment', back_populates='dispute')
+    attachments = relationship('DisputeAttachmentModel', back_populates='dispute')
 
     def data_between_date(self, limit, from_date=None, to_date=None):
         query = Dispute.query

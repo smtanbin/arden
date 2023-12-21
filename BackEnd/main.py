@@ -13,6 +13,7 @@ from bin.blueprint.user_bp import user_bp
 from bin.database.db import database
 from bin.middleware.jwt_middleware import jwt_middleware
 from bin.sys.key_storage import retrieve_jwt_hash
+from bin.sys.setup import setup
 
 app = Flask(__name__)
 
@@ -58,7 +59,7 @@ def page_not_found():
 
 
 if __name__ == '__main__':
-    # setup()
+    setup()
     database()
     app.run(debug=True, host=config["server"]["host"], port=int(config["server"]["port"]))
     print("To run console type python3 console.py")

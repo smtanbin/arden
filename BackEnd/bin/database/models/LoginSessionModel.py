@@ -3,7 +3,7 @@ from click import DateTime
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime
 from sqlalchemy.orm import relationship
 
-from bin.database.base import Base
+from bin.database.db import Base
 
 
 class LoginSessionModel(Base):

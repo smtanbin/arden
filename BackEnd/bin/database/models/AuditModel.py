@@ -1,11 +1,11 @@
 
 from datetime import datetime
 import uuid
-from click import DateTime
+
 from sqlalchemy import Column, ForeignKey, String, DateTime
 from sqlalchemy.orm import relationship
 
-from bin.database.base import Base
+from bin.database.db import Base
 
 
 class AuditModel(Base):
