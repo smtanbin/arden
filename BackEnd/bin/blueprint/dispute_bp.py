@@ -32,13 +32,17 @@ def add_dispute_route():
         merchant_location = req.get("merchant_location")
         tr_amt = req.get("tr_amt")
         attachment = req.get("attachment")
+        massage = req.get("massage")
 
-        attachment_bytes = None
-        if attachment:
+        if attachment is not None:
             attachment_bytes = base64.b64decode(attachment.split(',')[1])
-
-        dispute = dispute_manager.add(pan, acno, channel, txn_date, org_id, org_branch_code, acquirer, maker_user,
-                                      merchant_name, merchant_location, tr_amt, attachment_bytes)
+            dispute = dispute_manager.add(pan, acno, massage, channel, txn_date, org_id, org_branch_code, acquirer,
+                                          maker_user,
+                                          merchant_name, merchant_location, tr_amt, attachment_bytes)
+        else:
+            dispute = dispute_manager.add(pan, acno, massage, channel, txn_date, org_id, org_branch_code, acquirer,
+                                          maker_user,
+                                          merchant_name, merchant_location, tr_amt, None)
 
         if dispute:
             return jsonify({"uuid": str(dispute), "error": None})
@@ -81,16 +85,16 @@ def get_image_data_route(dispute_id):
 
         dispute_attachment = dispute_manager.get_image(dispute_id)
 
-        if dispute_attachment:
+        if dispute_attachment is None:
+            return jsonify({"attachment": None, "error": None}), 200
+        else:
             # Convert bytes to base64-encoded string
             attachment_base64 = base64.b64encode(dispute_attachment).decode('utf-8')
             return jsonify({"error": None, "attachment": attachment_base64})
-        else:
-            return jsonify({"attachment": None, "error": None}), 200
 
     except Exception as e:
-        print(e)
-        return jsonify({"payload": None, "error": str(e)}), 500
+
+        return jsonify({"payload": None, "error": str(e)}), 200
 
 
 @dispute_report_bp.route('/acquirers', methods=['GET'])

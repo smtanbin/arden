@@ -19,7 +19,7 @@ class Dispute(Base):
     timestamp = Column(DateTime, nullable=False, default=datetime.now())
     acquirer = Column(String(24))
     org_branch_code = Column(String(5), nullable=False)
-    org_id = Column(String(24), nullable=False)
+    org_id = Column(String(24), nullable=True)
     txn_date = Column(Date, nullable=False)
     terminal_id = Column(String(32))
     merchant_name = Column(String(32))

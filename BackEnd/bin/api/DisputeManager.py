@@ -13,13 +13,14 @@ class DisputeManager:
     def __init__(self, session):
         self.session = session
 
-    def add(self, pan, acno, channel, txn_date, org_id, org_branch_code, acquirer, maker_user, merchant_name,
+    def add(self, pan, acno,massage, channel, txn_date, org_id, org_branch_code, acquirer, maker_user, merchant_name,
             merchant_location,
             tr_amt, attachment):
         try:
             new_dispute = Dispute(
                 pan=pan,
                 acno=acno,
+                massage=massage,
                 txn_date=txn_date,
                 org_id=org_id,
                 org_branch_code=org_branch_code,
@@ -35,14 +36,13 @@ class DisputeManager:
             self.session.commit()
 
             if attachment is not None:
-                # Encode binary data using base64 encoding
                 encoded_attachment = base64.b64encode(attachment)
                 attachment = DisputeAttachmentModel(
                     attachment_data=encoded_attachment,
                     dispute_uuid=new_dispute.uuid
                 )
-            self.session.add(attachment)
-            self.session.commit()
+                self.session.add(attachment)
+                self.session.commit()
 
             return new_dispute.uuid  # Return the newly added dispute object
 
@@ -66,18 +66,16 @@ class DisputeManager:
             raise
 
     def get_image(self, dispute_id):
-
         try:
-            dispute = self.session.query(
-                DisputeAttachmentModel).filter_by(uuid=dispute_id).first()
-            return dispute.attachment
-
+            dispute = self.session.query(DisputeAttachmentModel).filter_by(dispute_uuid=dispute_id).first()
+            return dispute.attachment_data if dispute else None
         except SQLAlchemyError as e:
             print(f"Error retrieving dispute entry: {str(e)}")
             raise
         except Exception as ex:
             print(f"An unexpected error occurred: {str(ex)}")
             raise
+
 
     def get_all(self, limit=200):
 

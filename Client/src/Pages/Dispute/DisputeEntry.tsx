@@ -12,7 +12,7 @@ import {
     Col,
     Form,
     SelectPicker,
-    Input,
+
     FlexboxGrid,
     Divider,
     Button,
@@ -20,6 +20,7 @@ import {
     Stack,
     IconButton,
     Message,
+    Input,
 
 } from 'rsuite';
 
@@ -51,6 +52,7 @@ type FormData = {
     merchant_name: string;
     merchant_location: string;
     tr_amt: string;
+    massage: string;
     channel: string;
     attachment: string | null;
     maker_user: string | null;
@@ -69,6 +71,7 @@ const DisputeEntry: React.FC<{ userprofile?: string }> = () => {
     const [success, setSuccess] = useState<boolean>(false);
     const [error, setError] = useState<string | undefined>(undefined);
     const [loading, setLoading] = useState<boolean>(false);
+    const [panError, setPanError] = useState<boolean>(false);
     const [formData, setFormData] = useState<FormData>({
         pan: '',
         acno: '',
@@ -79,6 +82,7 @@ const DisputeEntry: React.FC<{ userprofile?: string }> = () => {
         merchant_name: '',
         merchant_location: '',
         tr_amt: '',
+        massage: '',
         channel: '',
         attachment: null,
         maker_user: userprofile,
@@ -99,6 +103,7 @@ const DisputeEntry: React.FC<{ userprofile?: string }> = () => {
             merchant_name: '',
             merchant_location: '',
             tr_amt: '',
+            massage: '',
             channel: '',
             attachment: null,
             maker_user: userprofile,
@@ -132,6 +137,27 @@ const DisputeEntry: React.FC<{ userprofile?: string }> = () => {
         }
     }, []);
 
+    const isLuhnValid = (number: string): boolean => {
+        let sum = 0;
+        let alternate = false;
+
+        for (let i = number.length - 1; i >= 0; i--) {
+            let digit = parseInt(number.charAt(i), 10);
+
+            if (alternate) {
+                digit *= 2;
+                if (digit > 9) {
+                    digit -= 9;
+                }
+            }
+
+            sum += digit;
+            alternate = !alternate;
+        }
+
+        return sum % 10 === 0;
+    };
+
     const fatchAcquirers = useCallback(async () => {
         try {
             setLoading(true);
@@ -161,13 +187,13 @@ const DisputeEntry: React.FC<{ userprofile?: string }> = () => {
         }
     }, []);
 
-    const fetchAccountTitle = useCallback(async (value) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const fetchAccountTitle = useCallback(async (value: any) => {
         setLoading(true);
         try {
-
             const data = await api.useApi('GET', `/v1/cbs/account_info/${value}`);
 
-            if (!data.error && data.payload && data.payload.length != 0) {
+            if (!data.error && data.payload && data.payload.length !== 0) {
                 setCustomerName(data.payload[0].ACCOUNTTITLE);
                 handleChange('org_branch_code', data.payload[0].BRANCHCODE);
             } else if (!data.error && data.payload && data.payload.length === 0) {
@@ -178,18 +204,33 @@ const DisputeEntry: React.FC<{ userprofile?: string }> = () => {
                 setError("Unknown Error");
             }
             setLoading(false);
-        } catch (error) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
             setLoading(false);
-            setError(error.message)
+            setError(error.message);
             console.log('Error fetching account title:', error.message);
         }
-    }, [])
+    }, []);
 
 
     const handleChange = (name: string, value: string | null) => {
-        setError(undefined)
+        setError(undefined);
+        setPanError(false)
+
         if (name === 'acno' && value !== null && value.length >= 11) {
             fetchAccountTitle(value);
+        }
+
+        // Validate PAN
+        if (name === 'pan' && value !== null) {
+            const trimmedPan = value.replace(/\s/g, ''); // Remove spaces
+            const isValidPan = /^\d{16}$/.test(trimmedPan) && isLuhnValid(trimmedPan);
+
+            if (!isValidPan) {
+                setPanError(true)
+
+                return;
+            }
         }
 
         setFormData((prevData) => ({
@@ -197,7 +238,6 @@ const DisputeEntry: React.FC<{ userprofile?: string }> = () => {
             [name]: value || '',
             pan: name === 'pan' ? value || '' : prevData.pan,
             acno: name === 'acno' ? value || '' : prevData.acno,
-
         }));
     };
 
@@ -325,11 +365,13 @@ const DisputeEntry: React.FC<{ userprofile?: string }> = () => {
                                         <Form.Control
                                             type="text"
                                             name="pan"
-                                            value={formData.pan}
+                                            // value={formData.pan}
                                             onChange={(value) => handleChange('pan', value)}
                                             placeholder="PAN"
                                         />
+                                        <Form.ErrorMessage show={panError}>Invalid PAN. Please enter a valid 16-digit PAN.</Form.ErrorMessage>
                                     </Form.Group>
+
                                     <Form.Group controlId="acno">
                                         <Form.ControlLabel>Account Number <span style={{ color: 'purple' }}>*</span></Form.ControlLabel>
                                         <Form.Control
@@ -395,11 +437,17 @@ const DisputeEntry: React.FC<{ userprofile?: string }> = () => {
 
                             <Col sm={24} md={8} style={{ margin: "15px 0" }}>
                                 <Stack direction="column" alignItems="flex-start" spacing={6}>
-                                    <Form.ControlLabel>Transaction Date <span style={{ color: 'red' }}>*</span></Form.ControlLabel>
+                                    <Form.ControlLabel>
+                                        Transaction Date
+                                        <span style={{ color: 'red' }}>*</span>
+                                    </Form.ControlLabel>
                                     <Form.Group controlId="txn_date">
                                         <DatePicker shouldDisableDate={date => isAfter(date, new Date())} format="MM/dd/yyyy" ranges={[]} onChange={handelDate} block />
                                     </Form.Group>
-                                    <Form.ControlLabel>Transaction ID <span style={{ color: 'red' }}>*</span><Form.HelpText tooltip>Any ID help idenfy the dispute.</Form.HelpText></Form.ControlLabel>
+                                    <Form.ControlLabel>
+                                        Transaction ID
+                                        <Form.HelpText tooltip>Any ID help idenfy the dispute.</Form.HelpText>
+                                    </Form.ControlLabel>
                                     <Form.Group controlId="org_id">
                                         <Input
                                             type="text"
@@ -409,27 +457,36 @@ const DisputeEntry: React.FC<{ userprofile?: string }> = () => {
                                             placeholder="Transaction ID"
                                         />
                                     </Form.Group>
-                                    <Form.ControlLabel>Amount <span style={{ color: 'red' }}>*</span></Form.ControlLabel>
+                                    <Form.ControlLabel>
+                                        Amount
+                                        <span style={{ color: 'red' }}>*</span>
+                                    </Form.ControlLabel>
                                     <Form.Group controlId="tr_amt">
                                         <Input
-                                            type="text"
+                                            type="number"
                                             name="tr_amt"
                                             value={formData.tr_amt}
                                             onChange={(value) => handleChange('tr_amt', value)}
                                             placeholder="Transaction Amount"
                                         />
                                     </Form.Group>
-
-
+                                    <Form.ControlLabel>Massage</Form.ControlLabel>
+                                    <Form.Group controlId="massage">
+                                        <Input
+                                            placeholder="Massage"
+                                            as="textarea" rows={3}
+                                            name="massage"
+                                            value={formData.massage}
+                                            onChange={(value) => handleChange('massage', value || '')}
+                                        />
+                                    </Form.Group>
                                 </Stack>
                             </Col>
 
                             <Col sm={24} md={8} style={{ margin: "15px 0" }}>
                                 <Stack direction={"column"} alignItems="flex-start" spacing={2}>
-
                                     <Form.ControlLabel>Acquirer</Form.ControlLabel>
                                     <Form.Group controlId="acquirer">
-
                                         <SelectPicker
                                             data={memoizedAcquirers}
                                             placeholder="Acquirer"
@@ -438,7 +495,6 @@ const DisputeEntry: React.FC<{ userprofile?: string }> = () => {
                                             onChange={(value) => handleChange('acquirer', value || '')}
                                         />
                                     </Form.Group>
-
                                     <Form.ControlLabel>Merchant Name</Form.ControlLabel>
                                     <Form.Group controlId="merchant_name">
                                         <Input
