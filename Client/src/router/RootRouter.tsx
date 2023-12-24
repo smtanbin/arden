@@ -12,6 +12,7 @@ import PasswordReset from "../Pages/LoginPage/PasswordReset"
 import SignUp from "../Pages/LoginPage/SignUpPage"
 import DisputeChecker from "../Pages/Dispute/DisputeList/DisputeChecker"
 import ApproveProfile from "../Pages/System/Profile/ApproveProfile"
+import NoPermissionPage from "../Components/NoPermissionPage"
 
 
 
@@ -22,6 +23,7 @@ const RootRouter = () => {
         <Routes>
             <Route path="/" element={<SecureRoute children={undefined} />}>
                 <Route path="/" element={<Dashboard />} />
+                <Route path="/home" element={<Dashboard />} />
                 {/* <Route path="/userprofile" element={<ProfilePage />} /> */}
                 <Route path="/cardActivation" element={<Activation />} />
                 <Route path="/addDispute" element={<DisputeEntry />} />
@@ -29,6 +31,7 @@ const RootRouter = () => {
                 <Route path="/disputeChecker/:param" element={<DisputeChecker />} />
                 <Route path="/approve_profile" element={<ApproveProfile />} />
             </Route>
+            <Route path="/noPermissionPage" element={<NoPermissionPage />} />
             <Route path="/loading" element={<LoadingPage />} />
             <Route path="/login" element={<SignInPage />} />
             <Route path="/signup" element={<SignUp />} />

@@ -23,7 +23,7 @@ def injectAcquirer(value):
 
 
 def setup():
-    insert_branch_data(session)
+    # insert_branch_data(session)
 
     # Create an instance of PasswordManager
     PsMan = PasswordManager()

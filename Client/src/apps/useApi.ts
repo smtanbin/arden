@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios"
-const _url = "http://10.140.6.65:4000"
+const _url = "http://192.168.0.133:4000"
 // const _url = import.meta.env.VITE_SERVER_URL
 
 export default class Api {

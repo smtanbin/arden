@@ -107,11 +107,52 @@ def lock_user():
         session.close()
 
 
+@user_bp.route('/permission/<username>', methods=['GET'])
+def permission(username):
+    try:
+
+        user = session.query(UserInfoModel).filter_by(email=username).first()
+        if user:
+            user.lock = True
+            session.commit()
+            return jsonify(user.permissions)
+        else:
+            return jsonify({'error': 'User not found.'}), 404
+    except Exception as e:
+        session.rollback()
+        print(e)
+        return jsonify({'error': str(e)}), 500
+    finally:
+        session.close()
+
+
+@user_bp.route('/userlist', methods=['GET'])
+def userlist():
+    try:
+
+        user_list = session.query(
+            UserInfoModel).filter_by(reg_status=True).all()
+
+        if len(user_list) != 0:
+            users = [{'uuid': user.uuid, 'user_id': user.userid, 'username': user.email, 'firstName': user.firstName,
+                      'lastName': user.lastName,
+                      'phone': user.contact, 'reg_date': user.timestamp, 'last_login': user.lastLogin, 'status': user.status} for user in user_list]
+            return jsonify({'payload': users, 'error': None}), 200
+        else:
+            return jsonify({'payload': None, 'error': 'no data found'}), 200
+    except Exception as e:
+        print(e)
+        return jsonify({'message': None, 'error': str(e)}), 500
+    finally:
+        session.close()
+
+
 @user_bp.route('/pendingList', methods=['GET'])
 def funPendingList():
     try:
 
-        user_list = session.query(UserInfoModel).filter_by(status=False, reg_status=True).all()
+        user_list = session.query(UserInfoModel).filter_by(
+            status=False, reg_status=True).all()
 
         if len(user_list) != 0:
             users = [{'uuid': user.uuid, 'user_id': user.userid, 'username': user.email, 'firstName': user.firstName,
@@ -139,7 +180,8 @@ def approved_user(uuid):
             user.update_at = datetime.datetime.now()
             session.commit()
 
-            user_list = session.query(UserInfoModel).filter_by(status=False, reg_status=True).all()
+            user_list = session.query(UserInfoModel).filter_by(
+                status=False, reg_status=True).all()
 
             if len(user_list) != 0:
                 users = [
@@ -163,11 +205,13 @@ def reject_user(uuid):
     try:
         user = session.query(UserInfoModel).filter_by(uuid=uuid).first()
         if user:
-            Sent_email(user.email, 'Account Rejected', f'Sorry your account have been rejected.')
+            Sent_email(user.email, 'Account Rejected',
+                       f'Sorry your account have been rejected.')
             user.otp = None
             user.reg_status = False
             session.commit()
-            user_list = session.query(UserInfoModel).filter_by(status=False, reg_status=True).all()
+            user_list = session.query(UserInfoModel).filter_by(
+                status=False, reg_status=True).all()
 
             if len(user_list) != 0:
                 users = [

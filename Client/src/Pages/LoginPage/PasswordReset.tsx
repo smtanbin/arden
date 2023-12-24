@@ -16,13 +16,15 @@ const PasswordReset = () => {
     const [errorState, setErrorState] = useState<string | undefined>(undefined);
     const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(false);
 
+    const url: string = (process.env.NODE_ENV === 'development') ? 'http://192.168.0.133:4000' : import.meta.env.VITE_API_URL
+
     const navigate = useNavigate();
     const handleSendOtp = async () => {
         try {
             // Disable the button when sending OTP
             setIsButtonDisabled(true);
 
-            const response = await fetch(`http://10.140.6.65:4000/api/v1/oauth/reset_otp/${username}`, {
+            const response = await fetch(`${url}/api/v1/oauth/reset_otp/${username}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -56,7 +58,7 @@ const PasswordReset = () => {
 
     const handlePasswordReset = async () => {
         try {
-            const response = await fetch('http://10.140.6.65:4000/api/v1/oauth/forget_password', {
+            const response = await fetch(`${url}/api/v1/oauth/forget_password`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

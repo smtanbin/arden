@@ -2,12 +2,12 @@ import { useEffect, useState, useCallback } from 'react';
 import { Form, IconButton, Panel, Stack, Message, ButtonGroup, Button, SelectPicker } from 'rsuite';
 import { Link } from 'react-router-dom';
 
-
-
 import wallpaper from '../../assets/login/signup5098290.svg';
 import SendIcon from '@rsuite/icons/Send';
 import PageTopIcon from '@rsuite/icons/PageTop';
 import logo from '../../assets/logo.svg';
+
+
 
 interface BranchItem {
     label: string;
@@ -22,18 +22,22 @@ const SignUp = () => {
         contact: '',
         email: '',
         branch: ''
-    });
+    })
+
+
 
 
     const [branch, setBranch] = useState<BranchItem[]>([{ label: 'Select Branch', value: '' }]);
     const [errorState, setErrorState] = useState<string | undefined>(undefined);
     const [success, setSuccess] = useState<string | undefined>(undefined);
 
+    const url: string = (process.env.NODE_ENV === 'development') ? 'http://192.168.0.133:4000' : import.meta.env.VITE_API_URL
+
 
 
     const fatchBranch = useCallback(async () => {
         try {
-            const response = await fetch('http://10.140.6.65:4000/api/v1/oauth/branchs', {
+            const response = await fetch(`${url}/api/v1/oauth/branchs`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -65,7 +69,7 @@ const SignUp = () => {
 
     const handleChange = (name: string, value: string | null) => {
         if (name === 'employeeid' && value !== null && value.length >= 6) {
-            console.log("calling data");
+            setErrorState("Invalid Employee ID");
         }
         setFormData((prevData) => ({
             ...prevData,
@@ -82,7 +86,7 @@ const SignUp = () => {
 
 
         try {
-            const response = await fetch('http://10.140.6.65:4000/api/v1/oauth/signup', {
+            const response = await fetch('http://192.168.0.133:4000/api/v1/oauth/signup', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -115,7 +119,17 @@ const SignUp = () => {
 
 
 
-    useEffect(() => { fatchBranch() }, [])
+    useEffect(() => {
+
+
+        if (process.env.NODE_ENV === 'development') {
+            setBranch([{ label: 'Head Office', value: '100' }])
+        } else {
+            fatchBranch()
+        }
+
+
+    }, [])
 
 
 
@@ -232,8 +246,8 @@ const SignUp = () => {
                                                 data={branch}
                                                 placeholder="Select Branch"
                                                 name="branch"
-                                                value={formData.branch || '100'}
-                                                onChange={(value) => handleChange('branch', value || '')}
+                                                value={formData.branch}
+                                                onChange={(value) => handleChange('branch', value)}
                                             />
 
                                         </Form.Group>

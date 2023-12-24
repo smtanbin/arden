@@ -3,18 +3,11 @@ port = 4000
 host = '0.0.0.0'  # To allow all IP access, use '0.0.0.0'; default is '127.0.0.1'
 
 [database]
-username = "arden_dev"
-password = "arden_dev"
-address = "10.140.6.7"  # Enclose the IP address in double quotes
-port = 5432
-database = "arden_dev"  # Enclose the database name in double quotes
-
-[database_home]
-username = "test"
-password = "test"
+username = "postgres"
+password = "root"
 address = "127.0.0.1"  # Enclose the IP address in double quotes
 port = 5432
-database = "arden_test"  # Enclose the database name in double quotes
+database = "postgres"  # Enclose the database name in double quotes
 
 [access]
 username = "tanbin"
@@ -27,11 +20,3 @@ database = "CPSStandardBank"
 username = "adc"
 password = "adc123"
 url = "10.130.117.117:1523/ibpdb"
-
-
-[database_Cloud]
-username = "sql12666632"
-password = "HiYs4tP6lf"
-address = "sql12.freemysqlhosting.net"
-port = 3306
-database = "sql12666632"

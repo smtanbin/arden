@@ -11,10 +11,10 @@ import '../../styles/index.css'
 
 const SignInPage = () => {
 
-    const domain: string = 'http://127.0.0.1:4000'
+    const url: string = (process.env.NODE_ENV === 'development') ? 'http://192.168.0.133:4000' : import.meta.env.VITE_API_URL
 
     const [username, setUsername] = useState('');
-    const [password, setPassword] = useState(undefined);
+    const [password, setPassword] = useState<string | undefined>(undefined);
     const [errorState, setErrorState] = useState<string | undefined>(undefined);
     const [previousLoginState, setPreviousLoginState] = useState<string | undefined>(undefined);
     const [passwordChange, setPasswordChange] = useState<boolean>(false);
@@ -55,13 +55,13 @@ const SignInPage = () => {
             'Content-Type': 'application/json',
         };
 
-        const data: { username: string; password: string } = {
+        const data: { username: string; password: string | undefined } = {
             username,
             password,
         };
 
         try {
-            const response = await fetch(domain + '/api/v1/oauth/login', {
+            const response = await fetch(`${url}/api/v1/oauth/login`, {
                 method: 'POST',
                 headers,
                 body: JSON.stringify(data),
@@ -90,7 +90,7 @@ const SignInPage = () => {
 
     const fatchLoginInfo = async (username: string, token: string, refreshToken: string) => {
         try {
-            const response = await fetch(`${domain}/api/v1/oauth/last_login/${username}`);
+            const response = await fetch(`${url}/api/v1/oauth/last_login/${username}`);
 
             if (response.status === 200) {
                 auth.login({ username, token, refreshToken });
@@ -111,7 +111,7 @@ const SignInPage = () => {
 
     const submitResetPassword = async () => {
         try {
-            const response = await fetch(`${domain}/api/v1/oauth/password_reset`, {
+            const response = await fetch(`${url}/api/v1/oauth/password_reset`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

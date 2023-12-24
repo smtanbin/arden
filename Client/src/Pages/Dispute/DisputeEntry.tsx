@@ -113,7 +113,7 @@ const DisputeEntry: React.FC<{ userprofile?: string }> = () => {
 
     const fatchBranch = useCallback(async () => {
         try {
-            const response = await fetch('http://10.140.6.65:4000/api/v1/oauth/branchs', {
+            const response = await fetch('http://192.168.0.133:4000/api/v1/oauth/branchs', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -161,7 +161,7 @@ const DisputeEntry: React.FC<{ userprofile?: string }> = () => {
     const fatchAcquirers = useCallback(async () => {
         try {
             setLoading(true);
-            const response = await fetch('http://10.140.6.65:4000/api/v1/dispute/acquirers', {
+            const response = await fetch('http://192.168.0.133:4000/api/v1/dispute/acquirers', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

@@ -32,7 +32,7 @@ const LogoutModal: React.FC<LogoutProps> = ({ visible, onConfirm, onCancel }) =>
         };
 
         try {
-            const response = await fetch("http://10.140.6.65:4000/api/v1/oauth/logout", {
+            const response = await fetch("http://192.168.0.133:4000/api/v1/oauth/logout", {
                 method: "POST",
                 headers,
                 body: JSON.stringify(data),
