@@ -4,8 +4,7 @@ import styled from 'styled-components';
 import brandLogo from '../assets/react.svg'; // Replace with the path to your brand logo
 
 const FooterWrapper = styled.footer`
-    background-color: #EFFFE8;
-    color: #000000;
+
     padding: 20px 0;
 `;
 

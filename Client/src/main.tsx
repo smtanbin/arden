@@ -7,6 +7,7 @@ import './styles/index.less';
 
 import RootRouter from "./router/RootRouter";
 import { AuthProvider } from "./Context/AuthProvider";
+import { ThemeProvider } from "./Context/TheamProvider";
 
 
 const el = document.getElementById('root')
@@ -17,9 +18,11 @@ const root = ReactDOM.createRoot(el)
 root.render(
   <React.StrictMode>
     <Router>
-      <AuthProvider>
-        <RootRouter />
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <RootRouter />
+        </AuthProvider>
+      </ThemeProvider>
     </Router>
   </React.StrictMode>
 );

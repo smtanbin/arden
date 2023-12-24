@@ -1,15 +1,18 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Navbar, Nav, Avatar, Modal, Button } from 'rsuite';
+import { Navbar, Nav, Avatar, Modal, Button, Toggle } from 'rsuite';
 
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSun, faMoon } from "@fortawesome/free-solid-svg-icons";
 import CogIcon from '@rsuite/icons/legacy/Cog';
 import { faCreditCard, faMoneyBills, faBook } from '@fortawesome/free-solid-svg-icons';
 
 import { useAuth } from '../apps/useAuth';
 import { useNavigate } from 'react-router-dom';
 import logo from '../assets/arden_logo.svg';
+import { useTheme } from '../Context/TheamProvider';
+import Api from '../apps/useApi';
 
 
 
@@ -21,12 +24,40 @@ import logo from '../assets/arden_logo.svg';
 const AppNavbar: React.FC = () => {
 
     const auth = useAuth();
+    const api = new Api(auth);
     const navigate = useNavigate();
+    const url: string = (process.env.NODE_ENV === 'development') ? 'http://192.168.0.133:4000' : import.meta.env.VITE_API_URL
+
+    const { theme, setMode } = useTheme();
     const username: string = auth.token?.username || 'guest';
 
     const [open, setOpen] = useState(false);
+    const [pathlist, setPathList] = useState<string[] | undefined>(undefined);
+
+
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
+
+
+    useEffect(() => {
+        const fatch = async () => {
+            try {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const data: { "prime": boolean, "routes": string[] } = await api.useApi('GET', `/users/permission/${auth.username}`);
+
+                if (data.prime) setPathList(["prime"])
+                else setPathList(data.routes)
+
+            } catch (error) {
+                // Handle error, e.g., redirect to an error page
+                alert(`Error fetching rights: ${error}`);
+                setPathList([]);
+            }
+        }
+
+        fatch();
+    }, [])
+
 
 
     const logout = async () => {
@@ -40,7 +71,7 @@ const AppNavbar: React.FC = () => {
         };
 
         try {
-            const response = await fetch("http://192.168.0.133:4000/api/v1/oauth/logout", {
+            const response = await fetch(`${url}/api/v1/oauth/logout`, {
                 method: "POST",
                 headers,
                 body: JSON.stringify(data),
@@ -63,41 +94,66 @@ const AppNavbar: React.FC = () => {
 
 
 
+
     return (
 
-        <><Navbar style={{ backgroundColor: "#EFFFE8" }}>
+        <>
+            {/* <Navbar style={{ backgroundColor: "#EFFFE8" }}> */}
+            <Navbar>
 
-            <Navbar.Brand href="/">{<img src={logo} style={{ maxHeight: '120%', width: 'auto' }} />}</Navbar.Brand>
-            <Nav>
-                <Nav.Menu icon={<FontAwesomeIcon icon={faMoneyBills} />} title="ATM">
-                    <Nav.Item>ATM Monitor</Nav.Item>
-                    <Nav.Item>Downtime</Nav.Item>
-                    <Nav.Item>Extra Cash</Nav.Item>
-                </Nav.Menu>
-                <Nav.Menu icon={<FontAwesomeIcon icon={faCreditCard} />} title="Cards">
+                <Navbar.Brand href="/">{<img src={logo} style={{ maxHeight: '120%', width: 'auto' }} />}</Navbar.Brand>
+                <Nav>
 
-                    <Nav.Item>Production List</Nav.Item>
+                    <Nav.Menu icon={<FontAwesomeIcon icon={faMoneyBills} />} title="ATM">
+                        <Nav.Item>ATM Monitor</Nav.Item>
+                        <Nav.Item>Downtime</Nav.Item>
+                        <Nav.Item>Extra Cash</Nav.Item>
+                    </Nav.Menu>
+                    <Nav.Menu icon={<FontAwesomeIcon icon={faCreditCard} />} title="Cards">
+                        <Nav.Item>Production List</Nav.Item>
+                    </Nav.Menu>
+                    {pathlist && (pathlist.includes('prime') || pathlist.includes('adddispute') || pathlist.includes('disputelist')) ?
 
-                </Nav.Menu>
-                <Nav.Menu icon={<FontAwesomeIcon icon={faBook} />} title="Dispute">
-                    <Link to={"/addDispute"}><Nav.Item>Add Dispute</Nav.Item></Link>
-                    <Link to={"/disputeList"}><Nav.Item>Dispute list</Nav.Item></Link>
-                </Nav.Menu>
-                <Nav.Menu icon={<CogIcon />} title="Admin">
-                    <Link to={"/approve_profile"}><Nav.Item>Pending User</Nav.Item></Link>
-                </Nav.Menu>
-                {/* <Nav.Item icon={<CogIcon />}>Settings</Nav.Item> */}
-            </Nav>
-            <Nav style={{ marginLeft: 'auto' }} pullRight>
-                <Nav.Menu title={<Avatar circle>
-                    {username.slice(0, 2).toUpperCase()}
-                </Avatar>}>
-                    <Nav.Item>Profile</Nav.Item>
-                    <Nav.Item onClick={handleOpen}>Logout</Nav.Item>
-                </Nav.Menu>
-            </Nav>
+                        (<Nav.Menu icon={<FontAwesomeIcon icon={faBook} />} title="Dispute">
+                            {pathlist && (pathlist.includes('prime') || pathlist.includes('adddispute')) ? (
+                                <Link to={"/addDispute"}><Nav.Item>Add Dispute</Nav.Item></Link>
+                            ) : <></>}
+                            {pathlist && (pathlist.includes('prime') || pathlist.includes('disputelist')) ? (
+                                <Link to={"/disputeList"}><Nav.Item>Dispute list</Nav.Item></Link>
+                            ) : <></>}
+                        </Nav.Menu>)
+                        : <></>}
 
-        </Navbar><Modal role="alertdialog" open={open} onClose={handleClose}>
+
+                    <Nav.Menu icon={<CogIcon />} title="Admin">
+                        {pathlist && (pathlist.includes('prime') || pathlist.includes('approveprofile')) ? (
+
+                            <Link to={"/approveProfile"}><Nav.Item>Pending User</Nav.Item></Link>
+                        ) : <></>}
+                    </Nav.Menu>
+                    {/* <Nav.Item icon={<CogIcon />}>Settings</Nav.Item> */}
+                </Nav>
+                <Nav style={{ marginLeft: 'auto' }} pullRight>
+                    <Nav.Menu title={<Avatar circle>
+                        {username.slice(0, 2).toUpperCase()}
+                    </Avatar>}>
+                        <Nav.Item>Profile</Nav.Item>
+                        <Nav.Item onClick={handleOpen}>Logout</Nav.Item>
+                    </Nav.Menu>
+                    <Nav.Item onClick={setMode}>
+                        <Toggle
+                            arial-label="Switch"
+                            checked={theme !== 'light' ? true : false}
+                            size="lg"
+
+                            unCheckedChildren={<FontAwesomeIcon icon={faSun} />}
+                            checkedChildren={<FontAwesomeIcon icon={faMoon} />}
+                        />
+                    </Nav.Item>
+                </Nav>
+
+            </Navbar>
+            <Modal role="alertdialog" open={open} onClose={handleClose}>
                 <Modal.Header>
                     <Modal.Title>Logout</Modal.Title>
                 </Modal.Header>

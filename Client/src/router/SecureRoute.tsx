@@ -45,6 +45,7 @@ import LandingPage from "../LandingPage";
 import { useAuth } from "../apps/useAuth";
 import Api from "../apps/useApi";
 
+export const ignoreRoutes = ["/", "/home", "noPermissionPage"];
 
 const SecureRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const auth = useAuth();
@@ -54,7 +55,6 @@ const SecureRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
     // Define the routes to ignore from the authorization check
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    const ignoreRoutes = ["/", "/home", "noPermissionPage"];
 
     useEffect(() => {
         const checkPermissions = async () => {
@@ -65,6 +65,7 @@ const SecureRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
             try {
                 const data: { "prime": boolean, "routes": string[] } = await api.useApi('GET', `/users/permission/${auth.username}`);
+
                 // Convert current route path to lowercase for case-insensitive comparison
                 const currentRoute = location.pathname.toLowerCase();
 
@@ -83,7 +84,7 @@ const SecureRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         };
 
         checkPermissions();
-    }, [auth.token?.token, auth.username, location.pathname, api, ignoreRoutes]);
+    }, []);
 
 
     if (isAuthorized === null) {

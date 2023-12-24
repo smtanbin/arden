@@ -29,7 +29,7 @@ const RootRouter = () => {
                 <Route path="/addDispute" element={<DisputeEntry />} />
                 <Route path="/disputeList" element={<DisputeList />} />
                 <Route path="/disputeChecker/:param" element={<DisputeChecker />} />
-                <Route path="/approve_profile" element={<ApproveProfile />} />
+                <Route path="/approveProfile" element={<ApproveProfile />} />
             </Route>
             <Route path="/noPermissionPage" element={<NoPermissionPage />} />
             <Route path="/loading" element={<LoadingPage />} />
