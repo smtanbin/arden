@@ -11,6 +11,7 @@ import DisputeList from "../Pages/Dispute/DisputeList/DisputeList"
 import PasswordReset from "../Pages/LoginPage/PasswordReset"
 import SignUp from "../Pages/LoginPage/SignUpPage"
 import DisputeChecker from "../Pages/Dispute/DisputeList/DisputeChecker"
+import ApproveProfile from "../Pages/System/Profile/ApproveProfile"
 
 
 
@@ -26,6 +27,7 @@ const RootRouter = () => {
                 <Route path="/addDispute" element={<DisputeEntry />} />
                 <Route path="/disputeList" element={<DisputeList />} />
                 <Route path="/disputeChecker/:param" element={<DisputeChecker />} />
+                <Route path="/approve_profile" element={<ApproveProfile />} />
             </Route>
             <Route path="/loading" element={<LoadingPage />} />
             <Route path="/login" element={<SignInPage />} />

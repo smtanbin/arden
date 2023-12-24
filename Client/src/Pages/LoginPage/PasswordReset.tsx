@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { Form, Button, Panel, Stack, Message } from 'rsuite';
-import { Link } from 'react-router-dom';
+import { Form, Button, Panel, Stack, Message, ButtonGroup } from 'rsuite';
 
 
-import wallpaper from '../../assets/login/light.svg';
+
+import wallpaper from '../../assets/login/signup5098290.svg';
 import logo from '../../assets/arden_logo.svg';
+import { Link, useNavigate } from 'react-router-dom';
 
 const PasswordReset = () => {
 
@@ -15,6 +16,7 @@ const PasswordReset = () => {
     const [errorState, setErrorState] = useState<string | undefined>(undefined);
     const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(false);
 
+    const navigate = useNavigate();
     const handleSendOtp = async () => {
         try {
             // Disable the button when sending OTP
@@ -68,6 +70,7 @@ const PasswordReset = () => {
 
             if (response.ok) {
                 setErrorState('');
+                navigate('/login', { replace: true });
                 // Handle success (perhaps redirect the user to login)
             } else {
                 const data = await response.json();
@@ -91,47 +94,63 @@ const PasswordReset = () => {
             }}
         >
 
-            <Panel bordered style={{ background: '#ffffff', width: 400 }} header={
-                <img height={'100px'} src={logo} />
-            }>
-                <p style={{ marginBottom: 10 }}>
-                    <span className="text-muted">New Here? </span>{' '}
-                    <Link to="/sign-up"> Create an Account</Link>
-                </p>
-                <br />
-                {errorState ? <Message showIcon type="error">{errorState}</Message> : <></>}
-                <br />
+            <Panel bordered shaded style={{ background: 'rgba(255, 255, 255, 0.9)', width: 400 }}>
+                <Stack
+                    alignItems="center"
+                    direction="column"
+                    style={{
+                        padding: 15
+                    }}
+                >     <ButtonGroup>
 
-                <Form fluid onSubmit={handleSendOtp}>
-                    <Form.Group>
-                        <Form.ControlLabel>Email address</Form.ControlLabel>
-                        <Form.Control name="username" value={username} onChange={(value) => setUsername(value)} />
-                    </Form.Group>
-                    <Form.Group>
-                        <Button disabled={isButtonDisabled} appearance="primary" onClick={handleSendOtp} block>
-                            {isButtonDisabled ? `Retry in 30s` : 'Send OTP'}
-                        </Button>
-                    </Form.Group>
-                </Form>
+                    </ButtonGroup>
+                    <img height={'50px'} src={logo} />
+                </Stack>
 
-                {otpStage && (
-                    <Form fluid onSubmit={handlePasswordReset}>
+                <Panel header={<h5>Reset Password</h5>}>
+                    {errorState ? <Message showIcon type="error">{errorState}</Message> : <></>}
+                    <Form fluid onSubmit={handleSendOtp}>
                         <Form.Group>
-                            <Form.ControlLabel>Enter OTP</Form.ControlLabel>
-                            <Form.Control name="otp" value={otp} onChange={value => setOtp(value)} />
+                            <Form.ControlLabel>Email address</Form.ControlLabel>
+                            <Form.Control name="username" value={username} onChange={(value) => setUsername(value)} />
                         </Form.Group>
                         <Form.Group>
-                            <Form.ControlLabel>New Password</Form.ControlLabel>
-                            <Form.Control name="password" type="password" value={password} onChange={value => setPassword(value)} />
-                        </Form.Group>
-                        <Form.Group>
-
-                            <Button appearance="primary" type="submit">Reset Password</Button>
+                            <Button disabled={isButtonDisabled} appearance="primary" onClick={handleSendOtp} block>
+                                {isButtonDisabled ? `Retry in 30s` : 'Send OTP'}
+                            </Button>
+                            <br />
+                            <Link to={"/login"}>
+                                <Button appearance="ghost" block>Back</Button>
+                            </Link>
                         </Form.Group>
                     </Form>
-                )}
+
+                    {otpStage && (
+                        <Form fluid onSubmit={handlePasswordReset}>
+                            <Form.Group>
+                                <Form.ControlLabel>Enter OTP</Form.ControlLabel>
+                                <Form.Control name="otp" value={otp} onChange={value => setOtp(value)} />
+                            </Form.Group>
+                            <Form.Group>
+                                <Form.ControlLabel>New Password</Form.ControlLabel>
+                                <Form.Control name="password" type="password" value={password} onChange={value => setPassword(value)} />
+                            </Form.Group>
+                            <Form.Group>
+
+                                <Button appearance="primary" type="submit" block>Reset Password</Button>
+                                <br />
+                                <Link to={"/login"}>
+                                    <Button appearance="ghost" block>Back</Button>
+                                </Link>
+                            </Form.Group>
+
+                        </Form>
+                    )}
+
+                </Panel>
             </Panel>
         </Stack>
+
     );
 };
 

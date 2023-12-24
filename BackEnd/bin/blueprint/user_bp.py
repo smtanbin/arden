@@ -1,15 +1,16 @@
 # user_bp.py
+import datetime
 
 from bin.api.AuditManager import AuditModelManager
 from bin.database.db import database
 from bin.api.PasswordManager import PasswordManager
-
 
 import random
 from flask import Blueprint, request, jsonify
 from sqlalchemy.exc import IntegrityError
 
 from bin.database.models.Users.UserInfoModel import UserInfoModel
+from bin.mail.smtp import Sent_email
 
 user_bp = Blueprint('user', __name__)
 session_maker = database()
@@ -60,7 +61,6 @@ def add_user():
 
 @user_bp.route('/change_password', methods=['POST'])
 def change_password():
-
     data = request.get_json()
     username = data['username']
     old_password = data['old_password']
@@ -89,17 +89,101 @@ def change_password():
 
 @user_bp.route('/lock', methods=['POST'])
 def lock_user():
+    try:
+        data = request.get_json()
+        username = data['name']
 
-    data = request.get_json()
-    username = data['name']
+        user = session.query(UserInfoModel).filter_by(email=username).first()
+        if user:
+            user.lock = True
+            session.commit()
+            return jsonify({'message': 'User locked successfully.'})
+        else:
+            return jsonify({'message': 'User not found.'}), 404
+    except Exception as e:
+        session.rollback()
+        return jsonify({'message': None, 'error': str(e)}), 500
+    finally:
+        session.close()
 
-    user = session.query(UserInfoModel).filter_by(email=username).first()
-    if user:
-        user.lock = True
-        session.commit()
-        return jsonify({'message': 'User locked successfully.'})
-    else:
-        return jsonify({'message': 'User not found.'}), 404
+
+@user_bp.route('/pendingList', methods=['GET'])
+def funPendingList():
+    try:
+
+        user_list = session.query(UserInfoModel).filter_by(status=False, reg_status=True).all()
+
+        if len(user_list) != 0:
+            users = [{'uuid': user.uuid, 'user_id': user.userid, 'username': user.email, 'firstName': user.firstName,
+                      'lastName': user.lastName,
+                      'phone': user.contact, 'reg_date': user.timestamp} for user in user_list]
+            return jsonify({'payload': users, 'error': None}), 200
+        else:
+            return jsonify({'payload': None, 'error': 'no data found'}), 200
+    except Exception as e:
+        print(e)
+        return jsonify({'message': None, 'error': str(e)}), 500
+    finally:
+        session.close()
+
+
+@user_bp.route('/pendingList/<uuid>', methods=['PUT'])
+def approved_user(uuid):
+    try:
+        user = session.query(UserInfoModel).filter_by(uuid=uuid).first()
+        if user:
+            Sent_email(user.email, 'Account Approved', f'Congress your account has been approved. Your Temporary '
+                                                       f'password is {user.otp}')
+            user.status = True
+            user.otp = None
+            user.update_at = datetime.datetime.now()
+            session.commit()
+
+            user_list = session.query(UserInfoModel).filter_by(status=False, reg_status=True).all()
+
+            if len(user_list) != 0:
+                users = [
+                    {'uuid': user.uuid, 'user_id': user.userid, 'username': user.email, 'firstName': user.firstName,
+                     'lastName': user.lastName,
+                     'phone': user.contact, 'reg_date': user.timestamp} for user in user_list]
+                return jsonify({'payload': users, 'error': None}), 200
+            else:
+                return jsonify({'payload': [], 'error': None}), 200
+        else:
+            return jsonify({'payload': None, 'error': 'no data found'}), 200
+    except Exception as e:
+        print(e)
+        return jsonify({'message': None, 'error': str(e)}), 500
+    finally:
+        session.close()
+
+
+@user_bp.route('/pendingList/<uuid>', methods=['DELETE'])
+def reject_user(uuid):
+    try:
+        user = session.query(UserInfoModel).filter_by(uuid=uuid).first()
+        if user:
+            Sent_email(user.email, 'Account Rejected', f'Sorry your account have been rejected.')
+            user.otp = None
+            user.reg_status = False
+            session.commit()
+            user_list = session.query(UserInfoModel).filter_by(status=False, reg_status=True).all()
+
+            if len(user_list) != 0:
+                users = [
+                    {'uuid': user.uuid, 'user_id': user.userid, 'username': user.email, 'firstName': user.firstName,
+                     'lastName': user.lastName,
+                     'phone': user.contact, 'reg_date': user.timestamp} for user in user_list]
+                return jsonify({'payload': users, 'error': None}), 200
+            else:
+                return jsonify({'payload': None, 'error': 'no data found'}), 200
+        else:
+            return jsonify({'payload': None, 'error': 'no data found'}), 200
+    except Exception as e:
+        print(e)
+        return jsonify({'message': None, 'error': str(e)}), 500
+    finally:
+        session.close()
 
 
 @user_bp.errorhandler(404)

@@ -42,6 +42,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setTokenData(data);
         Cookies.set("authToken", JSON.stringify(data));
         Cookies.set("username", data.username);
+        localStorage.setItem("username", data.username);
 
         navigate("/");
     }, [navigate]);

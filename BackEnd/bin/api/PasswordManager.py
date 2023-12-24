@@ -13,7 +13,7 @@ class PasswordManager:
             'sha256', password.encode(), key.encode(), 100000)
         return salt + hashed_password.hex()
 
-    def is_valid_password(username, stored_password, provided_password):
+    def is_valid_password(self, username, stored_password, provided_password):
         salt = stored_password[:16]  # Extract salt from stored password
         # Extract hashed password from stored password
         stored_hash = stored_password[16:]

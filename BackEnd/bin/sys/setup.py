@@ -1,3 +1,5 @@
+import datetime
+
 from bin.api.PasswordManager import PasswordManager
 from bin.database.db import database
 from bin.database.models.BranchModel import insert_branch_data
@@ -33,19 +35,22 @@ def setup():
         # If admin user does not exist, create it
         new_user = UserInfoModel(
             userid='00000',
-            firstName='admin',
-            lastName='admin',
+            firstName='Default',
+            lastName='Admin',
             status=True,
             lock=False,
             email='admin',
             contact='admin',
             password_hash=PsMan.set_password('admin', 'admin'),
+            passwordTry=9999,
             permissions='{"admin": true}',
+            lastLogin=datetime.datetime.now(),
+            branch=000,
         )
         session.add(new_user)
         session.commit()
     else:
         print("Admin user already exists.")
 
-    # for acquirer_item in acquirer_data:
-    #     injectAcquirer(acquirer_item)
+    for acquirer_item in acquirer_data:
+        injectAcquirer(acquirer_item)

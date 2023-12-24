@@ -1,6 +1,6 @@
 from datetime import datetime
 import uuid
-from sqlalchemy import JSON, Boolean, Column, String, DateTime
+from sqlalchemy import JSON, Boolean, Column, String, DateTime,Integer
 from sqlalchemy.orm import relationship
 
 from bin.database.db import Base
@@ -19,6 +19,7 @@ class UserInfoModel(Base):
     firstName = Column(String(255))
     lastName = Column(String(255))
     status = Column(Boolean, nullable=False)
+    reg_status = Column(Boolean, nullable=False,default=True)
     contact = Column(String(20), nullable=False)
     password_hash = Column(String(128), nullable=True)
     lock = Column(Boolean, nullable=False, default=True)
@@ -30,8 +31,8 @@ class UserInfoModel(Base):
     permissions = Column(JSON)
     branch = Column(String(20))
     otp = Column(String(20))
-    passwordTry = Column(String(1))
-    lastLogin = Column(DateTime, nullable=True)
+    passwordTry = Column(Integer)
+    lastLogin = Column(DateTime, nullable=None)
 
     # Relationships
     audits = relationship('AuditModel', back_populates='user')

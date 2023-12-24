@@ -69,7 +69,6 @@ const AppNavbar: React.FC = () => {
 
             <Navbar.Brand href="/">{<img src={logo} style={{ maxHeight: '120%', width: 'auto' }} />}</Navbar.Brand>
             <Nav>
-
                 <Nav.Menu icon={<FontAwesomeIcon icon={faMoneyBills} />} title="ATM">
                     <Nav.Item>ATM Monitor</Nav.Item>
                     <Nav.Item>Downtime</Nav.Item>
@@ -84,7 +83,10 @@ const AppNavbar: React.FC = () => {
                     <Link to={"/addDispute"}><Nav.Item>Add Dispute</Nav.Item></Link>
                     <Link to={"/disputeList"}><Nav.Item>Dispute list</Nav.Item></Link>
                 </Nav.Menu>
-                <Nav.Item icon={<CogIcon />}>Settings</Nav.Item>
+                <Nav.Menu icon={<CogIcon />} title="Admin">
+                    <Link to={"/approve_profile"}><Nav.Item>Pending User</Nav.Item></Link>
+                </Nav.Menu>
+                {/* <Nav.Item icon={<CogIcon />}>Settings</Nav.Item> */}
             </Nav>
             <Nav style={{ marginLeft: 'auto' }} pullRight>
                 <Nav.Menu title={<Avatar circle>

@@ -1,5 +1,5 @@
 # auth_bp.py
-from datetime import timedelta
+from datetime import timedelta, datetime
 import random
 
 from flask import Blueprint, request, jsonify
@@ -36,7 +36,7 @@ def signup():
                 firstName=data['firstName'],
                 lastName=data['lastName'],
                 branch=data['branch'],
-                status=True,
+                status=False,
                 lock=False,
                 email=username,
                 password_hash=pm.set_password(data['email'], otp),
@@ -91,27 +91,37 @@ def check_user():
             email=username, status=True).first()
 
         if user:
-            password_hash = user.password_hash
-            if PasswordManager.is_valid_password(username, password_hash, password):
+
+            if pm.is_valid_password(user.email, user.password_hash, password):
                 token = [create_access_token(identity=username, expires_delta=timedelta(minutes=7)),
                          create_access_token(identity=user.uuid)]
+
+
+
                 login_session = LoginSessionModel(
                     token=token[1], user_uuid=user.uuid)
+
                 session.add(login_session)
                 session.commit()
-                session.close()
 
                 return jsonify({'message': 'success', 'token': token}), 200
             else:
-                session.close()
-                return jsonify({'message': 'Invalid password.'}), 200
+                if user.passwordTry <= 0:
+                    user.lock = True
+                else:
+                    user.passwordTry = user.passwordTry - 1
+
+                session.commit()
+                return jsonify({'message': f'Invalid password. You have {3 - user.passwordTry} remaining.'}), 200
         else:
-            session.close()
             return jsonify({'message': 'User not found.'}), 200
 
     except Exception as e:
-        session.close()
+        print(e)
         return jsonify({'error': str(e)}), 500
+
+    finally:
+        session.close()
 
 
 @auth_bp.route('/refresh', methods=['POST'])
@@ -148,11 +158,36 @@ def forget_password():
 
     if user:
         if otp == user.otp:
-            user.password_hash = PasswordManager.set_password(
+            user.password_hash = pm.set_password(
                 username, new_password)
-            user.otp = None  # Clear OTP after successful password reset
+            user.otp = None
+            user.lastLogin = 3
             session.commit()
 
+            return jsonify({'message': 'Password update successfully successfully.'}), 200
+        else:
+            return jsonify({'message': 'Invalid password.'}), 401
+    else:
+        return (jsonify({'message': 'User not found.'})), 404
+
+
+@auth_bp.route('/password_reset', methods=['POST'])
+def password_reset():
+    data = request.get_json()
+    username = data['username']
+    password = data['password']
+    new_password = data['new_password']
+
+    user = session.query(UserInfoModel).filter_by(email=username).first()
+
+    if user:
+        val = pm.is_valid_password(username, str(user.password_hash), password)
+        if val:
+            user.password_hash = pm.set_password(username, new_password)
+            user.otp = None
+            user.passwordTry = 3
+            user.lastLogin = datetime.utcnow()
+            session.commit()
             return jsonify({'message': 'Password update successfully successfully.'}), 200
         else:
             return jsonify({'message': 'Invalid password.'}), 401
@@ -206,6 +241,30 @@ def logout():
         else:
             session.close()
             return jsonify({'success': False, 'error': 'token or user not match'}), 401
+
+
+@auth_bp.route('/last_login/<username>', methods=['GET'])
+def last_login(username):
+    try:
+        user = session.query(UserInfoModel).filter_by(email=username).first()
+
+        if user:
+            print(user.lastLogin)
+            if user.lastLogin is None:
+                return jsonify({'code': 2, 'error': None}), 205
+            else:
+                user.passwordTry = 3
+                user.lastLogin = datetime.utcnow()
+                session.commit()
+                return jsonify({'code': 1, 'error': None}), 200
+        else:
+            return jsonify({'code': 0, 'error': 'User not found.'}), 404
+
+    except Exception as e:
+        print(e)
+        return jsonify({'status_code': 500, 'message': None, 'error': str(e)}), 500
+    finally:
+        session.close()
 
 
 @auth_bp.errorhandler(404)

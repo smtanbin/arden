@@ -44,7 +44,7 @@ def echo():
 
 # Apply middleware to specific blueprints
 app.register_blueprint(auth_bp, url_prefix='/api/v1/oauth')
-app.register_blueprint(user_bp, url_prefix='/api/v1/users')
+app.register_blueprint(user_bp, url_prefix='/api/users')
 app.register_blueprint(cbs_bp, url_prefix='/api/v1/cbs')
 app.register_blueprint(dispute_report_bp, url_prefix='/api/v1/dispute')
 
