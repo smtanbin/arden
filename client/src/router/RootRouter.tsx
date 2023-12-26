@@ -13,6 +13,7 @@ import SignUp from "../Pages/LoginPage/SignUpPage"
 import DisputeChecker from "../Pages/Dispute/DisputeList/DisputeChecker"
 import ApproveProfile from "../Pages/System/Profile/ApproveProfile"
 import ServerConnectionFailed from "../Components/ServerConnectionFailed"
+import AddUser from "../Pages/System/Profile/AddUser"
 
 
 
@@ -31,6 +32,7 @@ const RootRouter = () => {
                 <Route path="/disputeList" element={<DisputeList />} />
                 <Route path="/disputeChecker/:param" element={<DisputeChecker />} />
                 <Route path="/approveProfile" element={<ApproveProfile />} />
+                <Route path="/addUser" element={<AddUser />} />
             </Route>
             <Route path="/500" element={<ServerConnectionFailed />} />
             <Route path="/loading" element={<LoadingPage />} />

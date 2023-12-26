@@ -2,8 +2,9 @@ import React, { useState, useEffect, useCallback } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import LandingPage from "../LandingPage";
 import { useAuth } from "../apps/useAuth";
+import image403 from "../assets/403.svg";
 import Api from "../apps/useApi";
-import { Container, Content, FlexboxGrid, Button } from "rsuite";
+import { Container, Content, FlexboxGrid, Button, Stack } from "rsuite";
 
 export const ignoreRoutes = ["/", "noPermissionPage", "/home", "/noPermissionPage"];
 
@@ -58,23 +59,21 @@ const SecureRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
     // Handle unauthorized access, redirect to '/'
     return (<Container>
-        <Content style={{ marginTop: "50px" }}>
+        <Content>
             <FlexboxGrid justify="center">
                 <FlexboxGrid.Item colspan={12}>
-                    <div style={{ textAlign: "center" }}>
-
-                        <h3 style={{ marginTop: "20px" }}>No Permission</h3>
-                        <p>
-                            You do not have the required permissions to access this page.
-                        </p>
+                    <Stack direction="column" alignItems="center" spacing={9}>
+                        <img src={image403} style={{ height: "50vh" }} />
                         <Button
-                            appearance="primary"
+                            size="lg"
+                            appearance="ghost"
+                            color="green"
                             onClick={handleBackToHome}
                             style={{ marginTop: "20px" }}
                         >
                             Back to Home
                         </Button>
-                    </div>
+                    </Stack>
                 </FlexboxGrid.Item>
             </FlexboxGrid>
         </Content>

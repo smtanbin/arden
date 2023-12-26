@@ -124,6 +124,10 @@ const AppNavbar: React.FC = () => {
 
                             <Link to={"/approveProfile"}><Nav.Item>Pending User</Nav.Item></Link>
                         ) : <></>}
+                        {pathlist && (pathlist.includes('prime') || pathlist.includes('adduser')) ? (
+
+                            <Link to={"/addUser"}><Nav.Item>Add User</Nav.Item></Link>
+                        ) : <></>}
                     </Nav.Menu>
                     {/* <Nav.Item icon={<CogIcon />}>Settings</Nav.Item> */}
                 </Nav>
