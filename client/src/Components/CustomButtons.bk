@@ -1,0 +1,88 @@
+// CustomButton.tsx
+import { ReactNode, MouseEvent } from 'react';
+import { lightenHexColor, getContrastColor } from '../apps/colorLighter';
+
+
+type ButtonVariant = 'primary' | 'regular' | 'outline' | 'iconText' | 'icon' | undefined;
+
+
+interface CustomButtonProps {
+    variant?: ButtonVariant;
+    text?: string;
+    type?: "button" | "submit" | "reset" | undefined;
+    color: string | undefined;
+    icon?: ReactNode;
+    className?: string;
+    onClick?: (event: MouseEvent<HTMLButtonElement>) => void;
+}
+
+const buttonStyles: { [key: string]: React.CSSProperties } = {
+
+
+    primary: {
+        padding: '10px 20px',
+        cursor: 'pointer',
+        border: 'none',
+
+    },
+    regular: {
+        padding: '10px 20px',
+        cursor: 'pointer',
+        outline: 'none',
+
+    },
+    outline: {
+
+        backgroundColor: 'transparent',
+        padding: '10px 20px',
+        cursor: 'pointer',
+        outline: 'none',
+
+    },
+    iconText: {
+        display: 'flex',
+        alignItems: 'center',
+        padding: '10px 20px',
+        cursor: 'pointer',
+        outline: 'none',
+    },
+};
+
+
+
+const CustomButton: React.FC<CustomButtonProps> = ({ variant = 'regular', text, color = "#053223", type, icon, onClick, className }) => {
+
+    const contrastColor = getContrastColor(color)
+
+    const shade = lightenHexColor(color, 45)
+
+
+
+    const buttonStyle = {
+        ...buttonStyles[variant],
+        background: variant === 'primary' ? color : (variant === 'outline' ? shade : 'none'),
+        backgroundColor: variant === 'outline' ? shade
+            : (variant === 'primary' ? color
+                : 'none'),
+        color: variant !== 'outline' && variant !== 'regular' ? contrastColor : color,
+        outline: variant !== 'outline' && variant !== 'regular' ? color : 'none',
+        border: variant === 'outline' ? `1px solid ${color || "#217525"}` : 'none',
+        borderRadius: '5px',
+    };
+
+
+    return (
+        <button className={className} type={type} style={buttonStyle} onClick={onClick}>
+            {icon && <span style={{ marginRight: '8px' }}>{icon}</span>}
+            {text && <span>{text}</span>}
+        </button>
+    );
+};
+
+
+
+
+
+export default CustomButton;
+
+

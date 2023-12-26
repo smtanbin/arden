@@ -39,16 +39,20 @@ export default function ApproveProfile() {
     const handleClose = () => setModelData(undefined);
 
     const handleActiveAccount = async (uuid: string) => {
-        const res: payload = await api.useApi('PUT', `/users/pendingList/${uuid}`)
-        !res.error ? setData(res.payload) : null
+        const res = await api.useApi('PUT', `/users/pendingList/${uuid}`)
+
+        const payload: payload = res.data
+        !payload.error ? setData(payload.payload) : null
         setLoading(false)
         setModelData(undefined)
 
     }
 
     const handleRejectAccount = async (uuid: string) => {
-        const res: payload = await api.useApi('DELETE', `/users/pendingList/${uuid}`)
-        !res.error ? setData(res.payload) : null
+        const res = await api.useApi('DELETE', `/users/pendingList/${uuid}`)
+        const payload: payload = res.data
+
+        !payload.error ? setData(payload.payload) : null
         setLoading(false)
         setModelData(undefined)
 
@@ -60,8 +64,9 @@ export default function ApproveProfile() {
 
     const fetchTableData = async () => {
         setLoading(true)
-        const res: payload = await api.useApi('GET', '/users/pendingList')
-        !res.error ? setData(res.payload) : setError(res.error)
+        const res = await api.useApi('GET', '/users/pendingList')
+        const payload: payload = res.data
+        !payload.error ? setData(payload.payload) : setError(payload.error)
         setLoading(false)
     }
 

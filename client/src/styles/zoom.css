@@ -1,0 +1,7 @@
+.zoom-image {
+  transition: transform 0.3s; /* Add a smooth transition effect */
+}
+
+.zoom-image:hover {
+  transform: scale(2);
+}
