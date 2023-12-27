@@ -5,7 +5,7 @@ import SecureRoute from "./SecureRoute"
 import SignInPage from "../Pages/LoginPage/SignInPage"
 import Dashboard from "../Pages/Dashboard/Dashboard"
 import ErrorPage from "../Pages/errorPage"
-import Activation from "../Pages/Activation/Activation"
+import CardActivationMaker from "../Pages/Activation/CardActivationMaker"
 import DisputeEntry from "../Pages/Dispute/DisputeEntry"
 import DisputeList from "../Pages/Dispute/DisputeList/DisputeList"
 import PasswordReset from "../Pages/LoginPage/PasswordReset"
@@ -27,18 +27,18 @@ const RootRouter = () => {
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/home" element={<Dashboard />} />
                 {/* <Route path="/userprofile" element={<ProfilePage />} /> */}
-                <Route path="/cardActivation" element={<Activation />} />
-                <Route path="/addDispute" element={<DisputeEntry />} />
-                <Route path="/disputeList" element={<DisputeList />} />
-                <Route path="/disputeChecker/:param" element={<DisputeChecker />} />
-                <Route path="/approveProfile" element={<ApproveProfile />} />
-                <Route path="/addUser" element={<AddUser />} />
+                <Route path="/card_activation_maker" element={<CardActivationMaker />} />
+                <Route path="/dispute_maker" element={<DisputeEntry />} />
+                <Route path="/dispute_list" element={<DisputeList />} />
+                <Route path="/dispute_checker/:param" element={<DisputeChecker />} />
+                <Route path="/approve_profile" element={<ApproveProfile />} />
+                <Route path="/add_user" element={<AddUser />} />
             </Route>
             <Route path="/500" element={<ServerConnectionFailed />} />
             <Route path="/loading" element={<LoadingPage />} />
             <Route path="/login" element={<SignInPage />} />
             <Route path="/signup" element={<SignUp />} />
-            <Route path="/PasswordReset" element={<PasswordReset />} />
+            <Route path="/password_reset" element={<PasswordReset />} />
             <Route path="*" element={<ErrorPage />} />
         </Routes>
     )

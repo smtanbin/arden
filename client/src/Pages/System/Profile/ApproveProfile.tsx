@@ -105,7 +105,7 @@ export default function ApproveProfile() {
                     <FlexboxGrid.Item as={Col} colspan={24} md={3}>
                         <br />
                         {pathlist && (pathlist.includes('prime') || pathlist.includes('adduser')) ? (
-                            <Link to={"/addUser"}><Button style={{ width: '100%' }} size="lg" type="submit" color="green" appearance="primary">Add User</Button></Link>)
+                            <Link to={"/add_user"}><Button style={{ width: '100%' }} size="lg" type="submit" color="green" appearance="primary">Add User</Button></Link>)
                             : (
                                 <></>
                             )}

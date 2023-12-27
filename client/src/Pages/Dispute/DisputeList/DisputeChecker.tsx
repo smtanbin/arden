@@ -194,7 +194,7 @@ const DisputeChecker: React.FC<any> = () => {
                 <Row className="p-5">
                     <FlexboxGrid>
                         <FlexboxGrid.Item as={Col} colspan={24} md={21}>
-                            <Link to={"/disputeList"}>
+                            <Link to={"/dispute_list"}>
                                 <IconButton icon={<PageTopIcon />}>Back</IconButton>
                             </Link>
                             <h3 className="p-5">Dispute Checker</h3>

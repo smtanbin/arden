@@ -32,7 +32,7 @@ const SignInPage = () => {
         setPreviousLoginState(undefined)
     }
     const handelForgetPassword = () => {
-        navigate('/PasswordReset');
+        navigate('/password_reset');
     }
 
     const handelSignup = () => {

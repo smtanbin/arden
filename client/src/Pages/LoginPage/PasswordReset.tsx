@@ -9,7 +9,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import NetworkRequest from '../../apps/NetworkRequest';
 import { useTheme } from '../../Context/TheamProvider';
 
-const PasswordReset = () => {
+const password_reset = () => {
 
     const [username, setUsername] = useState<string | undefined>(undefined);
     const [otpStage, setOtpStage] = useState<boolean>(false);
@@ -151,4 +151,4 @@ const PasswordReset = () => {
     );
 };
 
-export default PasswordReset;
+export default password_reset;

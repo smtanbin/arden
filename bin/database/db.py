@@ -41,7 +41,6 @@ from sqlalchemy import create_engine
 log_directory = 'log'
 os.makedirs(log_directory, exist_ok=True)
 
-
 # Set up a JSONFormatter for the JSON log entries
 formatter = logging.Formatter(
     '"timestamp":"%(asctime)s" ~ ["%(levelname)s"] =/> "%(message)s"')
@@ -73,7 +72,7 @@ def database():
         # PostgresSQL connection URL
         url = f'''postgresql+psycopg2://{config["database"]["username"]}:{config["database"]["password"]}@{config["database"]["address"]}/{config["database"]["database"]}'''
 
-        engine = create_engine(url, echo=False)
+        engine = create_engine(url, echo=True)
         Base.metadata.create_all(engine)
         engine.dispose()  # Commit and close the engine
     except SQLAlchemyError as e:

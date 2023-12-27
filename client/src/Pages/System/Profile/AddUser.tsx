@@ -3,10 +3,17 @@ import { Form, Stack, Message, Button, SelectPicker, Col, Grid, Row } from 'rsui
 import adduserImage from '../../../assets/login/signup5098290.svg'
 import SendIcon from '@rsuite/icons/Send';
 import NetworkRequest from '../../../apps/NetworkRequest';
-import Hero from '../../../Components/Hero';
+
 
 
 const AddUser = () => {
+
+    const maker = ['Eugenia', 'Bryan', 'Linda', 'Nancy', 'Lloyd', 'Alice'].map(item => ({
+        label: item,
+        value: item
+    }));
+
+
     const [formData, setFormData] = useState({
         employeeid: '',
         firstName: '',
@@ -39,6 +46,7 @@ const AddUser = () => {
             [name]: value || '',
         }));
     };
+
 
     const handleSignUp = async () => {
 
@@ -84,7 +92,8 @@ const AddUser = () => {
         >
 
             <Stack
-                justifyContent="flex-start"
+                // justifyContent="flex-start"
+                justifyContent="center"
                 alignItems="center"
                 direction="column"
                 spacing={3}
@@ -106,9 +115,7 @@ const AddUser = () => {
                         alignItems="flex-start"
                         direction="column"
                         spacing={9}
-
                     >
-
                         <Form.Group controlId='employeeid'>
                             <Form.ControlLabel>Employee ID</Form.ControlLabel>
                             <Form.Control type="number" name="employeeid" value={formData.employeeid} onChange={(value) => handleChange('employeeid', value)} />

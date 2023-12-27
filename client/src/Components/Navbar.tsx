@@ -112,27 +112,27 @@ const AppNavbar: React.FC = () => {
                     <Nav.Menu icon={<FontAwesomeIcon icon={faCreditCard} />} title="Cards">
                         <Nav.Item>Production List</Nav.Item>
                     </Nav.Menu>
-                    {pathlist && (pathlist.includes('prime') || pathlist.includes('adddispute') || pathlist.includes('disputelist')) ?
+                    {pathlist && (pathlist.includes('prime') || pathlist.includes('dispute_maker') || pathlist.includes('dispute_list')) ?
 
                         (<Nav.Menu icon={<FontAwesomeIcon icon={faBook} />} title="Dispute">
-                            {pathlist && (pathlist.includes('prime') || pathlist.includes('adddispute')) ? (
-                                <Link to={"/addDispute"}><Nav.Item>Add Dispute</Nav.Item></Link>
+                            {pathlist && (pathlist.includes('prime') || pathlist.includes('dispute_maker')) ? (
+                                <Link to={"/dispute_maker"}><Nav.Item>Add Dispute</Nav.Item></Link>
                             ) : <></>}
-                            {pathlist && (pathlist.includes('prime') || pathlist.includes('disputelist')) ? (
-                                <Link to={"/disputeList"}><Nav.Item>Dispute list</Nav.Item></Link>
+                            {pathlist && (pathlist.includes('prime') || pathlist.includes('dispute_list')) ? (
+                                <Link to={"/dispute_list"}><Nav.Item>Dispute list</Nav.Item></Link>
                             ) : <></>}
                         </Nav.Menu>)
                         : <></>}
 
 
                     <Nav.Menu icon={<CogIcon />} title="Admin">
-                        {pathlist && (pathlist.includes('prime') || pathlist.includes('approveprofile')) ? (
+                        {pathlist && (pathlist.includes('prime') || pathlist.includes('approve_profile')) ? (
 
-                            <Link to={"/approveProfile"}><Nav.Item>Pending User</Nav.Item></Link>
+                            <Link to={"/approve_profile"}><Nav.Item>Pending User</Nav.Item></Link>
                         ) : <></>}
                         {pathlist && (pathlist.includes('prime') || pathlist.includes('adduser')) ? (
 
-                            <Link to={"/addUser"}><Nav.Item>Add User</Nav.Item></Link>
+                            <Link to={"/add_user"}><Nav.Item>Add User</Nav.Item></Link>
                         ) : <></>}
                     </Nav.Menu>
                     {/* <Nav.Item icon={<CogIcon />}>Settings</Nav.Item> */}

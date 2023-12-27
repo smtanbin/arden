@@ -85,7 +85,7 @@ const DisputeListTable: React.FC<DisputeListTableProps> = ({ data }) => {
 
     const handleRowClick = (rowData: DisputeData) => {
 
-        navigate(`/disputeChecker/${rowData.uuid}`);
+        navigate(`/dispute_checker/${rowData.uuid}`);
     };
 
     return (
