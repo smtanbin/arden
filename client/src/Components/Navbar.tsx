@@ -60,6 +60,8 @@ const AppNavbar: React.FC = () => {
 
 
 
+
+
     const logout = async () => {
 
         const data: { username: string; refreshToken: string } = {
@@ -92,10 +94,14 @@ const AppNavbar: React.FC = () => {
     return (
 
         <>
-            {/* <Navbar style={{ backgroundColor: "#EFFFE8" }}> */}
-            <Navbar>
+            <Navbar style={{
+                backgroundColor: (theme === 'light') ? "#EFFFE8" : "#3C3F43"
+            }}
+            >
 
-                <Navbar.Brand href="/">{<img src={logo} style={{ maxHeight: '120%', width: 'auto' }} />}</Navbar.Brand>
+
+                <Navbar.Brand href="/"> {<img src={logo} style={{ maxHeight: '120%', width: 'auto' }} />}
+                </Navbar.Brand>
                 <Nav>
 
                     <Nav.Menu icon={<FontAwesomeIcon icon={faMoneyBills} />} title="ATM">
@@ -150,7 +156,7 @@ const AppNavbar: React.FC = () => {
                     </Nav.Item>
                 </Nav>
 
-            </Navbar>
+            </Navbar >
             <Modal role="alertdialog" open={open} onClose={handleClose}>
                 <Modal.Header>
                     <Modal.Title>Logout</Modal.Title>

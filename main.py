@@ -21,7 +21,7 @@ from bin.sys.setup import setup
 app = Flask(__name__)
 
 # Ensure the Log directory exists
-log_directory = 'Log'
+log_directory = 'log'
 os.makedirs(log_directory, exist_ok=True)
 
 # Logging configuration for both Flask and Werkzeug

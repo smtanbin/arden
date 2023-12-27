@@ -1,4 +1,4 @@
-import { Button, Container, DateRangePicker, Dropdown, Stack } from 'rsuite'
+import { Button, DateRangePicker, Dropdown, Stack } from 'rsuite'
 
 import { useState, useEffect } from 'react';
 
@@ -135,7 +135,7 @@ const DisputeList = () => {
     }, []);
 
     return (
-        <Container>
+        <div>
 
             <Stack style={{
                 width: "100%", padding: "3%"
@@ -178,7 +178,7 @@ const DisputeList = () => {
                 {data ? <DisputeListTable data={[data, loading, approvedData]} /> : <></>}
             </div>
 
-        </Container >
+        </div >
     );
 };
 

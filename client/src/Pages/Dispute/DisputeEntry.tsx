@@ -7,7 +7,7 @@ import isAfter from 'date-fns/isAfter';
 
 import {
     Grid,
-    Container,
+
     Row,
     Col,
     Form,
@@ -315,7 +315,7 @@ const DisputeEntry: React.FC<{ userprofile?: string }> = () => {
     const memoizedAcquirers = useMemo(() => acquirers, [acquirers]);
     const memoizedBranches = useMemo(() => branch, [branch]);
     return (
-        <Container>
+        <div>
 
             {success ? (
                 <Grid fluid>
@@ -550,7 +550,7 @@ const DisputeEntry: React.FC<{ userprofile?: string }> = () => {
 
             )
             }
-        </Container >
+        </div>
     );
 };
 

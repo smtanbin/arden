@@ -1,8 +1,8 @@
 
 import AppNavbar from "./Components/Navbar"
 import { Outlet } from "react-router-dom";
-import Footer from "./Components/Footer"
-import { Container } from "rsuite";
+import FooterComponent from "./Components/FooterComponent"
+import { Footer, Container, Content } from "rsuite";
 
 interface LandingPageProps {
   children: React.ReactNode;
@@ -11,13 +11,18 @@ interface LandingPageProps {
 
 const LandingPage: React.FC<LandingPageProps> = () => {
   return (
-    <main>
+
+    <Container>
       <AppNavbar />
-      <Container>
+      <Content>
         <Outlet />
-      </Container>
-      <Footer />
-    </main>
+      </Content>
+      <Footer>
+        <FooterComponent />
+      </Footer>
+    </Container>
+
+
   )
 }
 

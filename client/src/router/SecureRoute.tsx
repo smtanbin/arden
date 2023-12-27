@@ -4,7 +4,7 @@ import LandingPage from "../LandingPage";
 import { useAuth } from "../apps/useAuth";
 import image403 from "../assets/403.svg";
 import Api from "../apps/useApi";
-import { Container, Content, FlexboxGrid, Button, Stack } from "rsuite";
+import { Content, FlexboxGrid, Button, Stack } from "rsuite";
 
 export const ignoreRoutes = ["/", "noPermissionPage", "/home", "/noPermissionPage"];
 
@@ -58,8 +58,10 @@ const SecureRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     }
 
     // Handle unauthorized access, redirect to '/'
-    return (<Container>
+    return (
         <Content>
+            {/* <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><linearGradient id='a11'><stop offset='0' stop-color='#00C98D' stop-opacity='0'></stop><stop offset='1' stop-color='#00C98D'></stop></linearGradient><circle fill='none' stroke='url(#a11)' stroke-width='15' stroke-linecap='round' stroke-dasharray='0 44 0 44 0 44 0 44 0 360' cx='100' cy='100' r='70' transform-origin='center'><animateTransform type='rotate' attributeName='transform' calcMode='discrete' dur='2' values='360;324;288;252;216;180;144;108;72;36' repeatCount='indefinite'></animateTransform></circle></svg> */}
+
             <FlexboxGrid justify="center">
                 <FlexboxGrid.Item colspan={12}>
                     <Stack direction="column" alignItems="center" spacing={9}>
@@ -77,7 +79,7 @@ const SecureRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 </FlexboxGrid.Item>
             </FlexboxGrid>
         </Content>
-    </Container>)
+    )
 };
 
 export default SecureRoute;
@@ -87,58 +89,3 @@ export default SecureRoute;
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// import { useEffect } from "react";
-// import { Navigate } from "react-router-dom";
-
-// import LandingPage from "../LandingPage";
-// import ErrorPage from "../Pages/errorPage";
-// import { useAuth } from "../apps/useAuth";
-// import Api from "../apps/useApi";
-
-
-// const SecureRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-//     const auth = useAuth();
-//     const api = new Api(auth);
-
-//     const fatchRights = async () => {
-//         return await api.useApi('GET', `/users/permission/${auth.username}`)
-//     }
-
-//     useEffect(() => {
-
-//         fatchRights().then((data) => {
-//             console.log("permission", data)
-//             console.log("children", children)
-//         })
-
-//     }, [])
-
-
-
-//     if (auth.token?.token) {
-//         return <LandingPage>{children}</LandingPage>;
-//     } else {
-
-//         return <Navigate to="/login" replace />;
-//     }
-//     return <ErrorPage />;
-// };
-
-
-// export default SecureRoute;

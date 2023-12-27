@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Button, Placeholder, Form, Col, Container, Divider, FlexboxGrid, Grid, Row, Stack, IconButton } from 'rsuite';
+import { Button, Placeholder, Form, Col, Divider, FlexboxGrid, Grid, Row, Stack, IconButton } from 'rsuite';
 
 import PageTopIcon from '@rsuite/icons/PageTop';
 import useApi from '../../../apps/useApi';
@@ -187,71 +187,71 @@ const DisputeChecker: React.FC<any> = () => {
 
 
     return (
-        <Container>
 
-            <Form style={{ padding: '3%' }} onSubmit={() => console.log("t")}>
-                <Grid fluid >
-                    <Row className="p-5">
-                        <FlexboxGrid>
-                            <FlexboxGrid.Item as={Col} colspan={24} md={21}>
-                                <Link to={"/disputeList"}>
-                                    <IconButton icon={<PageTopIcon />}>Back</IconButton>
-                                </Link>
-                                <h3 className="p-5">Dispute Checker</h3>
-                            </FlexboxGrid.Item>
-                            <FlexboxGrid.Item as={Col} colspan={24} md={3}>
-                                <br />
-                                <Button style={{ width: '100%' }} size="lg" type="submit" color="green" appearance="primary">Save</Button>
-                            </FlexboxGrid.Item>
-                        </FlexboxGrid>
-                    </Row>
-                    <Divider />
-                    <h6>Disput ID: {disputeData?.uuid}</h6>
-                    <Divider />
-                </Grid>
-                <Grid fluid>
-                    <Row className="show-grid">
-                        <Col sm={24} md={8} style={{ margin: "15px 0" }}>
-                            <Stack direction={"column"} alignItems="flex-start" spacing={2}>
-                                <span><strong>Open Date :</strong>{disputeData?.timestamp}</span>
-                                <span><strong>Account Number :</strong>{disputeData?.acno}</span>
-                                <span><strong>Account Titel :</strong>{disputeData?.title}</span>
-                                <span><strong>Card Number :</strong>{disputeData?.pan}</span>
-                                <span><strong>Branch :</strong>{disputeData?.org_branch_code}</span>
-                                <span><strong>Channel :</strong>{disputeData?.channel}</span>
-                                <span><strong>Maker :</strong>{disputeData?.maker_user}</span>
-                            </Stack>
-                        </Col>
-                        <Col sm={24} md={8} style={{ margin: "15px 0" }}>
-                            <Stack direction={"column"} alignItems="flex-start" spacing={2}>
-                                <span><strong>Transaction  Date :</strong>{disputeData?.txn_date}</span>
-                                <span><strong>Transaction  ID :</strong>{disputeData?.org_id}</span>
-                                <span><strong>Clame Amount :</strong>{disputeData?.tr_amt}</span>
-                                <span><strong>Merchant  Bank:</strong>{disputeData?.merchant_bank}</span>
-                                <span><strong>Merchant  Name:</strong>{disputeData?.merchant_name}</span>
-                                <span><strong>Merchant  Location:</strong>{disputeData?.merchant_location}</span>
-                            </Stack>
-                        </Col>
-                        <Col sm={24} md={8} style={{ margin: "15px 0" }}>
-                            <Stack direction="column" alignItems="flex-start" spacing={6}>
-                                {image ?
 
-                                    <img
-                                        src={`data:image/jpeg;base64,${image || ''}`}
-                                        alt="Image Preview"
-                                        className="zoom-image"
-                                        width={"100%"}
-                                    />
-
-                                    : <Placeholder.Paragraph style={{ marginTop: 30 }} rows={5} graph="image" />}
-                            </Stack>
-                        </Col>
-                    </Row>
-                </Grid>
+        <Form style={{ padding: '3%' }} onSubmit={() => console.log("t")}>
+            <Grid fluid >
+                <Row className="p-5">
+                    <FlexboxGrid>
+                        <FlexboxGrid.Item as={Col} colspan={24} md={21}>
+                            <Link to={"/disputeList"}>
+                                <IconButton icon={<PageTopIcon />}>Back</IconButton>
+                            </Link>
+                            <h3 className="p-5">Dispute Checker</h3>
+                        </FlexboxGrid.Item>
+                        <FlexboxGrid.Item as={Col} colspan={24} md={3}>
+                            <br />
+                            <Button style={{ width: '100%' }} size="lg" type="submit" color="green" appearance="primary">Save</Button>
+                        </FlexboxGrid.Item>
+                    </FlexboxGrid>
+                </Row>
                 <Divider />
+                <h6>Disput ID: {disputeData?.uuid}</h6>
+                <Divider />
+            </Grid>
+            <Grid fluid>
+                <Row className="show-grid">
+                    <Col sm={24} md={8} style={{ margin: "15px 0" }}>
+                        <Stack direction={"column"} alignItems="flex-start" spacing={2}>
+                            <span><strong>Open Date :</strong>{disputeData?.timestamp}</span>
+                            <span><strong>Account Number :</strong>{disputeData?.acno}</span>
+                            <span><strong>Account Titel :</strong>{disputeData?.title}</span>
+                            <span><strong>Card Number :</strong>{disputeData?.pan}</span>
+                            <span><strong>Branch :</strong>{disputeData?.org_branch_code}</span>
+                            <span><strong>Channel :</strong>{disputeData?.channel}</span>
+                            <span><strong>Maker :</strong>{disputeData?.maker_user}</span>
+                        </Stack>
+                    </Col>
+                    <Col sm={24} md={8} style={{ margin: "15px 0" }}>
+                        <Stack direction={"column"} alignItems="flex-start" spacing={2}>
+                            <span><strong>Transaction  Date :</strong>{disputeData?.txn_date}</span>
+                            <span><strong>Transaction  ID :</strong>{disputeData?.org_id}</span>
+                            <span><strong>Clame Amount :</strong>{disputeData?.tr_amt}</span>
+                            <span><strong>Merchant  Bank:</strong>{disputeData?.merchant_bank}</span>
+                            <span><strong>Merchant  Name:</strong>{disputeData?.merchant_name}</span>
+                            <span><strong>Merchant  Location:</strong>{disputeData?.merchant_location}</span>
+                        </Stack>
+                    </Col>
+                    <Col sm={24} md={8} style={{ margin: "15px 0" }}>
+                        <Stack direction="column" alignItems="flex-start" spacing={6}>
+                            {image ?
 
-            </Form>
-        </Container>
+                                <img
+                                    src={`data:image/jpeg;base64,${image || ''}`}
+                                    alt="Image Preview"
+                                    className="zoom-image"
+                                    width={"100%"}
+                                />
+
+                                : <Placeholder.Paragraph style={{ marginTop: 30 }} rows={5} graph="image" />}
+                        </Stack>
+                    </Col>
+                </Row>
+            </Grid>
+            <Divider />
+
+        </Form>
+
     );
 };
 

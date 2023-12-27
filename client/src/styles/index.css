@@ -2,7 +2,7 @@
   color: purple;
 }
 
-.container::before {
+.<Container > ::before {
   content: "";
   position: absolute;
   top: 0;

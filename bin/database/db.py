@@ -38,7 +38,7 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 from sqlalchemy import create_engine
 
 # Ensure the Log directory exists
-log_directory = 'Log'
+log_directory = 'log'
 os.makedirs(log_directory, exist_ok=True)
 
 
