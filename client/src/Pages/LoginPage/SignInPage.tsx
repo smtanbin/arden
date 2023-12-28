@@ -68,6 +68,7 @@ const SignInPage = () => {
 
                 } else {
 
+
                     const refreshToken = payload.token[1];
                     const token = payload.token[0];
                     fatchLoginInfo(username, token, refreshToken)
@@ -85,6 +86,8 @@ const SignInPage = () => {
     const fatchLoginInfo = async (username: string, token: string, refreshToken: string) => {
         try {
             const response = await net.openRequest(`/v1/oauth/last_login/${username}`)
+
+            console.log(response)
 
             if (response[1] == 200) {
                 auth.login({ username, token, refreshToken });
@@ -104,17 +107,13 @@ const SignInPage = () => {
 
     const submitResetPassword = async () => {
         try {
+            const res = await net.ResetPassword(username, password, newPassword);
 
-            const response = await net.ResetPassword(username, password, newPassword);
-
-            if (response.status === 200) {
+            if (res[1] === 200) {
                 navigate('/', { replace: true });
-
             } else {
-                // Handle other status codes or errors
-                setErrorState(`Unexpected response status: ${response.status}`);
+                setErrorState(`Unexpected response status: ${res[0]}`);
             }
-
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
             setErrorState(error.message);

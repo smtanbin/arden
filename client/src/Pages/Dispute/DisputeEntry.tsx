@@ -112,6 +112,8 @@ const DisputeEntry: React.FC<{ userprofile?: string }> = () => {
         });
     };
 
+    console.log(formData)
+
 
     const fatchBranch = useCallback(async () => {
         try {
@@ -402,7 +404,7 @@ const DisputeEntry: React.FC<{ userprofile?: string }> = () => {
                                                 data={memoizedBranches}
                                                 placeholder="Select Branch"
                                                 name="org_branch_code"
-                                                value={formData.org_branch_code || '100'}
+                                                value={formData.org_branch_code}
                                                 onChange={(value) => handleChange('org_branch_code', value || '')}
                                             />
 
@@ -426,7 +428,7 @@ const DisputeEntry: React.FC<{ userprofile?: string }> = () => {
                                                 ]}
                                                 placeholder="Select Channel"
                                                 name="channel"
-                                                value={formData.channel || 'default'}
+                                                value={formData.channel}
                                                 onChange={(value) => handleChange('channel', value || '')}
                                             />
                                         </Form.Group>

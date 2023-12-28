@@ -72,7 +72,7 @@ def database():
         # PostgresSQL connection URL
         url = f'''postgresql+psycopg2://{config["database"]["username"]}:{config["database"]["password"]}@{config["database"]["address"]}/{config["database"]["database"]}'''
 
-        engine = create_engine(url, echo=True)
+        engine = create_engine(url, echo=False)
         Base.metadata.create_all(engine)
         engine.dispose()  # Commit and close the engine
     except SQLAlchemyError as e:

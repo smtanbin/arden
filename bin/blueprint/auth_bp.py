@@ -23,19 +23,11 @@ pm = PasswordManager()
 
 @auth_bp.route('/signup', methods=['POST'])
 def signup():
-    _permissions = []
     try:
         data = request.get_json()
 
         if all(data.get(field) for field in ['employeeid', 'firstName', 'lastName', 'email', 'contact', 'branch']):
             otp = str(random.randint(100000, 999999))
-
-            if data['permissions'] is not None:
-                _permissions = data['permissions']
-            else:
-                # Default permission
-                _permissions = ['dispute_list', 'dispute_maker', 'home',
-                                'card_activation_maker']
 
             username = str(data['email']).lower()
 
@@ -50,8 +42,8 @@ def signup():
                 password_hash=pm.set_password(data['email'], otp),
                 contact=data['contact'],
                 otp=otp,
-                permissions=_permissions
-
+                permissions=['dispute_list', 'dispute_maker', 'home',
+                             'card_activation_maker']
             )
             session.add(new_user)
             session.commit()

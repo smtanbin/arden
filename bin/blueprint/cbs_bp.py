@@ -16,7 +16,7 @@ def add_dispute_route(account_no):
                  f"A.TELENO) PHONE, A.MAILID EMAIL, A.ADDRS1 || ' ' || A.ADDRS2 || ' ' || A.ADDRS3 || ' ' || A.ADDRS4 " \
                  f"|| ' ' || A.CITYNM ADDRESS, B.BRANCD BRANCHCODE, TO_CHAR(a.CUSDOB, 'YYYY-MM-DD') DOB, A.GENDER, A.CUSNMG FATHERNAME, " \
                  f"A.CUSMNM MOTHERNAME, B.ACTYPE ACCCODE, B.CURBAL BALANCE, B.CURCDE CURRENCY, B.ACTNUM ACCOUNTNUMBER, b.ACSTAT, " \
-                 f"B.OPRINS OPRTYPE FROM ISLBAS.STCUSMAS A, ISLBAS.STFACMAS B WHERE A.CUSCOD = B.CUSCOD AND B.ACTNUM = " \
+                 f"B.OPRINS OPRTYPE FROM ISLBAS.STCUSMAS@CBS_HASAN A, ISLBAS.STFACMAS@CBS_HASAN B WHERE A.CUSCOD = B.CUSCOD AND B.ACTNUM = " \
                  f"'{account_no}' and B.ACSTAT not in ('CLS','TRF') and b.OPRINS  in ('SIN','AN1', 'EOS') and "
                  f"b.OPRINS NOT IN ('AN2','AN3','JNT') and b.OPRINS is not null")
 
@@ -35,7 +35,7 @@ def add_dispute_route(account_no):
 @cbs_bp.route('/branchs', methods=['GET'])
 def branch_list():
     try:
-        payload = cbs_query("SELECT CACMPCDE AS CODE,CACMPNAM AS NAME  FROM ISLBAS.SYPARMAS")
+        payload = cbs_query("SELECT CACMPCDE AS CODE,CACMPNAM AS NAME  FROM ISLBAS.SYPARMAS@CBS_HASAN")
         return jsonify({"payload": payload, "error": None})
     except Exception as e:
         return jsonify({"payload": None, "error": str(e)}), 500

@@ -148,7 +148,7 @@ def userlist():
 
 
 @user_bp.route('/pendingList', methods=['GET'])
-def funPendingList():
+def getPendingList():
     try:
 
         user_list = session.query(UserInfoModel).filter_by(

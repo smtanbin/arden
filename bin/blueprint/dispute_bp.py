@@ -35,14 +35,18 @@ def add_dispute_route():
         attachment = req.get("attachment")
         massage = req.get("massage")
 
+        user = session.query(UserInfoModel).filter_by(email=maker_user).first()
+
+        issue_branch_code = user.branch
+
         if attachment is not None:
             attachment_bytes = base64.b64decode(attachment.split(',')[1])
             dispute = dispute_manager.add(pan, acno, massage, channel, txn_date, org_id, org_branch_code, acquirer,
-                                          maker_user,
+                                          maker_user, issue_branch_code,
                                           merchant_name, merchant_location, tr_amt, attachment_bytes)
         else:
             dispute = dispute_manager.add(pan, acno, massage, channel, txn_date, org_id, org_branch_code, acquirer,
-                                          maker_user,
+                                          maker_user, issue_branch_code,
                                           merchant_name, merchant_location, tr_amt, None)
 
         if dispute:
@@ -115,12 +119,13 @@ def get_all_dispute_data(username):
         user = session.query(UserInfoModel).filter_by(email=username).first()
         limit = request.args.get('limit', default=200, type=int)
 
+
         disputes = None
 
         if user.branch == '000' or user.branch == '100':
             disputes = dispute_manager.get_all(limit)
         else:
-            disputes = dispute_manager.get_Branchwise(user.branch)
+            disputes = dispute_manager.get_BranchWise(user.branch)
 
         if disputes and disputes[0] is not None:
             serialized_disputes = []

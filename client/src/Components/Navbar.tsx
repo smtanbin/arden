@@ -110,6 +110,9 @@ const AppNavbar: React.FC = () => {
                         <Nav.Item>Extra Cash</Nav.Item>
                     </Nav.Menu>
                     <Nav.Menu icon={<FontAwesomeIcon icon={faCreditCard} />} title="Cards">
+                        {pathlist && (pathlist.includes('prime') || pathlist.includes('card_activation_maker')) ? (
+                            <Link to={"/card_activation_maker"}><Nav.Item>Card Activation Maker</Nav.Item></Link>
+                        ) : <></>}
                         <Nav.Item>Production List</Nav.Item>
                     </Nav.Menu>
                     {pathlist && (pathlist.includes('prime') || pathlist.includes('dispute_maker') || pathlist.includes('dispute_list')) ?

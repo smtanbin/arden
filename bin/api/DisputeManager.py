@@ -2,7 +2,7 @@
 import base64
 from datetime import datetime
 
-from sqlalchemy import desc, func
+from sqlalchemy import desc, func, or_
 from sqlalchemy.exc import SQLAlchemyError
 
 from bin.database.models.DisputeModels.DisputeAttachmentModel import DisputeAttachmentModel
@@ -13,7 +13,8 @@ class DisputeManager:
     def __init__(self, session):
         self.session = session
 
-    def add(self, pan, acno, massage, channel, txn_date, org_id, org_branch_code, acquirer, maker_user, merchant_name,
+    def add(self, pan, acno, massage, channel, txn_date, org_id, org_branch_code, acquirer, maker_user,
+            issue_branch_code, merchant_name,
             merchant_location,
             tr_amt, attachment):
         try:
@@ -28,6 +29,7 @@ class DisputeManager:
                 maker_user=maker_user,
                 merchant_name=merchant_name,
                 merchant_location=merchant_location,
+                issue_branch_code=issue_branch_code,
                 tr_amt=tr_amt,
                 channel=channel,
             )
@@ -76,11 +78,13 @@ class DisputeManager:
             print(f"An unexpected error occurred: {str(ex)}")
             raise
 
-    def get_Branchwise(self, branch_code, limit=200):
-
+    def get_BranchWise(self, branch_code, limit=200):
         try:
-            disputes = (self.session.query(Dispute).filter_by(org_branch_code=branch_code)).order_by(
-                desc(Dispute.timestamp)).limit(limit).all()
+            disputes = (self.session.query(Dispute)
+                        .filter(or_(Dispute.org_branch_code == branch_code, Dispute.issue_branch_code == branch_code))
+                        .order_by(desc(Dispute.timestamp))
+                        .limit(limit)
+                        .all())
             return disputes
 
         except SQLAlchemyError as e:

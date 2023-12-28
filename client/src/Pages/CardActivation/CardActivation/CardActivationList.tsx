@@ -1,10 +1,10 @@
 import { Button, DateRangePicker, Dropdown, Stack } from 'rsuite'
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 import { useAuth } from '../../../apps/useAuth';
 import useApi from '../../../apps/useApi';
-import DisputeListTable from './DisputeListTable';
+import CardActivationTable from './CardActivationTable';
 import { DateRange } from 'rsuite/esm/DateRangePicker/types';
 
 interface Payload {
@@ -47,7 +47,7 @@ export interface DisputeData {
     uuid: string;
 }
 
-const DisputeList = () => {
+const CardActivationList = () => {
     const [data, setData] = useState<DisputeData[] | undefined>(undefined);
     const [dateRange, setDateRange] = useState<[Date, Date] | []>([]);
     const [loading, setLoading] = useState<boolean>(true);
@@ -176,11 +176,11 @@ const DisputeList = () => {
             </Stack>
             <div style={{ padding: "1%" }}>
 
-                {data ? <DisputeListTable data={[data, loading, approvedData]} /> : <></>}
+                {data ? <CardActivationTable data={[data, loading, approvedData]} /> : <></>}
             </div>
 
         </div >
     );
 };
 
-export default DisputeList;
+export default CardActivationList;

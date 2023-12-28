@@ -4,11 +4,12 @@ from logging.handlers import TimedRotatingFileHandler
 import os
 
 import toml
-from flask import Flask, jsonify
+from flask import Flask, jsonify, abort
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 
 from bin.blueprint.auth_bp import auth_bp
+from bin.blueprint.authorized_slip_bp import authorized_slip_bp
 from bin.blueprint.cbs_bp import cbs_bp
 from bin.blueprint.dispute_bp import dispute_report_bp
 
@@ -37,7 +38,6 @@ app.logger.addHandler(handler)  # Flask logger
 werkzeug_logger = logging.getLogger('werkzeug')
 werkzeug_logger.addHandler(handler)  # Werkzeug logger
 
-
 CORS(app, resources={r"*": {"origins": "*"}})
 app.config['JWT_SECRET_KEY'] = retrieve_jwt_hash()[0]
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(minutes=30)
@@ -55,7 +55,6 @@ def handle_error(param):
 
 @app.route('/', methods=['GET'])
 def echo():
-
     return jsonify({
         "Name": "Arden",
         "Author": "Tanbin Hassan Bappi",
@@ -69,9 +68,15 @@ app.register_blueprint(auth_bp, url_prefix='/api/v1/oauth')
 app.register_blueprint(user_bp, url_prefix='/api/users')
 app.register_blueprint(cbs_bp, url_prefix='/api/v1/cbs')
 app.register_blueprint(dispute_report_bp, url_prefix='/api/v1/dispute')
+app.register_blueprint(authorized_slip_bp, url_prefix='/api/v1/card/activation/')
 
 # Only apply middleware to the following blueprints
 app = jwt_middleware(app, blueprints=[cbs_bp, user_bp, dispute_report_bp])
+
+
+@app.route('/<path:unknown>', methods=['GET', 'POST'])
+def handle_unknown_routes(unknown):
+    abort(404)
 
 
 @app.errorhandler(404)
@@ -81,8 +86,8 @@ def page_not_found():
 
 
 if __name__ == '__main__':
-    setup()
+    # setup()
     database()
     app.run(debug=True, host=config["server"]
-            ["host"], port=int(config["server"]["port"]))
+    ["host"], port=int(config["server"]["port"]))
     print("To run console type python3 console.py")

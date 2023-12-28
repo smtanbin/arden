@@ -51,7 +51,7 @@ const appKeyOrder = [
     'txn_date',
 ];
 
-const DisputeListTable: React.FC<DisputeListTableProps> = ({ data }) => {
+const CardActivationTable: React.FC<DisputeListTableProps> = ({ data }) => {
     const { Column, HeaderCell, Cell } = Table;
     const [headerCells, setHeaderCells] = useState<ReactNode[]>([]);
     const navigate = useNavigate();
@@ -105,4 +105,4 @@ const DisputeListTable: React.FC<DisputeListTableProps> = ({ data }) => {
     );
 };
 
-export default DisputeListTable;
+export default CardActivationTable;

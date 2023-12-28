@@ -5,7 +5,7 @@ import SecureRoute from "./SecureRoute"
 import SignInPage from "../Pages/LoginPage/SignInPage"
 import Dashboard from "../Pages/Dashboard/Dashboard"
 import ErrorPage from "../Pages/errorPage"
-import CardActivationMaker from "../Pages/Activation/CardActivationMaker"
+
 import DisputeEntry from "../Pages/Dispute/DisputeEntry"
 import DisputeList from "../Pages/Dispute/DisputeList/DisputeList"
 import PasswordReset from "../Pages/LoginPage/PasswordReset"
@@ -14,6 +14,7 @@ import DisputeChecker from "../Pages/Dispute/DisputeList/DisputeChecker"
 import ApproveProfile from "../Pages/System/Profile/ApproveProfile"
 import ServerConnectionFailed from "../Components/ServerConnectionFailed"
 import AddUser from "../Pages/System/Profile/AddUser"
+import CardActivationMaker from "../Pages/CardActivation/CardActivationMaker"
 
 
 

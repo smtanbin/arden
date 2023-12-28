@@ -38,12 +38,6 @@ const SignUp = () => {
 
 
 
-
-
-
-
-
-
     const fatchBranch = useCallback(async () => {
         try {
             const data = await net.openRequest('/v1/oauth/branchs')

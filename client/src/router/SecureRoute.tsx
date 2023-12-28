@@ -27,7 +27,9 @@ const SecureRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const checkPermissions = useCallback(async () => {
         try {
             const response = await api.useApi('GET', `/users/permission/${auth.username}`);
-            const currentRoute = location.pathname.toLowerCase().substring(1)
+            const currentRoute = location.pathname.toLowerCase().substring(1).split("/")[0];
+
+            console.log(currentRoute)
 
 
             if (

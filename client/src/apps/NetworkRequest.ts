@@ -1,3 +1,5 @@
+import axios from "axios"
+
 class NetworkRequest {
   constructor() {
     // Initialization if needed
@@ -6,10 +8,10 @@ class NetworkRequest {
   getBaseUrl = () => {
     if (process.env.NODE_ENV === "development") {
       const href = window.location.href.split(":")
-      return href[0] + ":" + href[1] + ":4000"
+      return `${href[0]}:${href[1]}:4000`
     } else {
       const href = window.location.href.split(":")
-      return href[0] + ":" + href[1]
+      return `${href[0]}:${href[1]}`
     }
   }
 
@@ -17,14 +19,14 @@ class NetworkRequest {
     try {
       const url = this.getBaseUrl()
 
-      const response = await fetch(`${url}/api${path}`, {
-        method: "GET",
+      const response = await axios.get(`${url}/api${path}`, {
         headers: {
           "Content-Type": "application/json",
         },
       })
 
-      const data = await response.json()
+      const data = response.data
+      console.log("openRequestData />", data)
       return [data, response.status]
     } catch (error) {
       if (process.env.NODE_ENV === "development") {
@@ -44,21 +46,16 @@ class NetworkRequest {
   }) => {
     try {
       const url = this.getBaseUrl()
-      const response = await fetch(`${url}/api/v1/oauth/signup`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          employeeid: formData.employeeid,
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          email: formData.email,
-          contact: formData.contact,
-          branch: formData.branch,
-        }),
-      })
-      const payload = await response.json()
+      const response = await axios.post(
+        `${url}/api/v1/oauth/signup`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      )
+      const payload = response.data
 
       return [payload, response.status]
     } catch (error) {
@@ -75,32 +72,28 @@ class NetworkRequest {
       try {
         const url = this.getBaseUrl()
 
-        const response = await fetch(`${url}/api/v1/oauth/login`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
+        const response = await axios.post(
+          `${url}/api/v1/oauth/login`,
+          {
             username: _username,
             password: _password,
-          }),
-        })
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        )
 
-        const payload = await response.json()
+        const payload = response.data
 
-        if (!response.ok) {
-          // If the response status is not OK, throw an error with the status and payload
-          throw { status: response.status, payload }
-        }
-
-        // Return an object with both payload and status
         return payload
       } catch (error) {
         if (process.env.NODE_ENV === "development") {
           console.log("openRequest />", error)
         }
 
-        // Always return an object with a 'error' property for consistency
+        // Always return an object with an 'error' property for consistency
         return { error }
       }
     } else {
@@ -113,41 +106,39 @@ class NetworkRequest {
     _password: string | undefined,
     _newPassword: string | undefined
   ) => {
-    if (_password || _newPassword) {
-      try {
-        const url = this.getBaseUrl()
+    try {
+      if (!_password || !_newPassword) {
+        throw new Error("password is required")
+      }
 
-        const response = await fetch(`${url}/api/v1/oauth/password_reset`, {
-          method: "POST",
+      const url = this.getBaseUrl()
+
+      const response = await axios.post(
+        `${url}/api/v1/oauth/password_reset`,
+        {
+          username: _username,
+          password: _password,
+          new_password: _newPassword,
+        },
+        {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            username: _username,
-            password: _password,
-            new_password: _newPassword,
-          }),
-        })
-
-        const payload = await response.json()
-
-        if (!response.ok) {
-          // If the response status is not OK, throw an error with the status and payload
-          throw { status: response.status, payload }
         }
+      )
 
-        // Return an object with both payload and status
-        return payload
-      } catch (error) {
-        if (process.env.NODE_ENV === "development") {
-          console.log("openRequest />", error)
-        }
-
-        // Always return an object with a 'error' property for consistency
-        return { error }
+      if (response.status === 200) {
+        return [true, null]
+      } else {
+        return [false, `Unexpected status: ${response.status}`]
       }
-    } else {
-      throw "password is required"
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      if (process.env.NODE_ENV === "development") {
+        console.error("ResetPassword error:", error)
+      }
+
+      return [false, error.message || "Unknown error"]
     }
   }
 
@@ -160,25 +151,21 @@ class NetworkRequest {
       try {
         const url = this.getBaseUrl()
 
-        const response = await fetch(`${url}/api/v1/oauth/forget_password`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
+        const response = await axios.post(
+          `${url}/api/v1/oauth/forget_password`,
+          {
             username: _username,
             otp: _otp,
             new_password: _newPassword,
-          }),
-        })
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        )
 
-        const payload = await response.json()
-
-        if (!response.ok) {
-          // If the response status is not OK, throw an error with the status and payload
-          throw { status: response.status, payload }
-        }
-
+        const payload = response.data
         // Return an object with both payload and status
         return payload
       } catch (error) {
@@ -186,7 +173,7 @@ class NetworkRequest {
           console.log("openRequest />", error)
         }
 
-        // Always return an object with a 'error' property for consistency
+        // Always return an object with an 'error' property for consistency
         return { error }
       }
     } else {
