@@ -25,11 +25,10 @@ class CardActivationModel(Base):
     massage = Column(String(300))
     attachment = Column(LargeBinary, nullable=False)
     update_by_uuid = Column(String(32), ForeignKey('userinfo.uuid'), nullable=True)
-    update_by = relationship('UserInfoModel', foreign_keys=[update_by_uuid], nullable=True)
+    update_by = relationship('UserInfoModel', foreign_keys=[update_by_uuid], uselist=False)  # Set uselist to False
     update_at = Column(DateTime, nullable=True)
     approved = Column(Boolean, nullable=True)
     rejected = Column(Boolean, nullable=True)
-
 
     def serialize(self):
         """

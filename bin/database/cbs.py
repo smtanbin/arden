@@ -7,11 +7,11 @@ with open('config.toml', 'r') as file:
 
 def cbs_query(query, bind_vars=None):
     try:
-        connection = cx_Oracle.connect(config["cbs"]["username"], config["cbs"]["password"],config["cbs"]["url"])
+        connection = cx_Oracle.connect(config["cbs"]["username"], config["cbs"]["password"], config["cbs"]["url"])
         cursor = connection.cursor()
 
         if bind_vars:
-            result = cursor.execute(query)
+            result = cursor.execute(query, bind_vars)
         else:
             result = cursor.execute(query)
         rows = result.fetchall()
@@ -35,5 +35,3 @@ def cbs_query(query, bind_vars=None):
     except cx_Oracle.Error as e:
         print(f"Oracle Error: {e}")
         raise ValueError(f"Oracle Error: {e}")
-
-

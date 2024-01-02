@@ -1,7 +1,10 @@
+import threading
 from datetime import datetime, timedelta
 import logging
 from logging.handlers import TimedRotatingFileHandler
 import os
+import schedule
+import time
 
 import toml
 from flask import Flask, jsonify, abort
@@ -12,10 +15,13 @@ from bin.blueprint.auth_bp import auth_bp
 from bin.blueprint.authorized_slip_bp import authorized_slip_bp
 from bin.blueprint.cbs_bp import cbs_bp
 from bin.blueprint.dispute_bp import dispute_report_bp
+from bin.blueprint.reports.report import report_bp
 
 from bin.blueprint.user_bp import user_bp
 from bin.database.db import database
 from bin.middleware.jwt_middleware import jwt_middleware
+from bin.scheduleJob.migFromAccess import migFromAccess
+from bin.scheduleJob.misJob import misJob
 from bin.sys.key_storage import retrieve_jwt_hash
 from bin.sys.setup import setup
 
@@ -64,6 +70,7 @@ def echo():
 
 
 # Apply middleware to specific blueprints
+app.register_blueprint(report_bp, url_prefix='/api/v1/report')
 app.register_blueprint(auth_bp, url_prefix='/api/v1/oauth')
 app.register_blueprint(user_bp, url_prefix='/api/users')
 app.register_blueprint(cbs_bp, url_prefix='/api/v1/cbs')
@@ -86,8 +93,38 @@ def page_not_found():
 
 
 if __name__ == '__main__':
-    # setup()
+    # Init Database
     database()
-    app.run(debug=True, host=config["server"]
-    ["host"], port=int(config["server"]["port"]))
+
+    # Set up the scheduler
+    scheduler = schedule.Scheduler()
+
+    # Define a cron expression to run the job on the 2nd day of the month at midnight
+    cron_expr = '0 0 2 * *'
+
+    # Schedule the job using cron expression
+    scheduler.every().day.at('00:00').do(misJob).tag('Generating MIS data.')
+
+
+    # Start the scheduler in a separate thread
+    def run_scheduler():
+        while True:
+            scheduler.run_pending()
+            time.sleep(1)
+
+
+    # Start the scheduler thread as a daemon
+    scheduler_thread = threading.Thread(target=run_scheduler, daemon=True)
+    scheduler_thread.start()
+
+    # Run the rest of your code
+    # setup()
+    migFromAccess()
+    misJob()
+
+    print("Active Schedules:")
+    for job in scheduler.get_jobs():
+        print(job)
+
+    app.run(debug=True, host=config["server"]["host"], port=int(config["server"]["port"]))
     print("To run console type python3 console.py")
