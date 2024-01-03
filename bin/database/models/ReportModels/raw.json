@@ -1,0 +1,211 @@
+{
+"mis_particular": [
+	{
+		"SL" : "01",
+		"PARTICULAR" : "Total No. of Live ATMs "
+	},
+	{
+		"SL" : "10",
+		"PARTICULAR" : "Total Cash Withdrawal Amount (SBL Card at NPSB ATMs)"
+	},
+	{
+		"SL" : "11",
+		"PARTICULAR" : "Total No. of Transactions (NPSB Cards at SBL ATMs) "
+	},
+	{
+		"SL" : "12",
+		"PARTICULAR" : "Total Cash Withdrawal Amount (NPSB Cards at SBL ATMs)"
+	},
+	{
+		"SL" : "13",
+		"PARTICULAR" : "Average No. of Transaction per day at SBL ATMs"
+	},
+	{
+		"SL" : "14",
+		"PARTICULAR" : "Average Amount of Cash Withdrawal per day SBL ATMs"
+	},
+	{
+		"SL" : "15",
+		"PARTICULAR" : "Daily Average Transaction (ATM, POS & NPSB)"
+	},
+	{
+		"SL" : "16",
+		"PARTICULAR" : "Total Debit Card Income"
+	},
+	{
+		"SL" : "17",
+		"PARTICULAR" : "Total NPSB Income Amount for ATM"
+	},
+	{
+		"SL" : "18",
+		"PARTICULAR" : "Total NPSB Expense Amount for ATM"
+	},
+	{
+		"SL" : "19",
+		"PARTICULAR" : "Total No. of Branch LIVE POS"
+	},
+	{
+		"SL" : "02",
+		"PARTICULAR" : "No. of SBL Debit Cards "
+	},
+	{
+		"SL" : "20",
+		"PARTICULAR" : "Total No. of Branch POS Transaction"
+	},
+	{
+		"SL" : "21",
+		"PARTICULAR" : "Total Amount of Cash Withdrawal"
+	},
+	{
+		"SL" : "22",
+		"PARTICULAR" : "Average No. of Transaction per day "
+	},
+	{
+		"SL" : "23",
+		"PARTICULAR" : "Average Amount of Cash Withdrawal per day"
+	},
+	{
+		"SL" : "24",
+		"PARTICULAR" : "Total No. of NPSB POS PurchaseTransaction"
+	},
+	{
+		"SL" : "25",
+		"PARTICULAR" : "Total Amount of NPSB POS Purchase"
+	},
+	{
+		"SL" : "26",
+		"PARTICULAR" : "Total NPSB POS Income Amount"
+	},
+	{
+		"SL" : "27",
+		"PARTICULAR" : "No. of Customers in DigiBanking"
+	},
+	{
+		"SL" : "28",
+		"PARTICULAR" : "Total No. of Customers in DigiBanking"
+	},
+	{
+		"SL" : "29",
+		"PARTICULAR" : "No. of SBL Account Fund Transfer by DigiBanking"
+	},
+	{
+		"SL" : "03",
+		"PARTICULAR" : "Total No. of SBL Debit Cards"
+	},
+	{
+		"SL" : "30",
+		"PARTICULAR" : "Amount of SBL Account Fund Transfer by DigiBanking"
+	},
+	{
+		"SL" : "31",
+		"PARTICULAR" : "No. of  Other Bank Fund Transfer by DigiBanking"
+	},
+	{
+		"SL" : "32",
+		"PARTICULAR" : "Amount of Other Bank Fund Transfer by DigiBanking"
+	},
+	{
+		"SL" : "33",
+		"PARTICULAR" : "No. of  Fund Transfer to Bkash by DigiBanking"
+	},
+	{
+		"SL" : "34",
+		"PARTICULAR" : "Amount of Fund Transfer to Bkash by DigiBanking"
+	},
+	{
+		"SL" : "35",
+		"PARTICULAR" : "No. of  Fund Transfer to Nagad by DigiBanking"
+	},
+	{
+		"SL" : "36",
+		"PARTICULAR" : "Amount of Fund Transfer to Nagadby DigiBanking"
+	},
+	{
+		"SL" : "37",
+		"PARTICULAR" : "No. of Mobile Recharge by DigiBanking"
+	},
+	{
+		"SL" : "38",
+		"PARTICULAR" : "Amount of Mobile Recharge by DigiBanking"
+	},
+	{
+		"SL" : "39",
+		"PARTICULAR" : "Mobile Recharge Income by DigiBanking"
+	},
+	{
+		"SL" : "04",
+		"PARTICULAR" : "Total No. of Transactions at SBL ATMs"
+	},
+	{
+		"SL" : "40",
+		"PARTICULAR" : "No. of WASA Bill Payment by DigiBanking"
+	},
+	{
+		"SL" : "41",
+		"PARTICULAR" : "Amount of WASA Bill Payment by DigiBanking"
+	},
+	{
+		"SL" : "42",
+		"PARTICULAR" : "No. of Card Bill Payment by DigiBanking"
+	},
+	{
+		"SL" : "43",
+		"PARTICULAR" : "Amount of Card Bill Payment by DigiBanking"
+	},
+	{
+		"SL" : "44",
+		"PARTICULAR" : "No. of Accounts Facilitated With Internet Banking"
+	},
+	{
+		"SL" : "45",
+		"PARTICULAR" : "Total No. of Accounts With Internet Banking"
+	},
+	{
+		"SL" : "46",
+		"PARTICULAR" : "No. of Fund Transfer by Internet Banking"
+	},
+	{
+		"SL" : "47",
+		"PARTICULAR" : "Fund Transfer Amount by Internet Banking"
+	},
+	{
+		"SL" : "48",
+		"PARTICULAR" : "No. of Mobile Recharge by Internet Banking"
+	},
+	{
+		"SL" : "49",
+		"PARTICULAR" : "Amount of Mobile Recharge by Internet Banking"
+	},
+	{
+		"SL" : "05",
+		"PARTICULAR" : "Total Cash Replenishment Amount at SBL ATMs"
+	},
+	{
+		"SL" : "50",
+		"PARTICULAR" : "Mobile Recharge Income by Internet Banking"
+	},
+	{
+		"SL" : "51",
+		"PARTICULAR" : "No. of Accounts Facilitated with SMS Banking"
+	},
+	{
+		"SL" : "52",
+		"PARTICULAR" : "Total No. of Accounts Facilitated with SMS Banking"
+	},
+	{
+		"SL" : "06",
+		"PARTICULAR" : "Total Cash Withdrawal Amount at SBL ATMs"
+	},
+	{
+		"SL" : "07",
+		"PARTICULAR" : "Total No. of Transactions (SBL Card at SBL ATMs) "
+	},
+	{
+		"SL" : "08",
+		"PARTICULAR" : "Total Cash Withdrawal Amount (SBL Card at SBL ATM)"
+	},
+	{
+		"SL" : "09",
+		"PARTICULAR" : "Total No. of Transactions (SBL Card at NPSB ATMs) "
+	}
+]}

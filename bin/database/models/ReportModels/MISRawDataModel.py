@@ -1,3 +1,6 @@
+import json
+import os
+
 from sqlalchemy import Column, String, Integer, DateTime, exists, ForeignKey
 from sqlalchemy.sql import func
 from sqlalchemy.orm import aliased, relationship
@@ -7,11 +10,13 @@ from bin.database.db import Base, database
 session_maker = database()
 session = session_maker()
 
+
 class MISParticularModel(Base):
     __tablename__ = 'mis_particular'
 
     sl = Column(String(64), primary_key=True, nullable=False)
     particular = Column(String(300), nullable=False)
+
 
 class MISRawDataModel(Base):
     __tablename__ = 'mis_raw_data'
@@ -35,6 +40,36 @@ def check_record_exists(sl, r_month, r_year):
         (MISRawDataModel.r_month == r_month) &
         (MISRawDataModel.r_year == r_year)
     )).scalar()
+
+
+def init_MIS_particular_data():
+    try:
+        # Get the path of the current script
+        script_path = os.path.dirname(os.path.abspath(__file__))
+
+        # Construct the path to the JSON file in the same directory
+        json_file_path = os.path.join(script_path, "raw.json")
+
+        with open(json_file_path, 'r') as json_file:
+            data = json.load(json_file)
+
+        # Assuming data is a list of dictionaries
+        for entry in data.get("mis_particular", []):
+            sl = str(entry.get('SL'))
+            particular = entry.get('PARTICULAR')
+
+
+                # Insert the new record
+            new_record = MISParticularModel(sl=sl, particular=particular)
+            session.add(new_record)
+            session.commit()
+            print(f"Record added: SL={sl}, PARTICULAR={particular}")
+
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+    finally:
+        session.close()
 
 
 def add_new_record(sl, r_month, r_year, value, note=None):
@@ -110,7 +145,7 @@ def get_mis_data(r_year):
         query = (
             session.query(
                 MISRawDataModel.sl,
-                func.max(subquery.note).label('particulars'),
+                MISParticularModel.particular.label('particulars'),
                 func.max(func.CASE([(subquery.r_month == '1', subquery.value)])).label('JAN'),
                 func.max(func.CASE([(subquery.r_month == '2', subquery.value)])).label('FEB'),
                 func.max(func.CASE([(subquery.r_month == '3', subquery.value)])).label('MAR'),
@@ -125,8 +160,9 @@ def get_mis_data(r_year):
                 func.max(func.CASE([(subquery.r_month == '12', subquery.value)])).label('DEC')
             )
             .outerjoin(subquery, subquery.sl == MISRawDataModel.sl)
+            .join(MISParticularModel, MISRawDataModel.sl == MISParticularModel.sl)  # Join with MISParticularModel
             .filter(MISRawDataModel.r_year == r_year)
-            .group_by(MISRawDataModel.sl)
+            .group_by(MISRawDataModel.sl, MISParticularModel.particular)  # Group by 'sl' and 'particulars'
             .order_by(MISRawDataModel.sl)
         )
 
@@ -152,9 +188,9 @@ def get_mis_data(r_year):
             }
             for row in result
         ]
-        return [data_list,None]
+        return [data_list, None]
     except Exception as e:
         print(f"An error occurred: {e}")
-        return [None,e]
+        return [None, e]
     finally:
         session.close()

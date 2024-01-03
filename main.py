@@ -19,6 +19,7 @@ from bin.blueprint.reports.report import report_bp
 
 from bin.blueprint.user_bp import user_bp
 from bin.database.db import database
+from bin.database.models.ReportModels.MISRawDataModel import init_MIS_particular_data
 from bin.middleware.jwt_middleware import jwt_middleware
 from bin.scheduleJob.migFromAccess import migFromAccess
 from bin.scheduleJob.misJob import misJob
@@ -119,8 +120,9 @@ if __name__ == '__main__':
 
     # Run the rest of your code
     # setup()
-    migFromAccess()
-    misJob()
+    # init_MIS_particular_data()
+    # migFromAccess()
+    # misJob()
 
     print("Active Schedules:")
     for job in scheduler.get_jobs():
@@ -128,3 +130,5 @@ if __name__ == '__main__':
 
     app.run(debug=True, host=config["server"]["host"], port=int(config["server"]["port"]))
     print("To run console type python3 console.py")
+
+
