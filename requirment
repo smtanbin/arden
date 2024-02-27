@@ -1,9 +1,0 @@
-toml
-flask
-sqlalchemy
-psycopg2
-pyodbc
-flask_cors
-flask_jwt_extended
-schedule
-croniter

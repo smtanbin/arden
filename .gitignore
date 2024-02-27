@@ -1,4 +1,5 @@
-config.toml
+bin/config.toml
+bin/log
 log
 
 

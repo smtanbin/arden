@@ -1,0 +1,18 @@
+# Use official Python 3.8 image as base for bin
+FROM python:3.8
+
+# Set the working directory for bin
+WORKDIR /app/server
+
+# Copy and install Python dependencies
+COPY server/requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the rest of the bin application
+COPY server/ .
+
+# Expose port for Python bin (if needed)
+EXPOSE 8080
+
+# Start the Python application
+CMD ["python", "main.py"]

@@ -1,0 +1,38 @@
+version: "3.8"
+
+services:
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./client:/app/client
+
+  bin:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./server:/app/bin
+
+  mssql:
+    image: mcr.microsoft.com/mssql/server
+    environment:
+      SA_PASSWORD: "ardenDev_123"
+      ACCEPT_EULA: "Y"
+      MSSQL_USER: "sa"
+      MSSQL_PASSWORD: "ardenDev_123"
+      MSSQL_ADDRESS: "mssql" # Use the service name as the hostname within Docker Compose network
+      MSSQL_PORT: "1433"
+      MSSQL_DATABASE: "arden_dev"
+    ports:
+      - "1433:1433"
+
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"

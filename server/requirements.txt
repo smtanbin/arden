@@ -1,0 +1,11 @@
+toml
+cx_Oracle
+sqlalchemy
+psycopg2
+pyodbc
+flask
+flask_cors
+flask_jwt_extended
+schedule
+
+

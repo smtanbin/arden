@@ -1,0 +1,33 @@
+[server]
+port = 4000
+host = '0.0.0.0'  # To allow all IP access, use '0.0.0.0'; default is '127.0.0.1'
+
+[database]
+username = "sa"
+password = "ardenDev_123"
+address = "127.0.0.1"
+port = 5432
+database = "arden_dev" 
+
+[cache]
+enable = false
+address = "127.0.0.1"  
+port = 6379
+
+
+[access]
+username = "arden"
+password = "arden"
+server  = "192.168.10.61"
+database = "CPSStandardbank"
+
+[digibanking]
+username = "root"
+password = "test123"
+server  = "192.168.200.62:2223"
+database = "db_sbl"
+
+[cbs]
+username = "adc"
+password = "adc123"
+url = "10.130.117.117:1523/IBPDB"
